@@ -70,6 +70,14 @@ def scan(
             help="Export results to a Markdown report file.",
         ),
     ] = None,
+    sarif_output: Annotated[
+        str | None,
+        typer.Option(
+            "--sarif",
+            "-S",
+            help="Export results to OASIS SARIF v2.1.0 JSON format for GitHub Code Scanning / CI-CD.",
+        ),
+    ] = None,
     llm: Annotated[
         bool,
         typer.Option(
@@ -99,6 +107,7 @@ def scan(
         output_json_path=json_output,
         output_html_path=html_output,
         output_markdown_path=markdown_output,
+        output_sarif_path=sarif_output,
         verbose=verbose,
     )
 
@@ -119,7 +128,9 @@ def scan(
         console.print(f"[bold green]✔[/bold green] Interactive HTML dashboard exported to: [underline]{html_output}[/underline]")
     if markdown_output:
         console.print(f"[bold green]✔[/bold green] Markdown report exported to: [underline]{markdown_output}[/underline]")
-    if json_output or html_output or markdown_output:
+    if sarif_output:
+        console.print(f"[bold green]✔[/bold green] OASIS SARIF report exported to: [underline]{sarif_output}[/underline]")
+    if json_output or html_output or markdown_output or sarif_output:
         console.print()
 
 

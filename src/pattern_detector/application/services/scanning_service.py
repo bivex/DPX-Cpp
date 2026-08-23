@@ -37,6 +37,7 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
         json_repository: ResultRepositoryPort | None = None,
         html_repository: ResultRepositoryPort | None = None,
         markdown_repository: ResultRepositoryPort | None = None,
+        sarif_repository: ResultRepositoryPort | None = None,
     ) -> None:
         self._source_provider = source_provider
         self._parser = parser
@@ -45,6 +46,7 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
         self._json_repository = json_repository
         self._html_repository = html_repository
         self._markdown_repository = markdown_repository
+        self._sarif_repository = sarif_repository
 
     def analyze_data_flow(
         self,
@@ -152,5 +154,8 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
 
         if opts.output_markdown_path and self._markdown_repository:
             self._markdown_repository.save(report, opts.output_markdown_path)
+
+        if opts.output_sarif_path and self._sarif_repository:
+            self._sarif_repository.save(report, opts.output_sarif_path)
 
         return report

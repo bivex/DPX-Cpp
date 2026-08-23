@@ -123,3 +123,29 @@ def test_llm_report_formatter() -> None:
     assert result.exit_code == 0
     assert "<codebase_architecture_analysis>" in result.stdout
 
+
+def test_sarif_report_formatter() -> None:
+    import json
+
+    from pattern_detector.adapters.outbound.persistence.file_result_repositories import SarifResultRepository
+    from pattern_detector.adapters.outbound.persistence.sarif_report_formatter import SarifReportFormatter
+
+    formatter = SarifReportFormatter()
+    report = _create_sample_report()
+    rendered = formatter.format(report)
+
+    sarif_data = json.loads(rendered)
+    assert sarif_data["version"] == "2.1.0"
+    assert len(sarif_data["runs"]) == 1
+    assert sarif_data["runs"][0]["tool"]["driver"]["name"] == "DPX-Cpp"
+    assert len(sarif_data["runs"][0]["results"]) == 1
+    assert sarif_data["runs"][0]["results"][0]["ruleId"] == "DPX-OBSERVER"
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        sarif_file = str(Path(tmpdir) / "report.sarif")
+        SarifResultRepository().save(report, sarif_file)
+        assert Path(sarif_file).exists()
+        loaded = json.loads(Path(sarif_file).read_text(encoding="utf-8"))
+        assert loaded["version"] == "2.1.0"
+
+

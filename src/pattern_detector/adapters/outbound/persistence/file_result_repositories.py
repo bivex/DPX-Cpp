@@ -6,6 +6,7 @@ from pathlib import Path
 
 from pattern_detector.adapters.outbound.persistence.html_report_formatter import HtmlReportFormatter
 from pattern_detector.adapters.outbound.persistence.markdown_report_formatter import MarkdownReportFormatter
+from pattern_detector.adapters.outbound.persistence.sarif_report_formatter import SarifReportFormatter
 from pattern_detector.domain.detection import DetectionReport
 from pattern_detector.ports.outbound import ResultRepositoryPort
 
@@ -34,3 +35,17 @@ class MarkdownResultRepository(ResultRepositoryPort):
         path.parent.mkdir(parents=True, exist_ok=True)
         content = self._formatter.format(report)
         path.write_text(content, encoding="utf-8")
+
+
+class SarifResultRepository(ResultRepositoryPort):
+    """Saves detection reports as OASIS SARIF v2.1.0 JSON files."""
+
+    def __init__(self, formatter: SarifReportFormatter | None = None) -> None:
+        self._formatter = formatter or SarifReportFormatter()
+
+    def save(self, report: DetectionReport, destination_path: str) -> None:
+        path = Path(destination_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = self._formatter.format(report)
+        path.write_text(content, encoding="utf-8")
+

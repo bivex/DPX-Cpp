@@ -22,6 +22,7 @@ class ScanOptions:
     output_json_path: str | None = None
     output_html_path: str | None = None
     output_markdown_path: str | None = None
+    output_sarif_path: str | None = None
     verbose: bool = False
 
 
