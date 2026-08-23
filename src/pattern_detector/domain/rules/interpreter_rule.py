@@ -100,4 +100,48 @@ class InterpreterPatternRule(BasePatternRule):
                         )
                     )
 
+        # 3. C++ OOP Interpreter Pattern (AbstractExpression protocols and base records)
+        candidates = list(model.all_protocols())
+        for rec in model.all_records():
+            if "expression" in rec.name.lower() or any("interpret" in m.name.lower() for m in rec.methods):
+                candidates.append(rec)
+
+        seen_targets: set[str] = set()
+        for cand in candidates:
+            if cand.name in seen_targets:
+                continue
+            name_lower = cand.name.lower()
+            if "expression" in name_lower or any("interpret" in m.name.lower() for m in cand.methods):
+                rec_impls = model.find_records_implementing(cand.name)
+                if rec_impls or "abstract" in name_lower:
+                    seen_targets.add(cand.name)
+                    evidences = [
+                        self.evidence(
+                            description=f"Class/Protocol '{cand.name}' defines domain expression interpretation interface: {', '.join(m.name for m in cand.methods)}",
+                            weight=0.55,
+                            location=cand.location,
+                            code_suffix="EXPRESSION_PROTOCOL",
+                        )
+                    ]
+                    for rec in rec_impls:
+                        evidences.append(
+                            self.evidence(
+                                description=f"Concrete grammar expression '{rec.name}' evaluates terminal/non-terminal syntax nodes",
+                                weight=0.35,
+                                location=rec.location,
+                                code_suffix="CONCRETE_EXPRESSION_IMPL",
+                            )
+                        )
+                    detections.append(
+                        self.create_detection(
+                            target_name=cand.name,
+                            target_kind="expression_protocol",
+                            evidences=evidences,
+                            primary_location=cand.location,
+                            related_locations=[r.location for r in rec_impls],
+                            summary=f"Interpreter pattern: class '{cand.name}' evaluates grammar sentences representing domain syntax",
+                            base_score=0.30,
+                        )
+                    )
+
         return detections

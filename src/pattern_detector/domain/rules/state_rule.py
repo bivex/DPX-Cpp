@@ -98,4 +98,39 @@ class StatePatternRule(BasePatternRule):
                         )
                     )
 
+        # 3. C++ OOP State Pattern (State Interface and polymorphic state implementations)
+        for proto in model.all_protocols():
+            name_lower = proto.name.lower()
+            if "state" in name_lower and "strategy" not in name_lower:
+                rec_impls = model.find_records_implementing(proto.name)
+                if rec_impls or len(proto.methods) >= 1:
+                    evidences = [
+                        self.evidence(
+                            description=f"Protocol '{proto.name}' defines behavioral State interface: {', '.join(m.name for m in proto.methods)}",
+                            weight=0.55,
+                            location=proto.location,
+                            code_suffix="STATE_INTERFACE_PROTOCOL",
+                        )
+                    ]
+                    for rec in rec_impls:
+                        evidences.append(
+                            self.evidence(
+                                description=f"Concrete state class '{rec.name}' encapsulates state-specific behavior",
+                                weight=0.35,
+                                location=rec.location,
+                                code_suffix="CONCRETE_STATE_IMPL",
+                            )
+                        )
+                    detections.append(
+                        self.create_detection(
+                            target_name=proto.name,
+                            target_kind="state_protocol",
+                            evidences=evidences,
+                            primary_location=proto.location,
+                            related_locations=[r.location for r in rec_impls],
+                            summary=f"State pattern: protocol '{proto.name}' allows an object to alter its behavior when internal state changes",
+                            base_score=0.30,
+                        )
+                    )
+
         return detections

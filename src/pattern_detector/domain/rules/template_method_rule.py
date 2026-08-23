@@ -92,4 +92,44 @@ class TemplateMethodRule(BasePatternRule):
                     )
                 )
 
+        # 5. C++ OOP Template Method Pattern (Abstract base classes with primitive operations)
+        for proto in model.all_protocols():
+            name_lower = proto.name.lower()
+            primitive_methods = [
+                m for m in proto.methods
+                if any(k in m.name.lower() for k in ("primitive", "step", "template", "hook", "do_"))
+            ]
+            has_template_method = any("template" in m.name.lower() or "execute" in m.name.lower() or "run" in m.name.lower() for m in proto.methods)
+
+            if primitive_methods or (has_template_method and len(proto.methods) >= 2):
+                rec_impls = model.find_records_implementing(proto.name)
+                evidences = [
+                    self.evidence(
+                        description=f"Class '{proto.name}' defines template algorithm skeleton with primitive operations: {', '.join(m.name for m in primitive_methods or proto.methods)}",
+                        weight=0.55,
+                        location=proto.location,
+                        code_suffix="TEMPLATE_METHOD_SKELETON",
+                    )
+                ]
+                for rec in rec_impls:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Subclass '{rec.name}' overrides primitive step operations without changing algorithm structure",
+                            weight=0.35,
+                            location=rec.location,
+                            code_suffix="CONCRETE_TEMPLATE_IMPL",
+                        )
+                    )
+                detections.append(
+                    self.create_detection(
+                        target_name=proto.name,
+                        target_kind="template_method_protocol",
+                        evidences=evidences,
+                        primary_location=proto.location,
+                        related_locations=[r.location for r in rec_impls],
+                        summary=f"Template Method pattern: '{proto.name}' defines skeleton of algorithm in base class",
+                        base_score=0.30,
+                    )
+                )
+
         return detections

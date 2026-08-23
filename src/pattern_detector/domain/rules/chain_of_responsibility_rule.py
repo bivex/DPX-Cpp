@@ -85,4 +85,60 @@ class ChainOfResponsibilityRule(BasePatternRule):
                     )
                 )
 
+        # 2. C++ OOP Chain of Responsibility Pattern (Handler chaining)
+        for rec in model.all_records():
+            name_lower = rec.name.lower()
+            is_handler_named = "handler" in name_lower or "filter" in name_lower or "processor" in name_lower
+
+            has_successor_field = any(
+                any(k in f.lower() for k in ("successor", "next", "handler", "parent", "chain"))
+                for f in rec.fields
+            )
+            has_chain_methods = any(
+                any(k in m.name.lower() for k in ("setsuccessor", "setnext", "handle", "handlerequest", "process"))
+                for m in rec.methods
+            )
+
+            if (is_handler_named and (has_successor_field or has_chain_methods)) or (has_successor_field and has_chain_methods):
+                evidences = []
+                if is_handler_named:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Class '{rec.name}' follows Chain of Responsibility handler naming convention",
+                            weight=0.45,
+                            location=rec.location,
+                            code_suffix="HANDLER_CLASS_NAMING",
+                        )
+                    )
+                if has_successor_field:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Maintains successor/next link to chain handler: {', '.join([f for f in rec.fields if any(k in f.lower() for k in ('successor', 'next', 'handler', 'parent', 'chain'))])}",
+                            weight=0.45,
+                            location=rec.location,
+                            code_suffix="HANDLER_SUCCESSOR_FIELD",
+                        )
+                    )
+                if has_chain_methods:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Declares request processing / successor configuration methods: {', '.join([m.name for m in rec.methods if any(k in m.name.lower() for k in ('setsuccessor', 'setnext', 'handle', 'handlerequest', 'process'))])}",
+                            weight=0.40,
+                            location=rec.location,
+                            code_suffix="HANDLER_CHAIN_METHODS",
+                        )
+                    )
+
+                detections.append(
+                    self.create_detection(
+                        target_name=rec.name,
+                        target_kind="cpp_chain_handler",
+                        evidences=evidences,
+                        primary_location=rec.location,
+                        related_locations=[],
+                        summary=f"Chain of Responsibility: handler '{rec.name}' passes requests along dynamic chain of successor objects",
+                        base_score=0.30,
+                    )
+                )
+
         return detections

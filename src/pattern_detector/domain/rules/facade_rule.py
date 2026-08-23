@@ -83,4 +83,57 @@ class FacadePatternRule(BasePatternRule):
                     )
                 )
 
+        # 2. C++ OOP Facade Pattern (Classes aggregating multiple subsystem components)
+        for rec in model.all_records():
+            name_lower = rec.name.lower()
+            is_facade_named = "facade" in name_lower
+
+            # Check if class has multiple subsystem fields
+            subsystem_fields = [
+                f for f in rec.fields
+                if any(k in f.lower() for k in ("subsystem", "service", "module", "engine", "system", "parser", "lexer", "db", "client", "worker"))
+            ]
+
+            if is_facade_named or len(subsystem_fields) >= 2:
+                evidences = []
+                if is_facade_named:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Class '{rec.name}' follows Facade pattern naming convention",
+                            weight=0.55,
+                            location=rec.location,
+                            code_suffix="FACADE_NAMING",
+                        )
+                    )
+                if subsystem_fields:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Aggregates {len(subsystem_fields)} subsystem member(s): {', '.join(subsystem_fields)}",
+                            weight=0.45,
+                            location=rec.location,
+                            code_suffix="FACADE_SUBSYSTEM_MEMBERS",
+                        )
+                    )
+                if len(rec.methods) >= 1:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Exposes simplified unified facade method(s): {', '.join(m.name for m in rec.methods[:3])}",
+                            weight=0.35,
+                            location=rec.location,
+                            code_suffix="FACADE_UNIFIED_METHODS",
+                        )
+                    )
+
+                detections.append(
+                    self.create_detection(
+                        target_name=rec.name,
+                        target_kind="cpp_facade_class",
+                        evidences=evidences,
+                        primary_location=rec.location,
+                        related_locations=[],
+                        summary=f"Facade pattern: class '{rec.name}' exposes unified high-level interface over subsystems",
+                        base_score=0.30,
+                    )
+                )
+
         return detections
