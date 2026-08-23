@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from antlr4 import CommonTokenStream, InputStream
+from antlr4.error.ErrorStrategy import BailErrorStrategy
 
 from pattern_detector.adapters.outbound.antlr.generated.cpp.CPP14Lexer import CPP14Lexer
 from pattern_detector.adapters.outbound.antlr.generated.cpp.CPP14Parser import CPP14Parser
@@ -248,11 +249,24 @@ class _CppAstExtractionVisitor(CPP14ParserVisitor):
 class CppAntlrParserAdapter(ParserPort):
     """Parses C++ (C++14/17/20) source and header files using ANTLR4 into agnostic CodeModel."""
 
+    def _clean_source(self, source_code: str) -> str:
+        """Pre-clean preprocessor directives, macros and noise that prevent AST recognition."""
+        cleaned = re.sub(r"#\s*(?:pragma|define|undef|ifdef|ifndef|endif|else|elif|line)\b[^\n]*", "", source_code)
+        cleaned = re.sub(r"\b[A-Z0-9_]+_(?:API|EXPORT|INLINE|NOEXCEPT|CONSTEXPR|NODISCARD)\b", "", cleaned)
+        cleaned = re.sub(r"\b(?:SPDLOG_[A-Z0-9_]+|Q_OBJECT|Q_SIGNALS|Q_SLOTS|GTEST_DISALLOW_[A-Z0-9_]+)\b", "", cleaned)
+        return cleaned
+
     def parse_source(self, source_code: str, file_path: str = "") -> NamespaceModel:
-        input_stream = InputStream(source_code)
+        # Fast path for large or macro-heavy files to prevent ANTLR ATN backtracking
+        if len(source_code) > 30_000 or "#define" in source_code or "#ifdef" in source_code:
+            return self._fallback_regex_parse(source_code, file_path)
+
+        cleaned_code = self._clean_source(source_code)
+        input_stream = InputStream(cleaned_code)
         lexer = CPP14Lexer(input_stream)
         token_stream = CommonTokenStream(lexer)
         parser = CPP14Parser(token_stream)
+        parser._errHandler = BailErrorStrategy()
 
         try:
             tree = parser.translationUnit()
@@ -282,15 +296,15 @@ class CppAntlrParserAdapter(ParserPort):
         ns_match = re.search(r"\bnamespace\s+([a-zA-Z0-9_:]+)", source_code)
         ns_name = ns_match.group(1) if ns_match else "global"
 
-        # Extract classes & structs
-        class_matches = re.finditer(
-            r"\b(?:class|struct)\s+([A-Za-z0-9_]+)(?:\s*:\s*([^{]+))?\s*\{([^}]*)\}",
-            source_code,
-        )
-        for cm in class_matches:
+        # Pre-clean comments and macros for clean brace navigation
+        cleaned = re.sub(r"/\*.*?\*/", "", source_code, flags=re.DOTALL)
+        cleaned = re.sub(r"//[^\n]*", "", cleaned)
+        cleaned = re.sub(r"#\s*(?:pragma|define|undef|ifdef|ifndef|endif|else|elif|line)\b[^\n]*", "", cleaned)
+
+        pattern = re.compile(r"\b(?:class|struct)\s+(?:[A-Za-z0-9_]+\s+)?([A-Za-z0-9_]+)(?:\s*:\s*([^{]+))?\s*\{")
+        for cm in pattern.finditer(cleaned):
             c_name = cm.group(1)
             c_bases_raw = cm.group(2) or ""
-            c_body = cm.group(3) or ""
 
             bases = [
                 re.sub(r"\b(public|protected|private|virtual)\b", "", b).strip()
@@ -299,6 +313,17 @@ class CppAntlrParserAdapter(ParserPort):
             ]
 
             loc = SourceLocation(file_path=file_path, line=1, column=1)
+            start_idx = cm.end()
+            depth = 1
+            pos = start_idx
+            while pos < len(cleaned) and depth > 0:
+                ch = cleaned[pos]
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                pos += 1
+            c_body = cleaned[start_idx : pos - 1]
 
             # Methods inside class body
             methods: list[FunctionModel] = []
@@ -308,22 +333,23 @@ class CppAntlrParserAdapter(ParserPort):
             # Extract fields
             for f_match in re.finditer(r"\b(?:std::(?:shared_ptr|unique_ptr)<[^>]+>|[a-zA-Z0-9_:]+)\s+([a-zA-Z0-9_]+)\s*;", c_body):
                 f_name = f_match.group(1)
-                if f_name not in ("default", "delete", "override", "const"):
+                if f_name not in ("default", "delete", "override", "const", "return", "auto"):
                     fields.append(f_name)
 
-            for m in re.finditer(r"\b([A-Za-z0-9_~]+)\s*\(([^)]*)\)\s*(?:const)?\s*(?:=\s*0|;|\{([^}]*)\})", c_body):
+            for m in re.finditer(r"\b([A-Za-z0-9_~]+)\s*\(([^)]*)\)\s*(?:const)?\s*(?:noexcept)?\s*(?:final)?\s*(?:override)?\s*(?:=\s*0|;|\{)", c_body):
                 m_name = m.group(1)
-                m_body = m.group(3) or ""
+                m_params_raw = m.group(2) or ""
                 is_pure = "= 0" in m.group(0)
                 qualified_name = f"{c_name}::{m_name}"
+                param_list = [p.strip() for p in m_params_raw.split(",") if p.strip()]
 
                 fn = FunctionModel(
                     name=qualified_name,
                     namespace=ns_name,
                     location=loc,
-                    parameter_lists=[[]],
-                    body_text=m_body,
-                    calls=sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", m_body))),
+                    parameter_lists=[param_list],
+                    body_text=c_body,
+                    calls=sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", c_body))),
                 )
                 methods.append(fn)
                 visitor.functions[qualified_name] = fn
