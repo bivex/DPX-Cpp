@@ -2,8 +2,8 @@
 
 > **Project:** `/Volumes/External/Code/DPX-Cpp/tmp_real_project`  
 > **Scanned Files:** 24  
-> **Total Detections:** 71  
-> **Duration:** 5.793s  
+> **Total Detections:** 64  
+> **Duration:** 5.761s  
 
 ---
 
@@ -13,7 +13,7 @@
 | :--- | :---: |
 | **CREATIONAL** | 6 |
 | **STRUCTURAL** | 2 |
-| **BEHAVIORAL** | 17 |
+| **BEHAVIORAL** | 10 |
 | **PRINCIPLE** | 46 |
 
 ---
@@ -504,25 +504,7 @@
 
 ---
 
-### #37 STRATEGY on protocol_strategy `Subject`
-- **Confidence:** 81% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
-- **Summary:** Strategy pattern: protocol 'Subject' with 3 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Subject' defines strategy interface with methods: getState, setState _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'RealSubject' provides concrete strategy implementation for protocol 'Subject' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:31:1-39:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'Proxy' provides concrete strategy implementation for protocol 'Subject' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteSubject' provides concrete strategy implementation for protocol 'Subject' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:31:1-39:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
-
----
-
-### #38 STRATEGY on protocol_strategy `Strategy`
+### #37 STRATEGY on protocol_strategy `Strategy`
 - **Confidence:** 81% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:17:1-23:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** Strategy pattern: protocol 'Strategy' with 3 interchangeable concrete implementations
@@ -540,7 +522,7 @@
 
 ---
 
-### #39 BRIDGE on bridge_abstraction `RefinedAbstraction`
+### #38 BRIDGE on bridge_abstraction `RefinedAbstraction`
 - **Confidence:** 81% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** Bridge pattern: abstraction record 'RefinedAbstraction' decouples domain logic from 'Implementor' backend implementation
@@ -554,7 +536,7 @@
 
 ---
 
-### #40 PROTOTYPE on prototype_protocol `Prototype`
+### #39 PROTOTYPE on prototype_protocol `Prototype`
 - **Confidence:** 80% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** Prototype pattern: protocol 'Prototype' defines instance cloning and derivation interface
@@ -569,7 +551,7 @@
 
 ---
 
-### #41 VISITOR on visitor_interface `Visitor`
+### #40 VISITOR on visitor_interface `Visitor`
 - **Confidence:** 80% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Visitor pattern: 'Visitor' defines double-dispatch visitor operations over element hierarchy
@@ -584,7 +566,7 @@
 
 ---
 
-### #42 VISITOR on element_accept_method `ConcreteElementA.ConcreteElementA::accept`
+### #41 VISITOR on element_accept_method `ConcreteElementA.ConcreteElementA::accept`
 - **Confidence:** 77% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:94:3-97:4`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Visitor Element: 'ConcreteElementA' participates in visitor double-dispatch via accept()
@@ -594,7 +576,7 @@
 
 ---
 
-### #43 VISITOR on element_accept_method `ConcreteElementB.ConcreteElementB::accept`
+### #42 VISITOR on element_accept_method `ConcreteElementB.ConcreteElementB::accept`
 - **Confidence:** 77% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:106:3-109:4`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Visitor Element: 'ConcreteElementB' participates in visitor double-dispatch via accept()
@@ -604,103 +586,7 @@
 
 ---
 
-### #44 STRATEGY on protocol_strategy `Product`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
-- **Summary:** Strategy pattern: protocol 'Product' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Product' defines strategy interface with methods: getName _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteProductA' provides concrete strategy implementation for protocol 'Product' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:32:1-42:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteProductB' provides concrete strategy implementation for protocol 'Product' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:48:1-58:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:32:1-42:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:48:1-58:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
-
----
-
-### #45 STRATEGY on protocol_strategy `Prototype`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
-- **Summary:** Strategy pattern: protocol 'Prototype' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Prototype' defines strategy interface with methods: clone, type _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcretePrototypeA' provides concrete strategy implementation for protocol 'Prototype' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:32:1-46:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcretePrototypeB' provides concrete strategy implementation for protocol 'Prototype' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:48:1-62:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:32:1-46:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:48:1-62:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
-
----
-
-### #46 STRATEGY on protocol_strategy `Element`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
-- **Summary:** Strategy pattern: protocol 'Element' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Element' defines strategy interface with methods: accept _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteElementA' provides concrete strategy implementation for protocol 'Element' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:89:1-99:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteElementB' provides concrete strategy implementation for protocol 'Element' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:101:1-111:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:89:1-99:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:101:1-111:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
-
----
-
-### #47 STRATEGY on protocol_strategy `ProductA`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-- **Summary:** Strategy pattern: protocol 'ProductA' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'ProductA' defines strategy interface with methods: getName _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteProductAX' provides concrete strategy implementation for protocol 'ProductA' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:31:1-41:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteProductAY' provides concrete strategy implementation for protocol 'ProductA' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:43:1-53:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:31:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:43:1-53:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-
----
-
-### #48 STRATEGY on protocol_strategy `ProductB`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-- **Summary:** Strategy pattern: protocol 'ProductB' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'ProductB' defines strategy interface with methods: getName _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteProductBX' provides concrete strategy implementation for protocol 'ProductB' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:73:1-83:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteProductBY' provides concrete strategy implementation for protocol 'ProductB' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:85:1-95:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:73:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:85:1-95:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-
----
-
-### #49 STRATEGY on protocol_strategy `Flyweight`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
-- **Summary:** Strategy pattern: protocol 'Flyweight' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Flyweight' defines strategy interface with methods: operation _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'UnsharedConcreteFlyweight' provides concrete strategy implementation for protocol 'Flyweight' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:31:1-48:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteFlyweight' provides concrete strategy implementation for protocol 'Flyweight' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:55:1-72:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:31:1-48:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:55:1-72:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
-
----
-
-### #50 COMMAND on command_protocol `Command`
+### #43 COMMAND on command_protocol `Command`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp:32:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp)
 - **Summary:** Command pattern: protocol 'Command' implemented by 1 command records
@@ -714,7 +600,7 @@
 
 ---
 
-### #51 ITERATOR on iterator_protocol `Iterator`
+### #44 ITERATOR on iterator_protocol `Iterator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/iterator/Iterator.cpp:76:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/iterator/Iterator.cpp)
 - **Summary:** Iterator pattern: protocol 'Iterator' defines sequential iteration contract
@@ -724,7 +610,7 @@
 
 ---
 
-### #52 MEDIATOR on mediator_hub_record `Mediator`
+### #45 MEDIATOR on mediator_hub_record `Mediator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:63:1-73:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: record 'Mediator' mediates communication between decoupled subsystems
@@ -734,7 +620,7 @@
 
 ---
 
-### #53 MEDIATOR on mediator_hub_record `ConcreteMediator`
+### #46 MEDIATOR on mediator_hub_record `ConcreteMediator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:80:1-110:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: record 'ConcreteMediator' mediates communication between decoupled subsystems
@@ -744,7 +630,7 @@
 
 ---
 
-### #54 MEMENTO on memento_history_manager `Memento::Memento`
+### #47 MEMENTO on memento_history_manager `Memento::Memento`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:25:3`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** Memento pattern: snapshot & history management in namespace 'global' (6 functions)
@@ -762,7 +648,7 @@
 
 ---
 
-### #55 INTERFACE_SEGREGATION on segregated_role_interface `Subject`
+### #48 INTERFACE_SEGREGATION on segregated_role_interface `Subject`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** ISP Adherence: Role interface 'Subject' is segregated and focused (2 methods)
@@ -778,7 +664,7 @@
 
 ---
 
-### #56 INTERFACE_SEGREGATION on segregated_role_interface `Component`
+### #49 INTERFACE_SEGREGATION on segregated_role_interface `Component`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:19:1-33:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp)
 - **Summary:** ISP Adherence: Role interface 'Component' is segregated and focused (1 methods)
@@ -795,7 +681,7 @@
 
 ---
 
-### #57 INTERFACE_SEGREGATION on segregated_role_interface `Product`
+### #50 INTERFACE_SEGREGATION on segregated_role_interface `Product`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** ISP Adherence: Role interface 'Product' is segregated and focused (1 methods)
@@ -810,7 +696,7 @@
 
 ---
 
-### #58 INTERFACE_SEGREGATION on segregated_role_interface `Implementor`
+### #51 INTERFACE_SEGREGATION on segregated_role_interface `Implementor`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** ISP Adherence: Role interface 'Implementor' is segregated and focused (1 methods)
@@ -825,7 +711,7 @@
 
 ---
 
-### #59 INTERFACE_SEGREGATION on segregated_role_interface `Prototype`
+### #52 INTERFACE_SEGREGATION on segregated_role_interface `Prototype`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** ISP Adherence: Role interface 'Prototype' is segregated and focused (2 methods)
@@ -840,7 +726,7 @@
 
 ---
 
-### #60 INTERFACE_SEGREGATION on segregated_role_interface `State`
+### #53 INTERFACE_SEGREGATION on segregated_role_interface `State`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
 - **Summary:** ISP Adherence: Role interface 'State' is segregated and focused (1 methods)
@@ -855,7 +741,7 @@
 
 ---
 
-### #61 INTERFACE_SEGREGATION on segregated_role_interface `Visitor`
+### #54 INTERFACE_SEGREGATION on segregated_role_interface `Visitor`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** ISP Adherence: Role interface 'Visitor' is segregated and focused (2 methods)
@@ -870,7 +756,7 @@
 
 ---
 
-### #62 INTERFACE_SEGREGATION on segregated_role_interface `Element`
+### #55 INTERFACE_SEGREGATION on segregated_role_interface `Element`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** ISP Adherence: Role interface 'Element' is segregated and focused (1 methods)
@@ -885,7 +771,7 @@
 
 ---
 
-### #63 INTERFACE_SEGREGATION on segregated_role_interface `ProductA`
+### #56 INTERFACE_SEGREGATION on segregated_role_interface `ProductA`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'ProductA' is segregated and focused (1 methods)
@@ -900,7 +786,7 @@
 
 ---
 
-### #64 INTERFACE_SEGREGATION on segregated_role_interface `ProductB`
+### #57 INTERFACE_SEGREGATION on segregated_role_interface `ProductB`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'ProductB' is segregated and focused (1 methods)
@@ -915,7 +801,7 @@
 
 ---
 
-### #65 INTERFACE_SEGREGATION on segregated_role_interface `AbstractFactory`
+### #58 INTERFACE_SEGREGATION on segregated_role_interface `AbstractFactory`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'AbstractFactory' is segregated and focused (2 methods)
@@ -930,7 +816,7 @@
 
 ---
 
-### #66 INTERFACE_SEGREGATION on segregated_role_interface `Handler`
+### #59 INTERFACE_SEGREGATION on segregated_role_interface `Handler`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
 - **Summary:** ISP Adherence: Role interface 'Handler' is segregated and focused (3 methods)
@@ -945,7 +831,7 @@
 
 ---
 
-### #67 INTERFACE_SEGREGATION on segregated_role_interface `Flyweight`
+### #60 INTERFACE_SEGREGATION on segregated_role_interface `Flyweight`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** ISP Adherence: Role interface 'Flyweight' is segregated and focused (1 methods)
@@ -960,7 +846,7 @@
 
 ---
 
-### #68 INTERFACE_SEGREGATION on segregated_role_interface `Builder`
+### #61 INTERFACE_SEGREGATION on segregated_role_interface `Builder`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** ISP Adherence: Role interface 'Builder' is segregated and focused (3 methods)
@@ -975,7 +861,7 @@
 
 ---
 
-### #69 INTERFACE_SEGREGATION on segregated_role_interface `Strategy`
+### #62 INTERFACE_SEGREGATION on segregated_role_interface `Strategy`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:17:1-23:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** ISP Adherence: Role interface 'Strategy' is segregated and focused (1 methods)
@@ -991,7 +877,7 @@
 
 ---
 
-### #70 SINGLETON on static_singleton_state `Singleton::instance`
+### #63 SINGLETON on static_singleton_state `Singleton::instance`
 - **Confidence:** 74% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp:56:3`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp)
 - **Summary:** Singleton pattern: static single-instance management for 'Singleton::instance'
@@ -1001,7 +887,7 @@
 
 ---
 
-### #71 SINGLETON on cpp_singleton_class `Singleton`
+### #64 SINGLETON on cpp_singleton_class `Singleton`
 - **Confidence:** 57% (🟡 `MEDIUM`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp:18:1-58:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp)
 - **Summary:** Singleton pattern: class 'Singleton' guarantees a single global instance

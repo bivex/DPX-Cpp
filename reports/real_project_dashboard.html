@@ -80,11 +80,11 @@
         <div class="kpi-grid">
             <div class="kpi-card">
                 <div class="kpi-title">Total Detections</div>
-                <div class="kpi-value">71</div>
+                <div class="kpi-value">64</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">High Confidence (≥70%)</div>
-                <div class="kpi-value" style="color: #4ade80;">70</div>
+                <div class="kpi-value" style="color: #4ade80;">63</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Med / Low (<70%)</div>
@@ -96,12 +96,12 @@
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Scan Duration</div>
-                <div class="kpi-value">5.793s</div>
+                <div class="kpi-value">5.761s</div>
             </div>
         </div>
 
         <div class="category-filters">
-            <button class="cat-filter-btn btn-all" data-filter="all"><strong>All Categories</strong>: 71</button>
+            <button class="cat-filter-btn btn-all" data-filter="all"><strong>All Categories</strong>: 64</button>
             
                     <button class="cat-filter-btn" data-filter="creational" style="border-color: #059669; background: #064e3b44; color: #34d399;">
                         <span class="cat-dot" style="background: #10b981;"></span>
@@ -115,7 +115,7 @@
                     
                     <button class="cat-filter-btn" data-filter="behavioral" style="border-color: #9333ea; background: #581c8744; color: #c084fc;">
                         <span class="cat-dot" style="background: #a855f7;"></span>
-                        <strong>Behavioral</strong>: 17
+                        <strong>Behavioral</strong>: 10
                     </button>
                     
                     <button class="cat-filter-btn" data-filter="principle" style="border-color: #4f46e5; background: #312e8144; color: #818cf8;">
@@ -1101,37 +1101,10 @@
                     </div>
                 </div>
                 
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="Subject" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#37</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>Subject</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">81% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;Subject&#x27; with 3 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (4 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;Subject&#x27; defines strategy interface with methods: getState, setState <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;RealSubject&#x27; provides concrete strategy implementation for protocol &#x27;Subject&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:31:1-39:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;Proxy&#x27; provides concrete strategy implementation for protocol &#x27;Subject&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteSubject&#x27; provides concrete strategy implementation for protocol &#x27;Subject&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:31:1-39:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2</code></li></ul></div>
-                    </div>
-                </div>
-                
                 <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="Strategy" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#38</span>
+                            <span class="card-index">#37</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1158,7 +1131,7 @@
                 <div class="pattern-card" data-pattern="bridge" data-category="structural" data-target="RefinedAbstraction" style="border-left: 4px solid #0ea5e9;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#39</span>
+                            <span class="card-index">#38</span>
                             <span class="category-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
                                 STRUCTURAL
                             </span>
@@ -1185,7 +1158,7 @@
                 <div class="pattern-card" data-pattern="prototype" data-category="creational" data-target="Prototype" style="border-left: 4px solid #10b981;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#40</span>
+                            <span class="card-index">#39</span>
                             <span class="category-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
                                 CREATIONAL
                             </span>
@@ -1212,7 +1185,7 @@
                 <div class="pattern-card" data-pattern="visitor" data-category="behavioral" data-target="Visitor" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#41</span>
+                            <span class="card-index">#40</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1239,7 +1212,7 @@
                 <div class="pattern-card" data-pattern="visitor" data-category="behavioral" data-target="ConcreteElementA.ConcreteElementA::accept" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#42</span>
+                            <span class="card-index">#41</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1266,7 +1239,7 @@
                 <div class="pattern-card" data-pattern="visitor" data-category="behavioral" data-target="ConcreteElementB.ConcreteElementB::accept" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#43</span>
+                            <span class="card-index">#42</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1290,172 +1263,10 @@
                     </div>
                 </div>
                 
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="Product" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#44</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>Product</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">75% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;Product&#x27; with 2 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (3 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;Product&#x27; defines strategy interface with methods: getName <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteProductA&#x27; provides concrete strategy implementation for protocol &#x27;Product&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:32:1-42:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteProductB&#x27; provides concrete strategy implementation for protocol &#x27;Product&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:48:1-58:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:32:1-42:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:48:1-58:2</code></li></ul></div>
-                    </div>
-                </div>
-                
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="Prototype" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#45</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>Prototype</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">75% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;Prototype&#x27; with 2 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (3 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;Prototype&#x27; defines strategy interface with methods: clone, type <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcretePrototypeA&#x27; provides concrete strategy implementation for protocol &#x27;Prototype&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:32:1-46:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcretePrototypeB&#x27; provides concrete strategy implementation for protocol &#x27;Prototype&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:48:1-62:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:32:1-46:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:48:1-62:2</code></li></ul></div>
-                    </div>
-                </div>
-                
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="Element" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#46</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>Element</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">75% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;Element&#x27; with 2 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (3 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;Element&#x27; defines strategy interface with methods: accept <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteElementA&#x27; provides concrete strategy implementation for protocol &#x27;Element&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:89:1-99:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteElementB&#x27; provides concrete strategy implementation for protocol &#x27;Element&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:101:1-111:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:89:1-99:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:101:1-111:2</code></li></ul></div>
-                    </div>
-                </div>
-                
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="ProductA" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#47</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>ProductA</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">75% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;ProductA&#x27; with 2 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (3 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;ProductA&#x27; defines strategy interface with methods: getName <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteProductAX&#x27; provides concrete strategy implementation for protocol &#x27;ProductA&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:31:1-41:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteProductAY&#x27; provides concrete strategy implementation for protocol &#x27;ProductA&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:43:1-53:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:31:1-41:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:43:1-53:2</code></li></ul></div>
-                    </div>
-                </div>
-                
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="ProductB" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#48</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>ProductB</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">75% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;ProductB&#x27; with 2 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (3 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;ProductB&#x27; defines strategy interface with methods: getName <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteProductBX&#x27; provides concrete strategy implementation for protocol &#x27;ProductB&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:73:1-83:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteProductBY&#x27; provides concrete strategy implementation for protocol &#x27;ProductB&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:85:1-95:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:73:1-83:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:85:1-95:2</code></li></ul></div>
-                    </div>
-                </div>
-                
-                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="Flyweight" style="border-left: 4px solid #a855f7;">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <span class="card-index">#49</span>
-                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
-                                BEHAVIORAL
-                            </span>
-                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
-                                STRATEGY
-                            </span>
-                            <span class="target-name">protocol_strategy: <strong>Flyweight</strong></span>
-                        </div>
-                        <span class="confidence-badge badge-h">75% [HIGH]</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;Flyweight&#x27; with 2 interchangeable concrete implementations</p>
-                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2</code></p>
-                        <div class="evidence-section">
-                            <strong>Evidence Trail (3 heuristics):</strong>
-                            <ul class="evidence-list">
-                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;Flyweight&#x27; defines strategy interface with methods: operation <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;UnsharedConcreteFlyweight&#x27; provides concrete strategy implementation for protocol &#x27;Flyweight&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:31:1-48:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ConcreteFlyweight&#x27; provides concrete strategy implementation for protocol &#x27;Flyweight&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:55:1-72:2</span></li>
-                            </ul>
-                        </div>
-                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:31:1-48:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:55:1-72:2</code></li></ul></div>
-                    </div>
-                </div>
-                
                 <div class="pattern-card" data-pattern="command" data-category="behavioral" data-target="Command" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#50</span>
+                            <span class="card-index">#43</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1482,7 +1293,7 @@
                 <div class="pattern-card" data-pattern="iterator" data-category="behavioral" data-target="Iterator" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#51</span>
+                            <span class="card-index">#44</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1509,7 +1320,7 @@
                 <div class="pattern-card" data-pattern="mediator" data-category="behavioral" data-target="Mediator" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#52</span>
+                            <span class="card-index">#45</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1536,7 +1347,7 @@
                 <div class="pattern-card" data-pattern="mediator" data-category="behavioral" data-target="ConcreteMediator" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#53</span>
+                            <span class="card-index">#46</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1563,7 +1374,7 @@
                 <div class="pattern-card" data-pattern="memento" data-category="behavioral" data-target="Memento::Memento" style="border-left: 4px solid #a855f7;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#54</span>
+                            <span class="card-index">#47</span>
                             <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
                                 BEHAVIORAL
                             </span>
@@ -1590,7 +1401,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Subject" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#55</span>
+                            <span class="card-index">#48</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1617,7 +1428,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Component" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#56</span>
+                            <span class="card-index">#49</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1644,7 +1455,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Product" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#57</span>
+                            <span class="card-index">#50</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1671,7 +1482,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Implementor" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#58</span>
+                            <span class="card-index">#51</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1698,7 +1509,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Prototype" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#59</span>
+                            <span class="card-index">#52</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1725,7 +1536,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="State" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#60</span>
+                            <span class="card-index">#53</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1752,7 +1563,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Visitor" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#61</span>
+                            <span class="card-index">#54</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1779,7 +1590,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Element" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#62</span>
+                            <span class="card-index">#55</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1806,7 +1617,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="ProductA" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#63</span>
+                            <span class="card-index">#56</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1833,7 +1644,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="ProductB" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#64</span>
+                            <span class="card-index">#57</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1860,7 +1671,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="AbstractFactory" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#65</span>
+                            <span class="card-index">#58</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1887,7 +1698,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Handler" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#66</span>
+                            <span class="card-index">#59</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1914,7 +1725,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Flyweight" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#67</span>
+                            <span class="card-index">#60</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1941,7 +1752,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Builder" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#68</span>
+                            <span class="card-index">#61</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1968,7 +1779,7 @@
                 <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="Strategy" style="border-left: 4px solid #6366f1;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#69</span>
+                            <span class="card-index">#62</span>
                             <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
                                 PRINCIPLES &amp; SOLID
                             </span>
@@ -1995,7 +1806,7 @@
                 <div class="pattern-card" data-pattern="singleton" data-category="creational" data-target="Singleton::instance" style="border-left: 4px solid #10b981;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#70</span>
+                            <span class="card-index">#63</span>
                             <span class="category-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
                                 CREATIONAL
                             </span>
@@ -2022,7 +1833,7 @@
                 <div class="pattern-card" data-pattern="singleton" data-category="creational" data-target="Singleton" style="border-left: 4px solid #10b981;">
                     <div class="card-header">
                         <div class="header-left">
-                            <span class="card-index">#71</span>
+                            <span class="card-index">#64</span>
                             <span class="category-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
                                 CREATIONAL
                             </span>

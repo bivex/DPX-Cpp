@@ -58,6 +58,31 @@ class PatternDetectorService:
         for d in detections:
             claimed_targets.setdefault(d.target_name, set()).add(d.pattern_type)
 
+        NON_STRATEGY_KEYWORDS = (
+            "product",
+            "element",
+            "subject",
+            "prototype",
+            "flyweight",
+            "visitor",
+            "observer",
+            "listener",
+            "state",
+            "command",
+            "builder",
+            "factory",
+            "creator",
+            "mediator",
+            "iterator",
+            "handler",
+            "component",
+            "implementor",
+            "adapter",
+            "proxy",
+            "decorator",
+            "memento",
+        )
+
         filtered: list[Detection] = []
         for d in detections:
             target = d.target_name
@@ -77,30 +102,23 @@ class PatternDetectorService:
                         PatternType.BRIDGE,
                         PatternType.BUILDER,
                         PatternType.ABSTRACT_FACTORY,
+                        PatternType.FACTORY_METHOD,
+                        PatternType.PROTOTYPE,
+                        PatternType.FLYWEIGHT,
                         PatternType.MEDIATOR,
                         PatternType.ITERATOR,
                         PatternType.CHAIN_OF_RESPONSIBILITY,
+                        PatternType.ADAPTER,
+                        PatternType.PROXY,
+                        PatternType.DECORATOR,
                     )
                 ):
                     continue
 
-                # Also if target is named specifically after other patterns with existing specialized detections
-                if any(
-                    k in target_lower
-                    for k in (
-                        "visitor",
-                        "observer",
-                        "state",
-                        "command",
-                        "builder",
-                        "factory",
-                        "mediator",
-                        "iterator",
-                        "handler",
-                        "component",
-                        "implementor",
-                    )
-                ) and other_patterns:
+                # Also prune generic Strategy if target entity belongs to another known GoF role
+                if any(k in target_lower for k in NON_STRATEGY_KEYWORDS) and not any(
+                    k in target_lower for k in ("strategy", "algorithm", "policy")
+                ):
                     continue
 
             # Abstract Factory vs Builder deduplication
