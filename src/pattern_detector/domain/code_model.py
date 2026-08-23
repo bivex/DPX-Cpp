@@ -384,6 +384,8 @@ class CodeModel:
         seen_cycle_keys: set[tuple[str, ...]] = set()
 
         for c in cycles:
+            if "global" in c:
+                continue
             # Canonical cycle representation by smallest element first
             min_idx = c.index(min(c))
             canonical = tuple(c[min_idx:] + c[:min_idx])

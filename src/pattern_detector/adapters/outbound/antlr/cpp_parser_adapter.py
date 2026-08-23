@@ -472,13 +472,58 @@ class CppAntlrParserAdapter(ParserPort):
                 if f_name not in ("default", "delete", "override", "const", "return", "auto") and f_name not in CONTROL_KEYWORDS:
                     fields.append(f_name)
 
-            for m in re.finditer(r"\b([A-Za-z0-9_~]+)\s*\(([^)]*)\)\s*(?:const)?\s*(?:noexcept)?\s*(?:final)?\s*(?:override)?\s*(?:=\s*0|;|\{)", c_body):
-                m_name = m.group(1)
-                if m_name in CONTROL_KEYWORDS or m_name in fields:
-                    continue
+            # Accurate brace-aware method parser
+            raw_methods: list[tuple[str, str, str, bool]] = []
+            length = len(c_body)
+            i = 0
+            depth = 0
+            sig_start = 0
 
-                m_params_raw = m.group(2) or ""
-                is_pure = "= 0" in m.group(0)
+            while i < length:
+                ch = c_body[i]
+                if ch == "{" and depth == 0:
+                    raw_sig = c_body[sig_start:i].strip()
+                    cleaned_sig = re.sub(r"^(?:public|protected|private)\s*:\s*", "", raw_sig, flags=re.MULTILINE).strip()
+                    cleaned_sig = re.split(r"\s*:\s*(?=[A-Za-z0-9_]+(?:\(|$))", cleaned_sig)[0].strip()
+
+                    m = re.search(r"(?:virtual\s+|explicit\s+|static\s+|inline\s+)*(?:([a-zA-Z0-9_:*&<>, ]+)\s+)?(~?[A-Za-z0-9_]+)\s*\(([^)]*)\)", cleaned_sig)
+                    
+                    brace_depth = 1
+                    j = i + 1
+                    while j < length and brace_depth > 0:
+                        if c_body[j] == "{":
+                            brace_depth += 1
+                        elif c_body[j] == "}":
+                            brace_depth -= 1
+                        j += 1
+                    m_body_text = c_body[i:j]
+                    if m:
+                        m_name = m.group(2)
+                        params = m.group(3) or ""
+                        if m_name not in ("if", "for", "while", "switch", "catch", "return") and m_name not in fields:
+                            raw_methods.append((m_name, params, m_body_text, "= 0" in cleaned_sig))
+                    i = j
+                    sig_start = i
+                    continue
+                elif ch == ";" and depth == 0:
+                    raw_sig = c_body[sig_start:i].strip()
+                    cleaned_sig = re.sub(r"^(?:public|protected|private)\s*:\s*", "", raw_sig, flags=re.MULTILINE).strip()
+                    m = re.search(r"(?:virtual\s+|explicit\s+|static\s+|inline\s+)*(?:([a-zA-Z0-9_:*&<>, ]+)\s+)?(~?[A-Za-z0-9_]+)\s*\(([^)]*)\)", cleaned_sig)
+                    if m:
+                        m_name = m.group(2)
+                        params = m.group(3) or ""
+                        if m_name not in ("if", "for", "while", "switch", "catch", "return", "default", "delete") and m_name not in fields:
+                            raw_methods.append((m_name, params, "", "= 0" in cleaned_sig))
+                    sig_start = i + 1
+                elif ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    if depth > 0:
+                        depth -= 1
+                    sig_start = i + 1
+                i += 1
+
+            for m_name, m_params_raw, m_body_text, is_pure in raw_methods:
                 qualified_name = f"{c_name}::{m_name}"
                 param_list = [p.strip() for p in m_params_raw.split(",") if p.strip()]
 
@@ -487,8 +532,8 @@ class CppAntlrParserAdapter(ParserPort):
                     namespace=ns_name,
                     location=loc,
                     parameter_lists=[param_list],
-                    body_text=c_body,
-                    calls=sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", c_body))),
+                    body_text=m_body_text,
+                    calls=sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", m_body_text))),
                 )
                 methods.append(fn)
                 visitor.functions[qualified_name] = fn
