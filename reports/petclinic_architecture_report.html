@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Scanner Report - /Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java</title>
+    <style>
+        :root {
+            --bg: #090d13;
+            --card-bg: #121822;
+            --border: #232d3d;
+            --text: #cbd5e1;
+            --heading: #f8fafc;
+            --accent: #38bdf8;
+            --green: #22c55e;
+            --cyan: #0ea5e9;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 30px 20px; line-height: 1.5; }
+        .container { max-width: 1240px; margin: 0 auto; }
+        header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }
+        h1 { color: var(--heading); font-size: 26px; display: flex; align-items: center; gap: 10px; }
+        .subtitle { color: #94a3b8; font-size: 14px; margin-top: 5px; }
+        
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+        .kpi-title { font-size: 12px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: var(--heading); margin-top: 5px; }
+
+        .category-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .cat-filter-btn { padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card-bg); color: var(--heading); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.1s, opacity 0.2s; }
+        .cat-filter-btn:hover { transform: translateY(-1px); opacity: 0.9; }
+        .cat-filter-btn.active { ring: 2px solid #38bdf8; }
+        .cat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .btn-all { background: #1e293b; color: #f8fafc; border-color: #475569; }
+
+        .search-bar { width: 100%; padding: 14px 18px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--heading); font-size: 14px; margin-bottom: 25px; outline: none; transition: border-color 0.2s; }
+        .search-bar:focus { border-color: var(--accent); }
+
+        .pattern-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+        .pattern-card:hover { border-color: #38bdf888; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .card-header { background: #17202e; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); }
+        .header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .card-index { color: #64748b; font-weight: 700; font-size: 13px; }
+        
+        .category-badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }
+        .pattern-badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px; }
+        .target-name { color: var(--heading); font-size: 14px; }
+        
+        .confidence-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .badge-vh { background: #14532d55; color: #4ade80; border: 1px solid #22c55e; }
+        .badge-h { background: #0c4a6e55; color: #38bdf8; border: 1px solid #0284c7; }
+        .badge-m { background: #78350f55; color: #fbbf24; border: 1px solid #d97706; }
+        .badge-l { background: #7f1d1d55; color: #f87171; border: 1px solid #dc2626; }
+
+        .card-body { padding: 16px 18px; font-size: 13px; }
+        .summary-text { margin-bottom: 10px; color: #e2e8f0; font-size: 14px; }
+        .primary-loc { margin-bottom: 12px; color: #94a3b8; }
+        code { background: #0b0f17; padding: 3px 6px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #7dd3fc; border: 1px solid #1e293b; }
+
+        .evidence-section { margin-top: 14px; }
+        .evidence-list { list-style: none; margin-top: 8px; }
+        .evidence-item { margin-bottom: 7px; padding-left: 12px; border-left: 3px solid; }
+        .weight-tag { font-weight: 700; font-family: monospace; font-size: 13px; }
+        .rule-code { color: #94a3b8; font-size: 11px; font-family: monospace; }
+        .location-tag { color: #7dd3fc; font-size: 11px; margin-left: 6px; }
+        .related-locs { margin-top: 12px; color: #94a3b8; }
+        .related-locs ul { margin-left: 20px; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Software Design Pattern Detection Report</h1>
+            <div class="subtitle">Hexagonal DDD Pattern Scanner • Project: <code>/Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java</code></div>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Total Detections</div>
+                <div class="kpi-value">2</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">High Confidence (≥70%)</div>
+                <div class="kpi-value" style="color: #4ade80;">2</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Med / Low (<70%)</div>
+                <div class="kpi-value" style="color: #fbbf24;">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Files Scanned</div>
+                <div class="kpi-value">25</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Scan Duration</div>
+                <div class="kpi-value">0.688s</div>
+            </div>
+        </div>
+
+        <div class="category-filters">
+            <button class="cat-filter-btn btn-all" data-filter="all"><strong>All Categories</strong>: 2</button>
+            
+                    <button class="cat-filter-btn" data-filter="principle" style="border-color: #4f46e5; background: #312e8144; color: #818cf8;">
+                        <span class="cat-dot" style="background: #6366f1;"></span>
+                        <strong>Principles & SOLID</strong>: 2
+                    </button>
+                    
+        </div>
+
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔎 Instant search by pattern name, category, target function, or rule (e.g. observer, adapter, wrap-routes, with-db)...">
+
+        <div id="cardsContainer">
+            
+                <div class="pattern-card" data-pattern="kiss" data-category="principle" data-target="PetController.processUpdateForm" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#1</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #a3e635; background: #36531444; border: 1px solid #65a30d;">
+                                KISS
+                            </span>
+                            <span class="target-name">kiss_cyclomatic_complexity: <strong>PetController.processUpdateForm</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">88% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> KISS Violation (High Complexity): Method &#x27;PetController.processUpdateForm&#x27; has 8 control flow branches</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java/org/springframework/samples/petclinic/owner/PetController.java:145:9-179:3</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+70%</span> <span class="rule-code">[KISS_KISS_HIGH_CYCLOMATIC_COMPLEXITY]</span> Method &#x27;PetController.processUpdateForm&#x27; has high cyclomatic complexity (8 branch points), violating KISS <span class="location-tag">📍 /Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java/org/springframework/samples/petclinic/owner/PetController.java:145:9-179:3</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[KISS_KISS_DECOMPOSITION_NEEDED]</span> Complex nested conditionals are difficult to test and maintain; decompose into smaller functions <span class="location-tag">📍 /Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java/org/springframework/samples/petclinic/owner/PetController.java:145:9-179:3</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="dependency_inversion" data-category="principle" data-target="VetController" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#2</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
+                                DEPENDENCY_INVERSION
+                            </span>
+                            <span class="target-name">dip_interface_dependency: <strong>VetController</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">83% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> DIP Adherence: &#x27;VetController&#x27; depends on interface abstraction(s) (VetRepository)</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java/org/springframework/samples/petclinic/vet/VetController.java:36:1-74:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+60%</span> <span class="rule-code">[DEPENDENCY_INVERSION_DIP_INJECTED_ABSTRACTION]</span> Class &#x27;VetController&#x27; depends on abstracted interface(s): VetRepository adhering to DIP <span class="location-tag">📍 /Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java/org/springframework/samples/petclinic/vet/VetController.java:36:1-74:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[DEPENDENCY_INVERSION_DIP_DECOUPLED_ARCHITECTURE]</span> Core domain logic is decoupled from infrastructure details via Dependency Injection <span class="location-tag">📍 /Volumes/External/Code/DPX-Java/tmp_scan_test/src/main/java/org/springframework/samples/petclinic/vet/VetController.java:36:1-74:2</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.pattern-card');
+        const filterBtns = document.querySelectorAll('.cat-filter-btn');
+        let selectedCategory = 'all';
+
+        function filterCards() {
+            const query = searchInput.value.toLowerCase();
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const pattern = card.dataset.pattern || '';
+                const category = card.dataset.category || '';
+                const target = card.dataset.target || '';
+
+                const matchesCategory = (selectedCategory === 'all' || category === selectedCategory);
+                const matchesSearch = (text.includes(query) || pattern.includes(query) || category.includes(query) || target.includes(query));
+
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterCards);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectedCategory = btn.dataset.filter;
+                filterBtns.forEach(b => b.style.outline = 'none');
+                btn.style.outline = '2px solid #38bdf8';
+                filterCards();
+            });
+        });
+    </script>
+</body>
+</html>
