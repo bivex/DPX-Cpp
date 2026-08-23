@@ -234,24 +234,26 @@ class DataFlowService:
         """Analyze data flow for all discovered variables in the model or specific file."""
         from pattern_detector.domain.data_flow import DataFlowSummaryReport, VariableFlowSummary
 
+        RESERVED = {"true", "false", "nullptr", "NULL", "std", "this", "auto", "void", "int", "char", "bool", "double", "float", "size_t", "const"}
         vars_map: dict[str, Any] = {}
         for s in model.all_states():
             if file_filter and s.location and file_filter not in s.location.file_path:
                 continue
-            vars_map[s.name] = s.location
+            if s.name and len(s.name) >= 2 and s.name not in RESERVED and (s.name[0].isalpha() or s.name[0] == '_'):
+                vars_map[s.name] = s.location
 
         for r in model.all_records():
             if file_filter and r.location and file_filter not in r.location.file_path:
                 continue
             for f in r.fields:
-                if f not in vars_map:
+                if f and len(f) >= 2 and f not in vars_map and f not in RESERVED and (f[0].isalpha() or f[0] == '_'):
                     vars_map[f] = r.location
 
         for fn in model.all_functions():
             if file_filter and fn.location and file_filter not in fn.location.file_path:
                 continue
             for v in fn.reads_variables + fn.writes_variables + fn.modifies_variables:
-                if v not in vars_map:
+                if v and len(v) >= 2 and v not in vars_map and v not in RESERVED and (v[0].isalpha() or v[0] == '_'):
                     vars_map[v] = fn.location
 
         summaries: list[VariableFlowSummary] = []

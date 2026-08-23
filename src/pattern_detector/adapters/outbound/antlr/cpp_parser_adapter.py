@@ -35,8 +35,9 @@ def _extract_variable_accesses(
     writes: list[str] = []
     modifies: list[str] = []
 
+    RESERVED_CPP = {"true", "false", "nullptr", "NULL", "std", "this", "auto", "void", "int", "char", "bool", "double", "float", "size_t", "const"}
     for var in known_variables:
-        if not var or len(var) < 2 or "::" in var:
+        if not var or len(var) < 2 or "::" in var or var in RESERVED_CPP or not (var[0].isalpha() or var[0] == '_'):
             continue
         # Check modification (e.g. var += ..., var -= ..., var++, ++var)
         if re.search(rf"\b{re.escape(var)}\s*(?:\+=|-=|\*=|/=|%=|\+\+|--)", body_text) or re.search(
