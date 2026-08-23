@@ -9,6 +9,7 @@ from pattern_detector.domain.code_model import CodeModel
 from pattern_detector.domain.detection import Detection, DetectionReport
 from pattern_detector.domain.rules import get_default_rules
 from pattern_detector.domain.rules.base import PatternRule
+from pattern_detector.domain.value_objects import PatternType
 
 
 class PatternDetectorService:
@@ -35,14 +36,81 @@ class PatternDetectorService:
 
         elapsed = time.perf_counter() - start_time
 
+        # Disambiguate overlapping pattern classifications
+        disambiguated = self._disambiguate_detections(all_detections)
+
         # Sort detections by confidence score descending
-        all_detections.sort(key=lambda d: d.confidence.score, reverse=True)
+        disambiguated.sort(key=lambda d: d.confidence.score, reverse=True)
 
         scanned_files_count = len(model.all_file_paths()) or len(model.namespaces)
 
         return DetectionReport(
             project_path=project_path,
             scanned_files_count=scanned_files_count,
-            detections=all_detections,
+            detections=disambiguated,
             elapsed_seconds=elapsed,
         )
+
+    def _disambiguate_detections(self, detections: list[Detection]) -> list[Detection]:
+        """Disambiguates and deduplicates overlapping pattern detections based on structural specificity."""
+        # 1. Identify specific claims on target entities
+        claimed_targets: dict[str, set[PatternType]] = {}
+        for d in detections:
+            claimed_targets.setdefault(d.target_name, set()).add(d.pattern_type)
+
+        filtered: list[Detection] = []
+        for d in detections:
+            target = d.target_name
+            target_lower = target.lower()
+            other_patterns = claimed_targets.get(target, set()) - {d.pattern_type}
+
+            # Strategy deduplication: if target is claimed by a more specific structural/behavioral pattern
+            if d.pattern_type == PatternType.STRATEGY:
+                if any(
+                    p in other_patterns
+                    for p in (
+                        PatternType.COMPOSITE,
+                        PatternType.VISITOR,
+                        PatternType.OBSERVER,
+                        PatternType.COMMAND,
+                        PatternType.STATE,
+                        PatternType.BRIDGE,
+                        PatternType.BUILDER,
+                        PatternType.ABSTRACT_FACTORY,
+                        PatternType.MEDIATOR,
+                        PatternType.ITERATOR,
+                        PatternType.CHAIN_OF_RESPONSIBILITY,
+                    )
+                ):
+                    continue
+
+                # Also if target is named specifically after other patterns with existing specialized detections
+                if any(
+                    k in target_lower
+                    for k in (
+                        "visitor",
+                        "observer",
+                        "state",
+                        "command",
+                        "builder",
+                        "factory",
+                        "mediator",
+                        "iterator",
+                        "handler",
+                        "component",
+                        "implementor",
+                    )
+                ) and other_patterns:
+                    continue
+
+            # Abstract Factory vs Builder deduplication
+            if d.pattern_type == PatternType.ABSTRACT_FACTORY and "builder" in target_lower:
+                continue
+
+            # Command vs Bridge Abstraction / Composite deduplication
+            if d.pattern_type == PatternType.COMMAND and ("abstraction" in target_lower or "component" in target_lower):
+                continue
+
+            filtered.append(d)
+
+        return filtered

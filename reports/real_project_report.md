@@ -2,8 +2,8 @@
 
 > **Project:** `/Volumes/External/Code/DPX-Cpp/tmp_real_project`  
 > **Scanned Files:** 24  
-> **Total Detections:** 78  
-> **Duration:** 6.219s  
+> **Total Detections:** 71  
+> **Duration:** 5.793s  
 
 ---
 
@@ -12,31 +12,15 @@
 | Category | Detections Count |
 | :--- | :---: |
 | **CREATIONAL** | 6 |
-| **STRUCTURAL** | 1 |
-| **BEHAVIORAL** | 25 |
+| **STRUCTURAL** | 2 |
+| **BEHAVIORAL** | 17 |
 | **PRINCIPLE** | 46 |
 
 ---
 
 ## 📋 Identified Design Patterns
 
-### #1 ABSTRACT_FACTORY on abstract_factory_protocol `Builder`
-- **Confidence:** 89% (🟢 `VERY_HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
-- **Summary:** Abstract Factory: protocol 'Builder' declares family of object creation interfaces
-
-#### 🔎 Evidence Trail:
-- **+60%** `[ABSTRACT_FACTORY_FACTORY_PROTOCOL_METHODS]` Protocol 'Builder' defines family of 3 creation methods: buildPartA, buildPartB, buildPartC _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`)_
-- **+35%** `[ABSTRACT_FACTORY_FACTORY_PROTOCOL_NAMING]` Protocol 'Builder' follows Abstract Factory naming convention _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`)_
-- **+40%** `[ABSTRACT_FACTORY_CONCRETE_FACTORY_RECORDS]` Implemented by 2 concrete factory record(s): ConcreteBuilderX, ConcreteBuilderY _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:73:1-89:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:73:1-89:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:91:1-107:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
-
----
-
-### #2 ABSTRACT_FACTORY on abstract_factory_protocol `AbstractFactory`
+### #1 ABSTRACT_FACTORY on abstract_factory_protocol `AbstractFactory`
 - **Confidence:** 88% (🟢 `VERY_HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** Abstract Factory: protocol 'AbstractFactory' declares family of object creation interfaces
@@ -49,6 +33,22 @@
 **Related Locations:**
 - [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:115:1-129:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:131:1-145:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
+
+---
+
+### #2 BUILDER on builder_protocol `Builder`
+- **Confidence:** 87% (🟢 `VERY_HIGH`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
+- **Summary:** Builder pattern: protocol 'Builder' defines construction steps implemented by 2 concrete builders
+
+#### 🔎 Evidence Trail:
+- **+55%** `[BUILDER_BUILDER_PROTOCOL]` Protocol 'Builder' defines builder construction interface with methods: buildPartA, buildPartB, buildPartC _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`)_
+- **+35%** `[BUILDER_CONCRETE_BUILDER_IMPL]` Concrete builder 'ConcreteBuilderX' implements step-by-step assembly for 'Builder' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:73:1-89:2`)_
+- **+35%** `[BUILDER_CONCRETE_BUILDER_IMPL]` Concrete builder 'ConcreteBuilderY' implements step-by-step assembly for 'Builder' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:91:1-107:2`)_
+
+**Related Locations:**
+- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:73:1-89:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
+- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:91:1-107:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 
 ---
 
@@ -119,27 +119,7 @@
 
 ---
 
-### #7 STRATEGY on protocol_strategy `Component`
-- **Confidence:** 86% (🟢 `VERY_HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:19:1-33:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp)
-- **Summary:** Strategy pattern: protocol 'Component' with 4 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Component' defines strategy interface with methods: operation _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:19:1-33:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteComponent' provides concrete strategy implementation for protocol 'Component' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp:32:1-42:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'Decorator' provides concrete strategy implementation for protocol 'Component' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp:49:1-64:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'Composite' provides concrete strategy implementation for protocol 'Component' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:40:1-78:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'Leaf' provides concrete strategy implementation for protocol 'Component' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:85:1-99:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp:32:1-42:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp:49:1-64:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:40:1-78:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:85:1-99:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp)
-
----
-
-### #8 ABSTRACT_FACTORY on abstract_factory_protocol `Creator`
+### #7 ABSTRACT_FACTORY on abstract_factory_protocol `Creator`
 - **Confidence:** 86% (🟢 `VERY_HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:65:1-76:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** Abstract Factory: protocol 'Creator' declares family of object creation interfaces
@@ -154,7 +134,7 @@
 
 ---
 
-### #9 OPEN_CLOSED on ocp_polymorphic_hierarchy `Product`
+### #8 OPEN_CLOSED on ocp_polymorphic_hierarchy `Product`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** OCP Adherence: Interface 'Product' supports open extension with 2 implementations
@@ -169,7 +149,7 @@
 
 ---
 
-### #10 OPEN_CLOSED on ocp_polymorphic_hierarchy `Implementor`
+### #9 OPEN_CLOSED on ocp_polymorphic_hierarchy `Implementor`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** OCP Adherence: Interface 'Implementor' supports open extension with 2 implementations
@@ -184,7 +164,7 @@
 
 ---
 
-### #11 OPEN_CLOSED on ocp_polymorphic_hierarchy `Prototype`
+### #10 OPEN_CLOSED on ocp_polymorphic_hierarchy `Prototype`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** OCP Adherence: Interface 'Prototype' supports open extension with 2 implementations
@@ -199,7 +179,7 @@
 
 ---
 
-### #12 OPEN_CLOSED on ocp_polymorphic_hierarchy `State`
+### #11 OPEN_CLOSED on ocp_polymorphic_hierarchy `State`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
 - **Summary:** OCP Adherence: Interface 'State' supports open extension with 2 implementations
@@ -214,7 +194,7 @@
 
 ---
 
-### #13 OPEN_CLOSED on ocp_polymorphic_hierarchy `Visitor`
+### #12 OPEN_CLOSED on ocp_polymorphic_hierarchy `Visitor`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** OCP Adherence: Interface 'Visitor' supports open extension with 2 implementations
@@ -229,7 +209,7 @@
 
 ---
 
-### #14 OPEN_CLOSED on ocp_polymorphic_hierarchy `Element`
+### #13 OPEN_CLOSED on ocp_polymorphic_hierarchy `Element`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** OCP Adherence: Interface 'Element' supports open extension with 2 implementations
@@ -244,7 +224,7 @@
 
 ---
 
-### #15 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductA`
+### #14 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductA`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** OCP Adherence: Interface 'ProductA' supports open extension with 2 implementations
@@ -259,7 +239,7 @@
 
 ---
 
-### #16 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductB`
+### #15 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductB`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** OCP Adherence: Interface 'ProductB' supports open extension with 2 implementations
@@ -274,7 +254,7 @@
 
 ---
 
-### #17 OPEN_CLOSED on ocp_polymorphic_hierarchy `AbstractFactory`
+### #16 OPEN_CLOSED on ocp_polymorphic_hierarchy `AbstractFactory`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** OCP Adherence: Interface 'AbstractFactory' supports open extension with 2 implementations
@@ -289,7 +269,7 @@
 
 ---
 
-### #18 OPEN_CLOSED on ocp_polymorphic_hierarchy `Handler`
+### #17 OPEN_CLOSED on ocp_polymorphic_hierarchy `Handler`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
 - **Summary:** OCP Adherence: Interface 'Handler' supports open extension with 2 implementations
@@ -304,7 +284,7 @@
 
 ---
 
-### #19 OPEN_CLOSED on ocp_polymorphic_hierarchy `Flyweight`
+### #18 OPEN_CLOSED on ocp_polymorphic_hierarchy `Flyweight`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** OCP Adherence: Interface 'Flyweight' supports open extension with 2 implementations
@@ -319,7 +299,7 @@
 
 ---
 
-### #20 OPEN_CLOSED on ocp_polymorphic_hierarchy `Builder`
+### #19 OPEN_CLOSED on ocp_polymorphic_hierarchy `Builder`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** OCP Adherence: Interface 'Builder' supports open extension with 2 implementations
@@ -334,7 +314,7 @@
 
 ---
 
-### #21 DEPENDENCY_INVERSION on dip_interface_dependency `Context`
+### #20 DEPENDENCY_INVERSION on dip_interface_dependency `Context`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:69:1-88:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** DIP Adherence: 'Context' depends on interface abstraction(s) (Strategy)
@@ -345,7 +325,7 @@
 
 ---
 
-### #22 DEPENDENCY_INVERSION on dip_interface_dependency `Subject`
+### #21 DEPENDENCY_INVERSION on dip_interface_dependency `Subject`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** DIP Adherence: 'Subject' depends on interface abstraction(s) (Observer)
@@ -356,7 +336,7 @@
 
 ---
 
-### #23 DEPENDENCY_INVERSION on dip_interface_dependency `Proxy`
+### #22 DEPENDENCY_INVERSION on dip_interface_dependency `Proxy`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp)
 - **Summary:** DIP Adherence: 'Proxy' depends on interface abstraction(s) (Subject)
@@ -367,7 +347,7 @@
 
 ---
 
-### #24 DEPENDENCY_INVERSION on dip_interface_dependency `Decorator`
+### #23 DEPENDENCY_INVERSION on dip_interface_dependency `Decorator`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp:49:1-64:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp)
 - **Summary:** DIP Adherence: 'Decorator' depends on interface abstraction(s) (Component)
@@ -378,7 +358,7 @@
 
 ---
 
-### #25 DEPENDENCY_INVERSION on dip_interface_dependency `RefinedAbstraction`
+### #24 DEPENDENCY_INVERSION on dip_interface_dependency `RefinedAbstraction`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** DIP Adherence: 'RefinedAbstraction' depends on interface abstraction(s) (Implementor)
@@ -389,7 +369,7 @@
 
 ---
 
-### #26 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteObserver`
+### #25 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteObserver`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:36:1-55:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** DIP Adherence: 'ConcreteObserver' depends on interface abstraction(s) (Observer, State)
@@ -400,7 +380,7 @@
 
 ---
 
-### #27 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteSubject`
+### #26 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteSubject`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** DIP Adherence: 'ConcreteSubject' depends on interface abstraction(s) (State, Subject)
@@ -411,7 +391,7 @@
 
 ---
 
-### #28 DEPENDENCY_INVERSION on dip_interface_dependency `Memento`
+### #27 DEPENDENCY_INVERSION on dip_interface_dependency `Memento`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:19:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** DIP Adherence: 'Memento' depends on interface abstraction(s) (State)
@@ -422,7 +402,7 @@
 
 ---
 
-### #29 DEPENDENCY_INVERSION on dip_interface_dependency `Originator`
+### #28 DEPENDENCY_INVERSION on dip_interface_dependency `Originator`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:48:1-77:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** DIP Adherence: 'Originator' depends on interface abstraction(s) (State)
@@ -433,7 +413,7 @@
 
 ---
 
-### #30 DEPENDENCY_INVERSION on dip_interface_dependency `Invoker`
+### #29 DEPENDENCY_INVERSION on dip_interface_dependency `Invoker`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp:76:1-96:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp)
 - **Summary:** DIP Adherence: 'Invoker' depends on interface abstraction(s) (Command)
@@ -444,7 +424,7 @@
 
 ---
 
-### #31 DEPENDENCY_INVERSION on dip_interface_dependency `UnsharedConcreteFlyweight`
+### #30 DEPENDENCY_INVERSION on dip_interface_dependency `UnsharedConcreteFlyweight`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:31:1-48:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** DIP Adherence: 'UnsharedConcreteFlyweight' depends on interface abstraction(s) (State)
@@ -455,7 +435,7 @@
 
 ---
 
-### #32 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteFlyweight`
+### #31 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteFlyweight`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:55:1-72:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** DIP Adherence: 'ConcreteFlyweight' depends on interface abstraction(s) (State)
@@ -466,7 +446,7 @@
 
 ---
 
-### #33 DEPENDENCY_INVERSION on dip_interface_dependency `Builder`
+### #32 DEPENDENCY_INVERSION on dip_interface_dependency `Builder`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** DIP Adherence: 'Builder' depends on interface abstraction(s) (Product, ProductA, ProductB)
@@ -477,7 +457,7 @@
 
 ---
 
-### #34 DEPENDENCY_INVERSION on dip_interface_dependency `Director`
+### #33 DEPENDENCY_INVERSION on dip_interface_dependency `Director`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:113:1-150:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** DIP Adherence: 'Director' depends on interface abstraction(s) (Builder)
@@ -488,7 +468,7 @@
 
 ---
 
-### #35 DEPENDENCY_INVERSION on dip_interface_dependency `Colleague`
+### #34 DEPENDENCY_INVERSION on dip_interface_dependency `Colleague`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:22:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** DIP Adherence: 'Colleague' depends on interface abstraction(s) (Mediator)
@@ -499,7 +479,7 @@
 
 ---
 
-### #36 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteMediator`
+### #35 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteMediator`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:80:1-110:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** DIP Adherence: 'ConcreteMediator' depends on interface abstraction(s) (Colleague)
@@ -510,7 +490,7 @@
 
 ---
 
-### #37 MEDIATOR on mediator_protocol `Mediator`
+### #36 MEDIATOR on mediator_protocol `Mediator`
 - **Confidence:** 82% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:63:1-73:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: protocol 'Mediator' acts as central event/message broker decoupling components
@@ -524,7 +504,7 @@
 
 ---
 
-### #38 STRATEGY on protocol_strategy `Subject`
+### #37 STRATEGY on protocol_strategy `Subject`
 - **Confidence:** 81% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** Strategy pattern: protocol 'Subject' with 3 interchangeable concrete implementations
@@ -542,7 +522,7 @@
 
 ---
 
-### #39 STRATEGY on protocol_strategy `Strategy`
+### #38 STRATEGY on protocol_strategy `Strategy`
 - **Confidence:** 81% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:17:1-23:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** Strategy pattern: protocol 'Strategy' with 3 interchangeable concrete implementations
@@ -557,6 +537,20 @@
 - [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:29:1-39:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:41:1-51:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:53:1-63:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
+
+---
+
+### #39 BRIDGE on bridge_abstraction `RefinedAbstraction`
+- **Confidence:** 81% (🔵 `HIGH`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
+- **Summary:** Bridge pattern: abstraction record 'RefinedAbstraction' decouples domain logic from 'Implementor' backend implementation
+
+#### 🔎 Evidence Trail:
+- **+55%** `[BRIDGE_BRIDGE_ABSTRACTION_RECORD]` Record 'RefinedAbstraction' maintains decoupled bridge reference to implementation driver field: implementor _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`)_
+- **+40%** `[BRIDGE_BRIDGE_DRIVER_PROTOCOL]` Driver implementation protocol 'Implementor' defines concrete backend interface _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`)_
+
+**Related Locations:**
+- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 
 ---
 
@@ -626,23 +620,7 @@
 
 ---
 
-### #45 STRATEGY on protocol_strategy `Implementor`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
-- **Summary:** Strategy pattern: protocol 'Implementor' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Implementor' defines strategy interface with methods: action _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteImplementorA' provides concrete strategy implementation for protocol 'Implementor' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:30:1-40:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteImplementorB' provides concrete strategy implementation for protocol 'Implementor' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:42:1-52:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:30:1-40:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:42:1-52:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
-
----
-
-### #46 STRATEGY on protocol_strategy `Prototype`
+### #45 STRATEGY on protocol_strategy `Prototype`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** Strategy pattern: protocol 'Prototype' with 2 interchangeable concrete implementations
@@ -658,39 +636,7 @@
 
 ---
 
-### #47 STRATEGY on protocol_strategy `State`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
-- **Summary:** Strategy pattern: protocol 'State' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'State' defines strategy interface with methods: handle _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteStateA' provides concrete strategy implementation for protocol 'State' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:31:1-41:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteStateB' provides concrete strategy implementation for protocol 'State' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:43:1-53:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:31:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:43:1-53:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
-
----
-
-### #48 STRATEGY on protocol_strategy `Visitor`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
-- **Summary:** Strategy pattern: protocol 'Visitor' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Visitor' defines strategy interface with methods: visitElementA, visitElementB _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteVisitor1' provides concrete strategy implementation for protocol 'Visitor' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:38:1-53:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteVisitor2' provides concrete strategy implementation for protocol 'Visitor' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:55:1-70:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:38:1-53:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:55:1-70:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
-
----
-
-### #49 STRATEGY on protocol_strategy `Element`
+### #46 STRATEGY on protocol_strategy `Element`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Strategy pattern: protocol 'Element' with 2 interchangeable concrete implementations
@@ -706,7 +652,7 @@
 
 ---
 
-### #50 STRATEGY on protocol_strategy `ProductA`
+### #47 STRATEGY on protocol_strategy `ProductA`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** Strategy pattern: protocol 'ProductA' with 2 interchangeable concrete implementations
@@ -722,7 +668,7 @@
 
 ---
 
-### #51 STRATEGY on protocol_strategy `ProductB`
+### #48 STRATEGY on protocol_strategy `ProductB`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** Strategy pattern: protocol 'ProductB' with 2 interchangeable concrete implementations
@@ -738,39 +684,7 @@
 
 ---
 
-### #52 STRATEGY on protocol_strategy `AbstractFactory`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-- **Summary:** Strategy pattern: protocol 'AbstractFactory' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'AbstractFactory' defines strategy interface with methods: createProductA, createProductB _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteFactoryX' provides concrete strategy implementation for protocol 'AbstractFactory' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:115:1-129:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteFactoryY' provides concrete strategy implementation for protocol 'AbstractFactory' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:131:1-145:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:115:1-129:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:131:1-145:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
-
----
-
-### #53 STRATEGY on protocol_strategy `Handler`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
-- **Summary:** Strategy pattern: protocol 'Handler' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Handler' defines strategy interface with methods: ~Handler, setHandler, handleRequest _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteHandler1' provides concrete strategy implementation for protocol 'Handler' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:44:1-69:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteHandler2' provides concrete strategy implementation for protocol 'Handler' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:71:1-97:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:44:1-69:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:71:1-97:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
-
----
-
-### #54 STRATEGY on protocol_strategy `Flyweight`
+### #49 STRATEGY on protocol_strategy `Flyweight`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** Strategy pattern: protocol 'Flyweight' with 2 interchangeable concrete implementations
@@ -786,37 +700,7 @@
 
 ---
 
-### #55 STRATEGY on protocol_strategy `Builder`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
-- **Summary:** Strategy pattern: protocol 'Builder' with 2 interchangeable concrete implementations
-
-#### 🔎 Evidence Trail:
-- **+45%** `[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]` Protocol 'Builder' defines strategy interface with methods: buildPartA, buildPartB, buildPartC _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteBuilderX' provides concrete strategy implementation for protocol 'Builder' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:73:1-89:2`)_
-- **+25%** `[STRATEGY_RECORD_STRATEGY_IMPL]` Record 'ConcreteBuilderY' provides concrete strategy implementation for protocol 'Builder' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:91:1-107:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:73:1-89:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:91:1-107:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
-
----
-
-### #56 COMMAND on command_protocol `Abstraction`
-- **Confidence:** 75% (🔵 `HIGH`)
-- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:58:1-65:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
-- **Summary:** Command pattern: protocol 'Abstraction' implemented by 1 command records
-
-#### 🔎 Evidence Trail:
-- **+50%** `[COMMAND_COMMAND_PROTOCOL]` Protocol 'Abstraction' defines Command interface with methods: operation _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:58:1-65:2`)_
-- **+30%** `[COMMAND_COMMAND_RECORD]` Record 'RefinedAbstraction' encapsulates executable command parameters and behavior _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`)_
-
-**Related Locations:**
-- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
-
----
-
-### #57 COMMAND on command_protocol `Command`
+### #50 COMMAND on command_protocol `Command`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp:32:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp)
 - **Summary:** Command pattern: protocol 'Command' implemented by 1 command records
@@ -830,7 +714,7 @@
 
 ---
 
-### #58 ITERATOR on iterator_protocol `Iterator`
+### #51 ITERATOR on iterator_protocol `Iterator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/iterator/Iterator.cpp:76:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/iterator/Iterator.cpp)
 - **Summary:** Iterator pattern: protocol 'Iterator' defines sequential iteration contract
@@ -840,7 +724,7 @@
 
 ---
 
-### #59 MEDIATOR on mediator_hub_record `Mediator`
+### #52 MEDIATOR on mediator_hub_record `Mediator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:63:1-73:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: record 'Mediator' mediates communication between decoupled subsystems
@@ -850,7 +734,7 @@
 
 ---
 
-### #60 MEDIATOR on mediator_hub_record `ConcreteMediator`
+### #53 MEDIATOR on mediator_hub_record `ConcreteMediator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:80:1-110:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: record 'ConcreteMediator' mediates communication between decoupled subsystems
@@ -860,7 +744,7 @@
 
 ---
 
-### #61 MEMENTO on memento_history_manager `Memento::Memento`
+### #54 MEMENTO on memento_history_manager `Memento::Memento`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:25:3`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** Memento pattern: snapshot & history management in namespace 'global' (6 functions)
@@ -878,7 +762,7 @@
 
 ---
 
-### #62 INTERFACE_SEGREGATION on segregated_role_interface `Subject`
+### #55 INTERFACE_SEGREGATION on segregated_role_interface `Subject`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** ISP Adherence: Role interface 'Subject' is segregated and focused (2 methods)
@@ -894,7 +778,7 @@
 
 ---
 
-### #63 INTERFACE_SEGREGATION on segregated_role_interface `Component`
+### #56 INTERFACE_SEGREGATION on segregated_role_interface `Component`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:19:1-33:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp)
 - **Summary:** ISP Adherence: Role interface 'Component' is segregated and focused (1 methods)
@@ -911,7 +795,7 @@
 
 ---
 
-### #64 INTERFACE_SEGREGATION on segregated_role_interface `Product`
+### #57 INTERFACE_SEGREGATION on segregated_role_interface `Product`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** ISP Adherence: Role interface 'Product' is segregated and focused (1 methods)
@@ -926,7 +810,7 @@
 
 ---
 
-### #65 INTERFACE_SEGREGATION on segregated_role_interface `Implementor`
+### #58 INTERFACE_SEGREGATION on segregated_role_interface `Implementor`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** ISP Adherence: Role interface 'Implementor' is segregated and focused (1 methods)
@@ -941,7 +825,7 @@
 
 ---
 
-### #66 INTERFACE_SEGREGATION on segregated_role_interface `Prototype`
+### #59 INTERFACE_SEGREGATION on segregated_role_interface `Prototype`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** ISP Adherence: Role interface 'Prototype' is segregated and focused (2 methods)
@@ -956,7 +840,7 @@
 
 ---
 
-### #67 INTERFACE_SEGREGATION on segregated_role_interface `State`
+### #60 INTERFACE_SEGREGATION on segregated_role_interface `State`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
 - **Summary:** ISP Adherence: Role interface 'State' is segregated and focused (1 methods)
@@ -971,7 +855,7 @@
 
 ---
 
-### #68 INTERFACE_SEGREGATION on segregated_role_interface `Visitor`
+### #61 INTERFACE_SEGREGATION on segregated_role_interface `Visitor`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** ISP Adherence: Role interface 'Visitor' is segregated and focused (2 methods)
@@ -986,7 +870,7 @@
 
 ---
 
-### #69 INTERFACE_SEGREGATION on segregated_role_interface `Element`
+### #62 INTERFACE_SEGREGATION on segregated_role_interface `Element`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** ISP Adherence: Role interface 'Element' is segregated and focused (1 methods)
@@ -1001,7 +885,7 @@
 
 ---
 
-### #70 INTERFACE_SEGREGATION on segregated_role_interface `ProductA`
+### #63 INTERFACE_SEGREGATION on segregated_role_interface `ProductA`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'ProductA' is segregated and focused (1 methods)
@@ -1016,7 +900,7 @@
 
 ---
 
-### #71 INTERFACE_SEGREGATION on segregated_role_interface `ProductB`
+### #64 INTERFACE_SEGREGATION on segregated_role_interface `ProductB`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'ProductB' is segregated and focused (1 methods)
@@ -1031,7 +915,7 @@
 
 ---
 
-### #72 INTERFACE_SEGREGATION on segregated_role_interface `AbstractFactory`
+### #65 INTERFACE_SEGREGATION on segregated_role_interface `AbstractFactory`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'AbstractFactory' is segregated and focused (2 methods)
@@ -1046,7 +930,7 @@
 
 ---
 
-### #73 INTERFACE_SEGREGATION on segregated_role_interface `Handler`
+### #66 INTERFACE_SEGREGATION on segregated_role_interface `Handler`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
 - **Summary:** ISP Adherence: Role interface 'Handler' is segregated and focused (3 methods)
@@ -1061,7 +945,7 @@
 
 ---
 
-### #74 INTERFACE_SEGREGATION on segregated_role_interface `Flyweight`
+### #67 INTERFACE_SEGREGATION on segregated_role_interface `Flyweight`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** ISP Adherence: Role interface 'Flyweight' is segregated and focused (1 methods)
@@ -1076,7 +960,7 @@
 
 ---
 
-### #75 INTERFACE_SEGREGATION on segregated_role_interface `Builder`
+### #68 INTERFACE_SEGREGATION on segregated_role_interface `Builder`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** ISP Adherence: Role interface 'Builder' is segregated and focused (3 methods)
@@ -1091,7 +975,7 @@
 
 ---
 
-### #76 INTERFACE_SEGREGATION on segregated_role_interface `Strategy`
+### #69 INTERFACE_SEGREGATION on segregated_role_interface `Strategy`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:17:1-23:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** ISP Adherence: Role interface 'Strategy' is segregated and focused (1 methods)
@@ -1107,7 +991,7 @@
 
 ---
 
-### #77 SINGLETON on static_singleton_state `Singleton::instance`
+### #70 SINGLETON on static_singleton_state `Singleton::instance`
 - **Confidence:** 74% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp:56:3`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp)
 - **Summary:** Singleton pattern: static single-instance management for 'Singleton::instance'
@@ -1117,7 +1001,7 @@
 
 ---
 
-### #78 SINGLETON on cpp_singleton_class `Singleton`
+### #71 SINGLETON on cpp_singleton_class `Singleton`
 - **Confidence:** 57% (🟡 `MEDIUM`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp:18:1-58:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp)
 - **Summary:** Singleton pattern: class 'Singleton' guarantees a single global instance

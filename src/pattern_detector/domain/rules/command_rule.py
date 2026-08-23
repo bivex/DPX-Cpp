@@ -87,7 +87,9 @@ class CommandPatternRule(BasePatternRule):
         # 2. Command Protocol Handlers (e.g. protocol with 'execute' / 'handle' and command records)
         for proto in model.all_protocols():
             name_lower = proto.name.lower()
-            if any(k in name_lower for k in ("command", "cmd", "action", "executable", "operation")):
+            if any(k in name_lower for k in ("command", "cmd", "action", "executable", "task", "job")) or any(
+                m.name.lower() in ("execute", "exec", "undo", "redo") for m in proto.methods
+            ):
                 rec_impls = model.find_records_implementing(proto.name)
                 if rec_impls:
                     evidences = [
