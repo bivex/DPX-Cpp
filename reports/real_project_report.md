@@ -2,8 +2,8 @@
 
 > **Project:** `/Volumes/External/Code/DPX-Cpp/tmp_real_project`  
 > **Scanned Files:** 24  
-> **Total Detections:** 64  
-> **Duration:** 5.761s  
+> **Total Detections:** 69  
+> **Duration:** 5.888s  
 
 ---
 
@@ -12,8 +12,8 @@
 | Category | Detections Count |
 | :--- | :---: |
 | **CREATIONAL** | 6 |
-| **STRUCTURAL** | 2 |
-| **BEHAVIORAL** | 10 |
+| **STRUCTURAL** | 3 |
+| **BEHAVIORAL** | 14 |
 | **PRINCIPLE** | 46 |
 
 ---
@@ -119,7 +119,19 @@
 
 ---
 
-### #7 ABSTRACT_FACTORY on abstract_factory_protocol `Creator`
+### #7 PROXY on proxy_class `Proxy`
+- **Confidence:** 86% (🟢 `VERY_HIGH`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp)
+- **Summary:** Proxy pattern: class 'Proxy' acts as surrogate controlling access to real subject
+
+#### 🔎 Evidence Trail:
+- **+50%** `[PROXY_PROXY_CLASS_NAMING]` Class 'Proxy' follows Proxy surrogate naming convention _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`)_
+- **+40%** `[PROXY_PROXY_TARGET_FIELD]` Class 'Proxy' maintains reference to wrapped real subject: subject _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`)_
+- **+35%** `[PROXY_PROXY_IMPLEMENTS_SUBJECT]` Implements subject interface 'Subject' to act as polymorphic surrogate _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`)_
+
+---
+
+### #8 ABSTRACT_FACTORY on abstract_factory_protocol `Creator`
 - **Confidence:** 86% (🟢 `VERY_HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:65:1-76:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** Abstract Factory: protocol 'Creator' declares family of object creation interfaces
@@ -134,7 +146,7 @@
 
 ---
 
-### #8 OPEN_CLOSED on ocp_polymorphic_hierarchy `Product`
+### #9 OPEN_CLOSED on ocp_polymorphic_hierarchy `Product`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** OCP Adherence: Interface 'Product' supports open extension with 2 implementations
@@ -149,7 +161,7 @@
 
 ---
 
-### #9 OPEN_CLOSED on ocp_polymorphic_hierarchy `Implementor`
+### #10 OPEN_CLOSED on ocp_polymorphic_hierarchy `Implementor`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** OCP Adherence: Interface 'Implementor' supports open extension with 2 implementations
@@ -164,7 +176,7 @@
 
 ---
 
-### #10 OPEN_CLOSED on ocp_polymorphic_hierarchy `Prototype`
+### #11 OPEN_CLOSED on ocp_polymorphic_hierarchy `Prototype`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** OCP Adherence: Interface 'Prototype' supports open extension with 2 implementations
@@ -179,7 +191,7 @@
 
 ---
 
-### #11 OPEN_CLOSED on ocp_polymorphic_hierarchy `State`
+### #12 OPEN_CLOSED on ocp_polymorphic_hierarchy `State`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
 - **Summary:** OCP Adherence: Interface 'State' supports open extension with 2 implementations
@@ -194,7 +206,7 @@
 
 ---
 
-### #12 OPEN_CLOSED on ocp_polymorphic_hierarchy `Visitor`
+### #13 OPEN_CLOSED on ocp_polymorphic_hierarchy `Visitor`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** OCP Adherence: Interface 'Visitor' supports open extension with 2 implementations
@@ -209,7 +221,7 @@
 
 ---
 
-### #13 OPEN_CLOSED on ocp_polymorphic_hierarchy `Element`
+### #14 OPEN_CLOSED on ocp_polymorphic_hierarchy `Element`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** OCP Adherence: Interface 'Element' supports open extension with 2 implementations
@@ -224,7 +236,7 @@
 
 ---
 
-### #14 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductA`
+### #15 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductA`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** OCP Adherence: Interface 'ProductA' supports open extension with 2 implementations
@@ -239,7 +251,7 @@
 
 ---
 
-### #15 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductB`
+### #16 OPEN_CLOSED on ocp_polymorphic_hierarchy `ProductB`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** OCP Adherence: Interface 'ProductB' supports open extension with 2 implementations
@@ -254,7 +266,7 @@
 
 ---
 
-### #16 OPEN_CLOSED on ocp_polymorphic_hierarchy `AbstractFactory`
+### #17 OPEN_CLOSED on ocp_polymorphic_hierarchy `AbstractFactory`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** OCP Adherence: Interface 'AbstractFactory' supports open extension with 2 implementations
@@ -269,7 +281,7 @@
 
 ---
 
-### #17 OPEN_CLOSED on ocp_polymorphic_hierarchy `Handler`
+### #18 OPEN_CLOSED on ocp_polymorphic_hierarchy `Handler`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
 - **Summary:** OCP Adherence: Interface 'Handler' supports open extension with 2 implementations
@@ -284,7 +296,7 @@
 
 ---
 
-### #18 OPEN_CLOSED on ocp_polymorphic_hierarchy `Flyweight`
+### #19 OPEN_CLOSED on ocp_polymorphic_hierarchy `Flyweight`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** OCP Adherence: Interface 'Flyweight' supports open extension with 2 implementations
@@ -299,7 +311,7 @@
 
 ---
 
-### #19 OPEN_CLOSED on ocp_polymorphic_hierarchy `Builder`
+### #20 OPEN_CLOSED on ocp_polymorphic_hierarchy `Builder`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** OCP Adherence: Interface 'Builder' supports open extension with 2 implementations
@@ -314,7 +326,7 @@
 
 ---
 
-### #20 DEPENDENCY_INVERSION on dip_interface_dependency `Context`
+### #21 DEPENDENCY_INVERSION on dip_interface_dependency `Context`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:69:1-88:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** DIP Adherence: 'Context' depends on interface abstraction(s) (Strategy)
@@ -325,7 +337,7 @@
 
 ---
 
-### #21 DEPENDENCY_INVERSION on dip_interface_dependency `Subject`
+### #22 DEPENDENCY_INVERSION on dip_interface_dependency `Subject`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** DIP Adherence: 'Subject' depends on interface abstraction(s) (Observer)
@@ -336,7 +348,7 @@
 
 ---
 
-### #22 DEPENDENCY_INVERSION on dip_interface_dependency `Proxy`
+### #23 DEPENDENCY_INVERSION on dip_interface_dependency `Proxy`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:45:1-66:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp)
 - **Summary:** DIP Adherence: 'Proxy' depends on interface abstraction(s) (Subject)
@@ -347,7 +359,7 @@
 
 ---
 
-### #23 DEPENDENCY_INVERSION on dip_interface_dependency `Decorator`
+### #24 DEPENDENCY_INVERSION on dip_interface_dependency `Decorator`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp:49:1-64:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/decorator/Decorator.cpp)
 - **Summary:** DIP Adherence: 'Decorator' depends on interface abstraction(s) (Component)
@@ -358,7 +370,7 @@
 
 ---
 
-### #24 DEPENDENCY_INVERSION on dip_interface_dependency `RefinedAbstraction`
+### #25 DEPENDENCY_INVERSION on dip_interface_dependency `RefinedAbstraction`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** DIP Adherence: 'RefinedAbstraction' depends on interface abstraction(s) (Implementor)
@@ -369,7 +381,7 @@
 
 ---
 
-### #25 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteObserver`
+### #26 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteObserver`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:36:1-55:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** DIP Adherence: 'ConcreteObserver' depends on interface abstraction(s) (Observer, State)
@@ -380,7 +392,7 @@
 
 ---
 
-### #26 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteSubject`
+### #27 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteSubject`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** DIP Adherence: 'ConcreteSubject' depends on interface abstraction(s) (State, Subject)
@@ -391,7 +403,7 @@
 
 ---
 
-### #27 DEPENDENCY_INVERSION on dip_interface_dependency `Memento`
+### #28 DEPENDENCY_INVERSION on dip_interface_dependency `Memento`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:19:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** DIP Adherence: 'Memento' depends on interface abstraction(s) (State)
@@ -402,7 +414,7 @@
 
 ---
 
-### #28 DEPENDENCY_INVERSION on dip_interface_dependency `Originator`
+### #29 DEPENDENCY_INVERSION on dip_interface_dependency `Originator`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:48:1-77:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** DIP Adherence: 'Originator' depends on interface abstraction(s) (State)
@@ -413,7 +425,7 @@
 
 ---
 
-### #29 DEPENDENCY_INVERSION on dip_interface_dependency `Invoker`
+### #30 DEPENDENCY_INVERSION on dip_interface_dependency `Invoker`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp:76:1-96:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp)
 - **Summary:** DIP Adherence: 'Invoker' depends on interface abstraction(s) (Command)
@@ -424,7 +436,7 @@
 
 ---
 
-### #30 DEPENDENCY_INVERSION on dip_interface_dependency `UnsharedConcreteFlyweight`
+### #31 DEPENDENCY_INVERSION on dip_interface_dependency `UnsharedConcreteFlyweight`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:31:1-48:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** DIP Adherence: 'UnsharedConcreteFlyweight' depends on interface abstraction(s) (State)
@@ -435,7 +447,7 @@
 
 ---
 
-### #31 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteFlyweight`
+### #32 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteFlyweight`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:55:1-72:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** DIP Adherence: 'ConcreteFlyweight' depends on interface abstraction(s) (State)
@@ -446,7 +458,7 @@
 
 ---
 
-### #32 DEPENDENCY_INVERSION on dip_interface_dependency `Builder`
+### #33 DEPENDENCY_INVERSION on dip_interface_dependency `Builder`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** DIP Adherence: 'Builder' depends on interface abstraction(s) (Product, ProductA, ProductB)
@@ -457,7 +469,7 @@
 
 ---
 
-### #33 DEPENDENCY_INVERSION on dip_interface_dependency `Director`
+### #34 DEPENDENCY_INVERSION on dip_interface_dependency `Director`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:113:1-150:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** DIP Adherence: 'Director' depends on interface abstraction(s) (Builder)
@@ -468,7 +480,7 @@
 
 ---
 
-### #34 DEPENDENCY_INVERSION on dip_interface_dependency `Colleague`
+### #35 DEPENDENCY_INVERSION on dip_interface_dependency `Colleague`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:22:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** DIP Adherence: 'Colleague' depends on interface abstraction(s) (Mediator)
@@ -479,7 +491,7 @@
 
 ---
 
-### #35 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteMediator`
+### #36 DEPENDENCY_INVERSION on dip_interface_dependency `ConcreteMediator`
 - **Confidence:** 83% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:80:1-110:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** DIP Adherence: 'ConcreteMediator' depends on interface abstraction(s) (Colleague)
@@ -490,7 +502,7 @@
 
 ---
 
-### #36 MEDIATOR on mediator_protocol `Mediator`
+### #37 MEDIATOR on mediator_protocol `Mediator`
 - **Confidence:** 82% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:63:1-73:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: protocol 'Mediator' acts as central event/message broker decoupling components
@@ -504,7 +516,7 @@
 
 ---
 
-### #37 STRATEGY on protocol_strategy `Strategy`
+### #38 STRATEGY on protocol_strategy `Strategy`
 - **Confidence:** 81% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:17:1-23:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** Strategy pattern: protocol 'Strategy' with 3 interchangeable concrete implementations
@@ -522,7 +534,7 @@
 
 ---
 
-### #38 BRIDGE on bridge_abstraction `RefinedAbstraction`
+### #39 BRIDGE on bridge_abstraction `RefinedAbstraction`
 - **Confidence:** 81% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:71:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** Bridge pattern: abstraction record 'RefinedAbstraction' decouples domain logic from 'Implementor' backend implementation
@@ -536,7 +548,7 @@
 
 ---
 
-### #39 PROTOTYPE on prototype_protocol `Prototype`
+### #40 PROTOTYPE on prototype_protocol `Prototype`
 - **Confidence:** 80% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** Prototype pattern: protocol 'Prototype' defines instance cloning and derivation interface
@@ -551,7 +563,7 @@
 
 ---
 
-### #40 VISITOR on visitor_interface `Visitor`
+### #41 VISITOR on visitor_interface `Visitor`
 - **Confidence:** 80% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Visitor pattern: 'Visitor' defines double-dispatch visitor operations over element hierarchy
@@ -566,7 +578,32 @@
 
 ---
 
-### #41 VISITOR on element_accept_method `ConcreteElementA.ConcreteElementA::accept`
+### #42 OBSERVER on observer_protocol `Observer`
+- **Confidence:** 78% (🔵 `HIGH`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:21:1-29:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
+- **Summary:** Observer pattern: observer interface 'Observer' implemented by 1 observer records
+
+#### 🔎 Evidence Trail:
+- **+55%** `[OBSERVER_OBSERVER_INTERFACE]` Protocol 'Observer' defines Observer interface with callback methods: getState, update _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:21:1-29:2`)_
+- **+30%** `[OBSERVER_CONCRETE_OBSERVER]` Concrete observer 'ConcreteObserver' implements observer interface for 'Observer' _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:36:1-55:2`)_
+
+**Related Locations:**
+- [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:36:1-55:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
+
+---
+
+### #43 OBSERVER on subject_class `Subject`
+- **Confidence:** 77% (🔵 `HIGH`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
+- **Summary:** Observer pattern: subject 'Subject' manages event subscriptions and notifications
+
+#### 🔎 Evidence Trail:
+- **+45%** `[OBSERVER_SUBJECT_CLASS_NAMING]` Class 'Subject' represents Observable Subject managing event subscribers _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`)_
+- **+40%** `[OBSERVER_OBSERVER_COLLECTION_FIELD]` Maintains list/collection of observers: observers _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`)_
+
+---
+
+### #44 VISITOR on element_accept_method `ConcreteElementA.ConcreteElementA::accept`
 - **Confidence:** 77% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:94:3-97:4`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Visitor Element: 'ConcreteElementA' participates in visitor double-dispatch via accept()
@@ -576,7 +613,7 @@
 
 ---
 
-### #42 VISITOR on element_accept_method `ConcreteElementB.ConcreteElementB::accept`
+### #45 VISITOR on element_accept_method `ConcreteElementB.ConcreteElementB::accept`
 - **Confidence:** 77% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:106:3-109:4`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** Visitor Element: 'ConcreteElementB' participates in visitor double-dispatch via accept()
@@ -586,7 +623,7 @@
 
 ---
 
-### #43 COMMAND on command_protocol `Command`
+### #46 COMMAND on command_protocol `Command`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp:32:1-41:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/command/Command.cpp)
 - **Summary:** Command pattern: protocol 'Command' implemented by 1 command records
@@ -600,7 +637,7 @@
 
 ---
 
-### #44 ITERATOR on iterator_protocol `Iterator`
+### #47 ITERATOR on iterator_protocol `Iterator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/iterator/Iterator.cpp:76:1-86:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/iterator/Iterator.cpp)
 - **Summary:** Iterator pattern: protocol 'Iterator' defines sequential iteration contract
@@ -610,7 +647,7 @@
 
 ---
 
-### #45 MEDIATOR on mediator_hub_record `Mediator`
+### #48 MEDIATOR on mediator_hub_record `Mediator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:63:1-73:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: record 'Mediator' mediates communication between decoupled subsystems
@@ -620,7 +657,7 @@
 
 ---
 
-### #46 MEDIATOR on mediator_hub_record `ConcreteMediator`
+### #49 MEDIATOR on mediator_hub_record `ConcreteMediator`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp:80:1-110:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/mediator/Mediator.cpp)
 - **Summary:** Mediator pattern: record 'ConcreteMediator' mediates communication between decoupled subsystems
@@ -630,7 +667,7 @@
 
 ---
 
-### #47 MEMENTO on memento_history_manager `Memento::Memento`
+### #50 MEMENTO on memento_history_manager `Memento::Memento`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp:25:3`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/memento/Memento.cpp)
 - **Summary:** Memento pattern: snapshot & history management in namespace 'global' (6 functions)
@@ -648,7 +685,7 @@
 
 ---
 
-### #48 INTERFACE_SEGREGATION on segregated_role_interface `Subject`
+### #51 INTERFACE_SEGREGATION on segregated_role_interface `Subject`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:62:1-92:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
 - **Summary:** ISP Adherence: Role interface 'Subject' is segregated and focused (2 methods)
@@ -664,7 +701,7 @@
 
 ---
 
-### #49 INTERFACE_SEGREGATION on segregated_role_interface `Component`
+### #52 INTERFACE_SEGREGATION on segregated_role_interface `Component`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp:19:1-33:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/composite/Composite.cpp)
 - **Summary:** ISP Adherence: Role interface 'Component' is segregated and focused (1 methods)
@@ -681,7 +718,7 @@
 
 ---
 
-### #50 INTERFACE_SEGREGATION on segregated_role_interface `Product`
+### #53 INTERFACE_SEGREGATION on segregated_role_interface `Product`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp:19:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/factory-method/FactoryMethod.cpp)
 - **Summary:** ISP Adherence: Role interface 'Product' is segregated and focused (1 methods)
@@ -696,7 +733,7 @@
 
 ---
 
-### #51 INTERFACE_SEGREGATION on segregated_role_interface `Implementor`
+### #54 INTERFACE_SEGREGATION on segregated_role_interface `Implementor`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp:17:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/bridge/Bridge.cpp)
 - **Summary:** ISP Adherence: Role interface 'Implementor' is segregated and focused (1 methods)
@@ -711,7 +748,7 @@
 
 ---
 
-### #52 INTERFACE_SEGREGATION on segregated_role_interface `Prototype`
+### #55 INTERFACE_SEGREGATION on segregated_role_interface `Prototype`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp:18:1-26:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/prototype/Prototype.cpp)
 - **Summary:** ISP Adherence: Role interface 'Prototype' is segregated and focused (2 methods)
@@ -726,7 +763,7 @@
 
 ---
 
-### #53 INTERFACE_SEGREGATION on segregated_role_interface `State`
+### #56 INTERFACE_SEGREGATION on segregated_role_interface `State`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp:18:1-24:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/state/State.cpp)
 - **Summary:** ISP Adherence: Role interface 'State' is segregated and focused (1 methods)
@@ -741,7 +778,7 @@
 
 ---
 
-### #54 INTERFACE_SEGREGATION on segregated_role_interface `Visitor`
+### #57 INTERFACE_SEGREGATION on segregated_role_interface `Visitor`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:22:1-30:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** ISP Adherence: Role interface 'Visitor' is segregated and focused (2 methods)
@@ -756,7 +793,7 @@
 
 ---
 
-### #55 INTERFACE_SEGREGATION on segregated_role_interface `Element`
+### #58 INTERFACE_SEGREGATION on segregated_role_interface `Element`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp:76:1-83:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/visitor/Visitor.cpp)
 - **Summary:** ISP Adherence: Role interface 'Element' is segregated and focused (1 methods)
@@ -771,7 +808,7 @@
 
 ---
 
-### #56 INTERFACE_SEGREGATION on segregated_role_interface `ProductA`
+### #59 INTERFACE_SEGREGATION on segregated_role_interface `ProductA`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:18:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'ProductA' is segregated and focused (1 methods)
@@ -786,7 +823,7 @@
 
 ---
 
-### #57 INTERFACE_SEGREGATION on segregated_role_interface `ProductB`
+### #60 INTERFACE_SEGREGATION on segregated_role_interface `ProductB`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:60:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'ProductB' is segregated and focused (1 methods)
@@ -801,7 +838,7 @@
 
 ---
 
-### #58 INTERFACE_SEGREGATION on segregated_role_interface `AbstractFactory`
+### #61 INTERFACE_SEGREGATION on segregated_role_interface `AbstractFactory`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp:101:1-108:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/abstract-factory/AbstractFactory.cpp)
 - **Summary:** ISP Adherence: Role interface 'AbstractFactory' is segregated and focused (2 methods)
@@ -816,7 +853,7 @@
 
 ---
 
-### #59 INTERFACE_SEGREGATION on segregated_role_interface `Handler`
+### #62 INTERFACE_SEGREGATION on segregated_role_interface `Handler`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp:17:1-38:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/chain-of-responsibility/ChainOfResponsibility.cpp)
 - **Summary:** ISP Adherence: Role interface 'Handler' is segregated and focused (3 methods)
@@ -831,7 +868,7 @@
 
 ---
 
-### #60 INTERFACE_SEGREGATION on segregated_role_interface `Flyweight`
+### #63 INTERFACE_SEGREGATION on segregated_role_interface `Flyweight`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp:19:1-25:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/flyweight/Flyweight.cpp)
 - **Summary:** ISP Adherence: Role interface 'Flyweight' is segregated and focused (1 methods)
@@ -846,7 +883,7 @@
 
 ---
 
-### #61 INTERFACE_SEGREGATION on segregated_role_interface `Builder`
+### #64 INTERFACE_SEGREGATION on segregated_role_interface `Builder`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp:50:1-67:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/builder/Builder.cpp)
 - **Summary:** ISP Adherence: Role interface 'Builder' is segregated and focused (3 methods)
@@ -861,7 +898,7 @@
 
 ---
 
-### #62 INTERFACE_SEGREGATION on segregated_role_interface `Strategy`
+### #65 INTERFACE_SEGREGATION on segregated_role_interface `Strategy`
 - **Confidence:** 75% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp:17:1-23:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/strategy/Strategy.cpp)
 - **Summary:** ISP Adherence: Role interface 'Strategy' is segregated and focused (1 methods)
@@ -877,7 +914,7 @@
 
 ---
 
-### #63 SINGLETON on static_singleton_state `Singleton::instance`
+### #66 SINGLETON on static_singleton_state `Singleton::instance`
 - **Confidence:** 74% (🔵 `HIGH`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp:56:3`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp)
 - **Summary:** Singleton pattern: static single-instance management for 'Singleton::instance'
@@ -887,7 +924,27 @@
 
 ---
 
-### #64 SINGLETON on cpp_singleton_class `Singleton`
+### #67 OBSERVER on subject_class `RealSubject`
+- **Confidence:** 61% (🟡 `MEDIUM`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:31:1-39:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp)
+- **Summary:** Observer pattern: subject 'RealSubject' manages event subscriptions and notifications
+
+#### 🔎 Evidence Trail:
+- **+45%** `[OBSERVER_SUBJECT_CLASS_NAMING]` Class 'RealSubject' represents Observable Subject managing event subscribers _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/proxy/Proxy.cpp:31:1-39:2`)_
+
+---
+
+### #68 OBSERVER on subject_class `ConcreteSubject`
+- **Confidence:** 61% (🟡 `MEDIUM`)
+- **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp)
+- **Summary:** Observer pattern: subject 'ConcreteSubject' manages event subscriptions and notifications
+
+#### 🔎 Evidence Trail:
+- **+45%** `[OBSERVER_SUBJECT_CLASS_NAMING]` Class 'ConcreteSubject' represents Observable Subject managing event subscribers _(at `/Volumes/External/Code/DPX-Cpp/tmp_real_project/observer/Observer.cpp:98:1-117:2`)_
+
+---
+
+### #69 SINGLETON on cpp_singleton_class `Singleton`
 - **Confidence:** 57% (🟡 `MEDIUM`)
 - **Primary Location:** [`/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp:18:1-58:2`](/Volumes/External/Code/DPX-Cpp/tmp_real_project/singleton/Singleton.cpp)
 - **Summary:** Singleton pattern: class 'Singleton' guarantees a single global instance

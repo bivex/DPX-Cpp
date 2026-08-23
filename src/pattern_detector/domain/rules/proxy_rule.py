@@ -88,4 +88,48 @@ class ProxyPatternRule(BasePatternRule):
                     )
                 )
 
+        # 3. OOP Proxy Pattern in C++
+        for rec in model.all_records():
+            name_lower = rec.name.lower()
+            if "proxy" in name_lower:
+                evidences = [
+                    self.evidence(
+                        description=f"Class '{rec.name}' follows Proxy surrogate naming convention",
+                        weight=0.50,
+                        location=rec.location,
+                        code_suffix="PROXY_CLASS_NAMING",
+                    )
+                ]
+                has_subject_field = any(
+                    k in f.lower() for f in rec.fields for k in ("subject", "real", "target", "service", "impl")
+                )
+                if has_subject_field:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Class '{rec.name}' maintains reference to wrapped real subject: {', '.join([f for f in rec.fields if any(k in f.lower() for k in ('subject', 'real', 'target', 'service', 'impl'))])}",
+                            weight=0.40,
+                            location=rec.location,
+                            code_suffix="PROXY_TARGET_FIELD",
+                        )
+                    )
+                if rec.implemented_protocols:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Implements subject interface '{', '.join(rec.implemented_protocols)}' to act as polymorphic surrogate",
+                            weight=0.35,
+                            location=rec.location,
+                            code_suffix="PROXY_IMPLEMENTS_SUBJECT",
+                        )
+                    )
+                detections.append(
+                    self.create_detection(
+                        target_name=rec.name,
+                        target_kind="proxy_class",
+                        evidences=evidences,
+                        primary_location=rec.location,
+                        summary=f"Proxy pattern: class '{rec.name}' acts as surrogate controlling access to real subject",
+                        base_score=0.30,
+                    )
+                )
+
         return detections

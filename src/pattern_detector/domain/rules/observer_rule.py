@@ -127,4 +127,91 @@ class ObserverPatternRule(BasePatternRule):
                     )
                 )
 
+        # 4. OOP Observer / Subject Pattern in C++
+        for proto in model.all_protocols():
+            name_lower = proto.name.lower()
+            if any(k in name_lower for k in ("observer", "listener", "subscriber")):
+                evidences = [
+                    self.evidence(
+                        description=f"Protocol '{proto.name}' defines Observer interface with callback methods: {', '.join(m.name for m in proto.methods)}",
+                        weight=0.55,
+                        location=proto.location,
+                        code_suffix="OBSERVER_INTERFACE",
+                    )
+                ]
+                rec_impls = model.find_records_implementing(proto.name)
+                for r in rec_impls:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Concrete observer '{r.name}' implements observer interface for '{proto.name}'",
+                            weight=0.30,
+                            location=r.location,
+                            code_suffix="CONCRETE_OBSERVER",
+                        )
+                    )
+                detections.append(
+                    self.create_detection(
+                        target_name=proto.name,
+                        target_kind="observer_protocol",
+                        evidences=evidences,
+                        primary_location=proto.location,
+                        related_locations=[r.location for r in rec_impls],
+                        summary=f"Observer pattern: observer interface '{proto.name}' implemented by {len(rec_impls)} observer records",
+                        base_score=0.30,
+                    )
+                )
+
+        # Subject classes managing observer lists
+        for rec in model.all_records():
+            name_lower = rec.name.lower()
+            has_obs_field = any(
+                k in f.lower()
+                for f in rec.fields
+                for k in ("observer", "listener", "subscriber", "views", "listeners", "watchers")
+            )
+            has_obs_methods = any(
+                m.name.lower().startswith(("attach", "detach", "register", "unregister", "subscribe", "notify"))
+                for m in rec.methods
+            )
+            if "subject" in name_lower or has_obs_field or has_obs_methods:
+                evidences = []
+                if "subject" in name_lower:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Class '{rec.name}' represents Observable Subject managing event subscribers",
+                            weight=0.45,
+                            location=rec.location,
+                            code_suffix="SUBJECT_CLASS_NAMING",
+                        )
+                    )
+                if has_obs_field:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Maintains list/collection of observers: {', '.join([f for f in rec.fields if any(k in f.lower() for k in ('observer', 'listener', 'subscriber', 'views', 'listeners', 'watchers'))])}",
+                            weight=0.40,
+                            location=rec.location,
+                            code_suffix="OBSERVER_COLLECTION_FIELD",
+                        )
+                    )
+                if has_obs_methods:
+                    evidences.append(
+                        self.evidence(
+                            description=f"Declares observer lifecycle/notification methods: {', '.join([m.name for m in rec.methods if m.name.lower().startswith(('attach', 'detach', 'register', 'unregister', 'subscribe', 'notify'))])}",
+                            weight=0.40,
+                            location=rec.location,
+                            code_suffix="OBSERVER_MANAGEMENT_METHODS",
+                        )
+                    )
+                if len(evidences) >= 2 or (len(evidences) >= 1 and "subject" in name_lower):
+                    detections.append(
+                        self.create_detection(
+                            target_name=rec.name,
+                            target_kind="subject_class",
+                            evidences=evidences,
+                            primary_location=rec.location,
+                            summary=f"Observer pattern: subject '{rec.name}' manages event subscriptions and notifications",
+                            base_score=0.30,
+                        )
+                    )
+
         return detections
