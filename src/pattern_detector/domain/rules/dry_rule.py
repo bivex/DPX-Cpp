@@ -33,10 +33,7 @@ class DryRule(BasePatternRule):
         for fn in model.all_functions():
             simple_name = fn.name.split("::")[-1].split(".")[-1]
             if (
-                simple_name.startswith("get")
-                or simple_name.startswith("set")
-                or simple_name.startswith("is")
-                or simple_name.startswith("has")
+                simple_name.startswith(("get", "set", "is", "has"))
                 or simple_name in ("toString", "hashCode", "equals", "compareTo")
             ):
                 continue

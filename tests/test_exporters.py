@@ -102,9 +102,10 @@ def test_cli_html_and_markdown_export() -> None:
 
 
 def test_llm_report_formatter() -> None:
-    from pattern_detector.adapters.outbound.persistence.llm_report_formatter import LlmReportFormatter
     from typer.testing import CliRunner
+
     from pattern_detector.adapters.inbound.cli.main import app
+    from pattern_detector.adapters.outbound.persistence.llm_report_formatter import LlmReportFormatter
 
     formatter = LlmReportFormatter()
     report = _create_sample_report()

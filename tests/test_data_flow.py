@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 from typer.testing import CliRunner
 
 from pattern_detector.adapters.inbound.cli.main import app
 from pattern_detector.adapters.outbound.antlr import CppAntlrParserAdapter
-from pattern_detector.bootstrap.container import create_container
 from pattern_detector.domain.data_flow import (
     DataFlowDirection,
     DataFlowVariant,
-    NodeKind,
 )
 from pattern_detector.domain.services.data_flow import DataFlowService
 

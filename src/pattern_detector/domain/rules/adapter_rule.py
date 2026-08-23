@@ -106,8 +106,8 @@ class AdapterPatternRule(BasePatternRule):
                 continue
 
             if (is_adapter_named and (implemented_protocols or adaptee_fields)) or (implemented_protocols and adaptee_fields):
-                evidences: list[Evidence] = []
-                related_locs: list[SourceLocation] = []
+                evidences = []
+                related_locs = []
 
                 if is_adapter_named:
                     evidences.append(

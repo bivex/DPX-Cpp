@@ -160,9 +160,9 @@ class DecoratorPatternRule(BasePatternRule):
                         )
                     )
                     for p_name in implemented_protocols:
-                        p = model.find_protocol(p_name)
-                        if p:
-                            related_locs.append(p.location)
+                        proto = model.find_protocol(p_name)
+                        if proto:
+                            related_locs.append(proto.location)
 
                 if component_fields:
                     evidences.append(

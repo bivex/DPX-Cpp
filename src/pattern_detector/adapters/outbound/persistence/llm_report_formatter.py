@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pattern_detector.domain.data_flow import DataFlowGraph, DataFlowSummaryReport, NodeKind
+from pattern_detector.domain.data_flow import DataFlowGraph, DataFlowSummaryReport
 from pattern_detector.domain.detection import DetectionReport
 from pattern_detector.domain.value_objects import PatternCategory
 

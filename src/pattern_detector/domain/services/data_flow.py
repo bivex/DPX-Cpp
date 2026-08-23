@@ -202,9 +202,8 @@ class DataFlowService:
                 return True
             found = False
             for v in adj.get(u, []):
-                if v not in path:
-                    if can_reach(v, path + [u]):
-                        found = True
+                if v not in path and can_reach(v, path + [u]):
+                    found = True
             return found
 
         can_reach(source, [])
@@ -308,8 +307,8 @@ class DataFlowService:
                     name=var_name,
                     file_path=loc.file_path if loc else "",
                     line=loc.line if loc else 1,
-                    readers=sorted(list(dict.fromkeys(readers))),
-                    writers=sorted(list(dict.fromkeys(writers))),
+                    readers=sorted(dict.fromkeys(readers)),
+                    writers=sorted(dict.fromkeys(writers)),
                     downstream_reach=reach,
                     max_depth=m_depth,
                     impact_level=impact,

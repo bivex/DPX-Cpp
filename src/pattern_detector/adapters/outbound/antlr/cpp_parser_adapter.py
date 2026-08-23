@@ -57,9 +57,9 @@ def _extract_variable_accesses(
             reads.append(var)
 
     return (
-        sorted(list(dict.fromkeys(reads))),
-        sorted(list(dict.fromkeys(writes))),
-        sorted(list(dict.fromkeys(modifies))),
+        sorted(dict.fromkeys(reads)),
+        sorted(dict.fromkeys(writes)),
+        sorted(dict.fromkeys(modifies)),
     )
 
 
@@ -305,7 +305,7 @@ class _CppAstExtractionVisitor(CPP14ParserVisitor):
                         docstring="",
                     )
                     self.functions[fn_name_clean] = fn_model
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         return self.visitChildren(ctx)
 
@@ -321,12 +321,12 @@ class _CppAstExtractionVisitor(CPP14ParserVisitor):
                     v_name = vm.group(1)
                     if v_name not in ("default", "delete", "const", "return", "auto") and v_name not in self.states:
                         self.states[v_name] = StateModel(
-                            name=v_name,
-                            namespace=self.current_namespace,
-                            location=self._get_location(ctx),
-                            kind="atom",
-                        )
-        except Exception:
+                             name=v_name,
+                             namespace=self.current_namespace,
+                             location=self._get_location(ctx),
+                             kind="atom",
+                         )
+        except Exception:  # noqa: BLE001, S110
             pass
         return self.visitChildren(ctx)
 

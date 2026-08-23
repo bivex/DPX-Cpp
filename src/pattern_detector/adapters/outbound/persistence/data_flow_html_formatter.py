@@ -7,7 +7,6 @@ import json
 from typing import Any
 
 from pattern_detector.domain.data_flow import (
-    DataFlowDirection,
     DataFlowGraph,
     DataFlowSummaryReport,
     NodeKind,
@@ -122,14 +121,14 @@ class DataFlowHtmlFormatter:
                 "font": font,
                 "margin": 10,
                 "borderWidth": 3 if is_root else 2,
-                "shadow": True if is_root else False,
+                "shadow": is_root,
                 "title": f"<b>{node.name}</b><br>Kind: {node.kind.value}<br>Cluster: {node.cluster}<br>{node.file_path}:{node.line}",
             })
 
         for i, edge in enumerate(graph.edges):
             kind_lower = edge.kind.lower()
             edge_color = "#38bdf8" if kind_lower == "reads" else ("#f43f5e" if "write" in kind_lower else "#fbbf24")
-            dashes = True if "modifi" in kind_lower else False
+            dashes = "modifi" in kind_lower
 
             edges.append({
                 "id": f"e_{i}",

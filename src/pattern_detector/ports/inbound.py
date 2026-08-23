@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from pattern_detector.domain.code_model import CodeModel
+from pattern_detector.domain.data_flow import DataFlowGraph, DataFlowSummaryReport
 from pattern_detector.domain.detection import Detection, DetectionReport
 
 
@@ -51,7 +52,18 @@ class DataFlowPort(Protocol):
         variant: str = "simplified",
         to_entity: str | None = None,
         max_depth: int = 15,
-    ) -> Any:
+    ) -> DataFlowGraph:
         """Trace data flow graph for target entity."""
+        ...
+
+    def analyze_all_data_flows(
+        self,
+        target_path: str,
+        direction: str = "OUT",
+        file_filter: str | None = None,
+        max_depth: int = 15,
+        file_extensions: list[str] | None = None,
+    ) -> DataFlowSummaryReport:
+        """Analyze data flow for all variables across a file or codebase."""
         ...
 

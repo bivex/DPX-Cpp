@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pattern_detector.domain.code_model import CodeModel
+from pattern_detector.domain.code_model import CodeModel, ProtocolModel, RecordModel
 from pattern_detector.domain.detection import Detection
 from pattern_detector.domain.rules.base import BasePatternRule
 from pattern_detector.domain.value_objects import Evidence, PatternType, SourceLocation
@@ -101,7 +101,7 @@ class InterpreterPatternRule(BasePatternRule):
                     )
 
         # 3. C++ OOP Interpreter Pattern (AbstractExpression protocols and base records)
-        candidates = list(model.all_protocols())
+        candidates: list[ProtocolModel | RecordModel] = list(model.all_protocols())
         for rec in model.all_records():
             if "expression" in rec.name.lower() or any("interpret" in m.name.lower() for m in rec.methods):
                 candidates.append(rec)

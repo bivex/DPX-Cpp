@@ -5,7 +5,11 @@ from __future__ import annotations
 import time
 
 from pattern_detector.domain.code_model import CodeModel
-from pattern_detector.domain.data_flow import DataFlowGraph, DataFlowVariant
+from pattern_detector.domain.data_flow import (
+    DataFlowGraph,
+    DataFlowSummaryReport,
+    DataFlowVariant,
+)
 from pattern_detector.domain.detection import Detection, DetectionReport
 from pattern_detector.domain.services.data_flow import DataFlowService
 from pattern_detector.domain.services.pattern_detector import PatternDetectorService
@@ -83,7 +87,7 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
         file_filter: str | None = None,
         max_depth: int = 15,
         file_extensions: list[str] | None = None,
-    ) -> Any:
+    ) -> DataFlowSummaryReport:
         """Analyze data flow for all variables across a file or codebase."""
         from pattern_detector.domain.data_flow import DataFlowDirection
 

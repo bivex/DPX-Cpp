@@ -8,7 +8,6 @@ without direct dependency on any AST framework.
 from __future__ import annotations
 
 import os
-import re
 from dataclasses import dataclass, field
 
 from pattern_detector.domain.value_objects import SourceLocation
@@ -329,24 +328,22 @@ class CodeModel:
             for req in ns.requires:
                 clean_req = os.path.splitext(os.path.basename(req))[0]
                 for other_name, other_ns in self.namespaces.items():
-                    if other_name != ns_name:
-                        if (
-                            clean_req == other_name
-                            or clean_req in other_ns.records
-                            or (other_ns.file_path and clean_req in os.path.basename(other_ns.file_path))
-                        ):
-                            graph[ns_name].add(other_name)
+                    if other_name != ns_name and (
+                        clean_req == other_name
+                        or clean_req in other_ns.records
+                        or (other_ns.file_path and clean_req in os.path.basename(other_ns.file_path))
+                    ):
+                        graph[ns_name].add(other_name)
 
             for imp in ns.imports:
                 clean_imp = os.path.splitext(os.path.basename(imp))[0]
                 for other_name, other_ns in self.namespaces.items():
-                    if other_name != ns_name:
-                        if (
-                            clean_imp == other_name
-                            or clean_imp in other_ns.records
-                            or (other_ns.file_path and clean_imp in os.path.basename(other_ns.file_path))
-                        ):
-                            graph[ns_name].add(other_name)
+                    if other_name != ns_name and (
+                        clean_imp == other_name
+                        or clean_imp in other_ns.records
+                        or (other_ns.file_path and clean_imp in os.path.basename(other_ns.file_path))
+                    ):
+                        graph[ns_name].add(other_name)
 
             # 2. Inspect qualified calls / member calls (e.g. other_ns::func or other_ns::Class)
             for fn in ns.functions.values():
