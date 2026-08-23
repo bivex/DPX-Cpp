@@ -1,6 +1,4 @@
-"""Data Flow Analysis Service (SciTools Understand Parity)."""
-
-from __future__ import annotations
+from collections import defaultdict, deque
 
 from pattern_detector.domain.code_model import CodeModel
 from pattern_detector.domain.data_flow import (
@@ -36,11 +34,20 @@ class DataFlowService:
             is_root=True,
         )
 
+        # Pre-build inverted index for O(1) reader lookups
+        readers_by_var: dict[str, list] = defaultdict(list)
+        for fn in model.all_functions():
+            for r_var in fn.reads_variables:
+                readers_by_var[r_var].append(fn)
+            # Fallback for dynamic variables in body text if not in parsed reads
+            if not fn.reads_variables and root_variable in fn.body_text:
+                readers_by_var[root_variable].append(fn)
+
         visited_vars: set[str] = set()
-        queue: list[tuple[str, int]] = [(root_variable, 0)]
+        queue: deque[tuple[str, int]] = deque([(root_variable, 0)])
 
         while queue:
-            var_name, depth = queue.pop(0)
+            var_name, depth = queue.popleft()
             if depth >= max_depth:
                 continue
 
@@ -48,15 +55,11 @@ class DataFlowService:
                 continue
             visited_vars.add(var_name)
 
-            # 1. Find all functions that read/use var_name
-            reader_functions = [
-                fn for fn in model.all_functions()
-                if var_name in fn.reads_variables or var_name in fn.body_text
-            ]
+            reader_functions = readers_by_var.get(var_name, [])
 
             for fn in reader_functions:
                 fn_id = f"fn_{fn.name}"
-                cluster_name = fn.namespace or fn.location.file_path.split("/")[-1] if fn.location else "global"
+                cluster_name = fn.namespace or (fn.location.file_path.split("/")[-1] if fn.location else "global")
                 graph.add_node(
                     node_id=fn_id,
                     name=fn.name,
@@ -69,11 +72,6 @@ class DataFlowService:
 
                 # 2. Check what variables this function writes or modifies
                 written_vars = list(dict.fromkeys(fn.writes_variables + fn.modifies_variables))
-                # If no explicit parsed writes, infer from body assignments
-                if not written_vars:
-                    for other_state in model.all_states():
-                        if other_state.name != var_name and other_state.name in fn.body_text and f"{other_state.name} =" in fn.body_text:
-                            written_vars.append(other_state.name)
 
                 for w_var in written_vars:
                     w_kind = "MODIFIES" if w_var in fn.modifies_variables or (w_var == var_name) else "WRITES"
@@ -111,11 +109,17 @@ class DataFlowService:
             is_root=True,
         )
 
+        # Pre-build inverted index for O(1) writer lookups
+        writers_by_var: dict[str, list] = defaultdict(list)
+        for fn in model.all_functions():
+            for w_var in fn.writes_variables + fn.modifies_variables:
+                writers_by_var[w_var].append(fn)
+
         visited_vars: set[str] = set()
-        queue: list[tuple[str, int]] = [(root_variable, 0)]
+        queue: deque[tuple[str, int]] = deque([(root_variable, 0)])
 
         while queue:
-            var_name, depth = queue.pop(0)
+            var_name, depth = queue.popleft()
             if depth >= max_depth:
                 continue
 
@@ -123,15 +127,11 @@ class DataFlowService:
                 continue
             visited_vars.add(var_name)
 
-            # 1. Find all functions that write/modify var_name
-            writer_functions = [
-                fn for fn in model.all_functions()
-                if var_name in fn.writes_variables or var_name in fn.modifies_variables
-            ]
+            writer_functions = writers_by_var.get(var_name, [])
 
             for fn in writer_functions:
                 fn_id = f"fn_{fn.name}"
-                cluster_name = fn.namespace or fn.location.file_path.split("/")[-1] if fn.location else "global"
+                cluster_name = fn.namespace or (fn.location.file_path.split("/")[-1] if fn.location else "global")
                 graph.add_node(
                     node_id=fn_id,
                     name=fn.name,

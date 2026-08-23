@@ -66,6 +66,7 @@ class DataFlowGraph:
     variant: DataFlowVariant = DataFlowVariant.SIMPLIFIED
     nodes: dict[str, DataFlowNode] = field(default_factory=dict)
     edges: list[DataFlowEdge] = field(default_factory=list)
+    _edge_set: set[tuple[str, str, str]] = field(default_factory=set, repr=False)
 
     def add_node(
         self,
@@ -90,9 +91,10 @@ class DataFlowGraph:
         return self.nodes[node_id]
 
     def add_edge(self, from_id: str, to_id: str, kind: str, location: SourceLocation | None = None) -> None:
-        edge = DataFlowEdge(from_id=from_id, to_id=to_id, kind=kind, location=location)
-        if not any(e.from_id == from_id and e.to_id == to_id and e.kind == kind for e in self.edges):
-            self.edges.append(edge)
+        key = (from_id, to_id, kind)
+        if key not in self._edge_set:
+            self._edge_set.add(key)
+            self.edges.append(DataFlowEdge(from_id=from_id, to_id=to_id, kind=kind, location=location))
 
     def to_mermaid(self, direction_layout: str = "LR") -> str:
         """Render graph to clean Mermaid.js diagram."""
