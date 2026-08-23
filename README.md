@@ -1,15 +1,15 @@
-# ⚡ DPX-Cpp: Pattern Scanner & Software Architecture Analyzer for C++
+# ⚡ DPX-Cpp: Pattern Scanner, Software Architecture Analyzer & Data Flow Engine for C++
 
-> **Hexagonal Architecture (Ports & Adapters) + Domain-Driven Design (DDD)** static analysis and software design pattern detection engine for **C++ (C++14 / 17 / 20 / 23)** powered by **ANTLR4** grammar parsing.
+> **Hexagonal Architecture (Ports & Adapters) + Domain-Driven Design (DDD)** static analysis and software design pattern detection engine for **C++ (C++14 / 17 / 20 / 23)** powered by **ANTLR4** grammar parsing and **SciTools Understand-parity Data Flow Out / In Analysis**.
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg?style=flat&logo=python)](https://www.python.org/)
-[![C++](https://img.shields.io/badge/C%2B%2B-14%20%2F%2017%20%2F%2020%20%2F%2023-blue.svg?style=flat&logo=cplusplus)](https://en.cppreference.com/)
+[![C++](https://img.shields.io/badge/C%2B%2B-14%20%2F%2017%20%2020%20%2F%2023-blue.svg?style=flat&logo=cplusplus)](https://en.cppreference.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2B%20DDD-brightgreen.svg?style=flat)]()
 [![ANTLR](https://img.shields.io/badge/Parser-ANTLR%204.13.2-red.svg?style=flat)](https://www.antlr.org/)
-[![Tests](https://img.shields.io/badge/Tests-43%20passed%20(100%25)-success.svg?style=flat)]()
+[![Tests](https://img.shields.io/badge/Tests-48%20passed%20(100%25)-success.svg?style=flat)]()
 [![Code Style](https://img.shields.io/badge/Linter-Ruff%20%26%20Mypy%20Strict-black.svg?style=flat)]()
 [![Rules](https://img.shields.io/badge/Supported%20Rules-35%20(23%20GoF%20%2B%2010%20SOLID%2FPrinciples%20%2B%202%20Arch)-orange.svg?style=flat)]()
-[![Template](https://img.shields.io/badge/GitHub-Template%20Repository-purple.svg?style=flat)]()
+[![Data Flow](https://img.shields.io/badge/Data%20Flow-Understand%20Parity%20(Out%20%2F%20In)-purple.svg?style=flat)]()
 
 ---
 
@@ -36,6 +36,7 @@ The system strictly follows **Domain-Driven Design (DDD)** and **Hexagonal Archi
                                       │                   │
                                       │  CodeModel        │
                                       │  35 AnalysisRules │
+                                      │  DataFlowService  │
                                       │  Confidence Model │
                                       │  Evidence Trail   │
                                       │  Dependency Graph │
@@ -44,7 +45,7 @@ The system strictly follows **Domain-Driven Design (DDD)** and **Hexagonal Archi
                     ┌───────────────────────────▼────────────────────────────┐
                     │                      Ports / SPI                       │
                     │                                                        │
-                    │   Inbound:  ScannerPort, DetectorPort, ScanOptions     │
+                    │   Inbound:  ScannerPort, DetectorPort, DataFlowPort    │
                     │   Outbound: ParserPort, SourceProviderPort,            │
                     │             ResultRepositoryPort, ReportFormatterPort  │
                     └───────────────────────────┬────────────────────────────┘
@@ -53,59 +54,131 @@ The system strictly follows **Domain-Driven Design (DDD)** and **Hexagonal Archi
                     │                    Driven Adapters                     │
                     │                                                        │
                     │   • ANTLR4 C++ Parser (CPP14Lexer.g4 / CPP14Parser.g4) │
-                    │   • Fast Brace-Balanced Macro-Tolerant AST Parser      │
+                    │   • Fast Brace-Balanced Macro-Tolerant Def-Use Parser  │
                     │   • FileSystem Source Provider (.cpp, .hpp recursive)  │
                     │   • Interactive HTML Dashboard Formatter & Repository  │
                     │   • GitHub-Flavored Markdown Formatter & Repository    │
                     │   • JSON Result Repository                             │
-                    │   • Rich Console Terminal Formatter                    │
+                    │   • Rich Console Terminal Tree Formatter               │
                     └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📐 Catalog of 35 Supported Rules & Principles
+## 🌲 Data Flow Analysis (SciTools Understand Parity)
+
+DPX-Cpp includes a full **Def-Use Data Flow Graph Engine** parity with **SciTools Understand**:
+
+* **Data Flow Out (Forward Graph):** Rooted at a selected variable or object, shows every function that reads/uses its value, then recurses into whatever objects that function writes or modifies, continuing through the entire computation forward.
+* **Data Flow In (Backward Graph / Slicing):** The inverse relationship — traces backward from a target variable to everything that sets or modifies it, and all input sources contributing to its value.
+* **Relationship Path:** Filters the graph to only paths connecting two specific entities (e.g., `transformedData` $\to$ `reportValue`).
+* **Cluster Variant:** Automatically groups entities and functions by their containing class, namespace, or file.
+* **Multi-Format Visualizers:** Interactive **Rich Terminal Trees**, **Mermaid.js** diagrams, and **JSON** export.
+
+### Example C++ Code:
+```cpp
+extern int auxData;
+extern int transformedData;
+extern int outputResult;
+extern int logBuffer;
+extern int runningTotal;
+extern int reportValue;
+
+void normalize() {
+    if (transformedData > 100) transformedData = 100;
+    else transformedData = transformedData + auxData;
+}
+void output()     { outputResult = transformedData; }
+void logData()    { logBuffer += transformedData; }
+void accumulate() { runningTotal += outputResult; }
+void report()     { reportValue = runningTotal; }
+```
+
+### Data Flow Out (Mermaid.js Diagram):
+```mermaid
+graph LR
+    classDef rootNode fill:#0284c7,stroke:#38bdf8,stroke-width:3px,color:#ffffff,font-weight:bold;
+    classDef varNode fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef fnNode fill:#0f172a,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+
+    transformedData["🔷 transformedData"]
+    fn_normalize["⚙️ normalize"]
+    fn_output["⚙️ output"]
+    outputResult["🔷 outputResult"]
+    fn_logData["⚙️ logData"]
+    logBuffer["🔷 logBuffer"]
+    fn_accumulate["⚙️ accumulate"]
+    runningTotal["🔷 runningTotal"]
+    fn_report["⚙️ report"]
+    reportValue["🔷 reportValue"]
+
+    transformedData -->|reads| fn_normalize
+    fn_normalize -.->|modifies| transformedData
+    transformedData -->|reads| fn_output
+    fn_output -->|writes| outputResult
+    transformedData -->|reads| fn_logData
+    fn_logData -.->|modifies| logBuffer
+    outputResult -->|reads| fn_accumulate
+    fn_accumulate -.->|modifies| runningTotal
+    runningTotal -->|reads| fn_report
+    fn_report -->|writes| reportValue
+
+    class transformedData rootNode;
+    class fn_normalize fnNode;
+    class fn_output fnNode;
+    class outputResult varNode;
+    class fn_logData fnNode;
+    class logBuffer varNode;
+    class fn_accumulate fnNode;
+    class runningTotal varNode;
+    class fn_report fnNode;
+    class reportValue varNode;
+```
+
+---
+
+## 📐 Catalog of 35 Supported Rules & Principles (100% GoF Coverage)
 
 DPX-Cpp analyzes C++ codebases across **5 major categories**:
 
-### 1. 🏗 Creational Patterns (GoF)
-1. **Singleton**: Meyers' Singleton (`static T& getInstance() { static T inst; return inst; }`), deleted copy/move constructors, private constructors, static instance fields.
-2. **Factory Method**: Virtual factory methods returning `std::unique_ptr<Product>` or `std::shared_ptr<Product>`.
-3. **Abstract Factory**: Factory interfaces declaring multiple product creation families.
-4. **Builder**: Method chaining / fluent builders returning references (`Builder&`).
-5. **Prototype**: Classes declaring `clone()` / copy-creation returning `std::unique_ptr<Base>`.
+### 1. 🏗 Creational Patterns (GoF 5/5)
+1. **Abstract Factory**: Factory interfaces declaring multiple product creation families.
+2. **Builder**: Method chaining / fluent builders returning references (`Builder&`).
+3. **Factory Method**: Virtual factory methods producing concrete product variants.
+4. **Prototype**: Classes declaring `clone()` / copy-creation returning polymorphic pointers.
+5. **Singleton**: Meyers' Singleton, deleted copy/move constructors, private constructors, static instance fields.
 
-### 2. 🏛 Structural Patterns (GoF)
-6. **Adapter**: Object / Class adapters delegating to wrapped instances.
-7. **Bridge / PIMPL Idiom**: Decoupled abstraction & implementation, Pointer to Implementation (`std::unique_ptr<Impl> pImpl`).
-8. **Composite**: Tree structures aggregating `std::vector<std::shared_ptr<Component>>`.
-9. **Decorator**: Wrapping same abstract base class / interface and delegating.
+### 2. 🏛 Structural Patterns (GoF 7/7)
+6. **Adapter**: Object & Class adapters adapting legacy/incompatible interfaces.
+7. **Bridge / PIMPL Idiom**: Decoupled abstraction & implementation driver (`std::unique_ptr<Impl> pImpl`).
+8. **Composite**: Part-whole hierarchies unifying leaf elements and container records.
+9. **Decorator**: Wrapping same abstract component interface to dynamically augment behavior.
 10. **Facade**: High-level unified interfaces coordinating multiple sub-systems.
-11. **Flyweight**: Factory managing shared intrinsic object pools / flyweights.
-12. **Proxy**: Intermediary objects controlling access / lazy-initialization to real subjects.
+11. **Flyweight**: Factories managing shared intrinsic object pools and flyweight instances.
+12. **Proxy**: Surrogates controlling access / lazy-initialization to real subjects.
 
-### 3. 🎯 Behavioral Patterns (GoF)
-13. **Chain of Responsibility**: Handler chains with `next` pointers / smart pointers.
-14. **Command**: Command objects encapsulating `execute()` / `undo()`.
-15. **Interpreter**: Grammar expression hierarchies (`Expression` with `interpret()`).
-16. **Iterator**: Custom iterator implementations (`hasNext()`, `next()`, `operator++`).
-17. **Mediator**: Central event brokers / dispatchers decoupling components.
-18. **Memento**: Snapshot & state rollback managers (`createMemento()`, `restore()`).
-19. **Observer**: Subject maintaining subscriber lists (`std::vector<std::weak_ptr<IObserver>>`).
-20. **State**: Polymorphic state machines delegating behavior to current state object.
-21. **Strategy**: Interchangeable algorithmic strategies (`IStrategy` with concrete subclasses).
-22. **Template Method**: Base class skeleton algorithm calling virtual / pure-virtual step primitives.
-23. **Visitor**: Double-dispatch visitor (`Visitor` interface with overloaded `visit()` + `Element.accept(Visitor& v)`).
+### 3. 🎯 Behavioral Patterns (GoF 11/11)
+13. **Chain of Responsibility**: Handler chains passing requests along dynamic successor links.
+14. **Command**: Command objects encapsulating actions and parameters (`execute()`).
+15. **Interpreter**: Domain grammar expression hierarchies (`AbstractExpression` with `interpret()`).
+16. **Iterator**: Sequential traversal contracts (`first()`, `next()`, `isDone()`, `currentItem()`).
+17. **Mediator**: Central event brokers / dispatchers decoupling colleague components.
+18. **Memento**: State snapshot & history rollback managers (`setState()`, `getState()`).
+19. **Observer**: Observable subject managing event subscriber lists (`Observer` & `Subject`).
+20. **State**: Polymorphic state machines delegating behavior to interchangeable state objects.
+21. **Strategy**: Interchangeable algorithmic strategies with clean interface encapsulation.
+22. **Template Method**: Base class skeleton algorithm calling primitive step operations.
+23. **Visitor**: Double-dispatch visitor (`Visitor` interface with overloaded `visit()` + `accept()`).
 
 ### 4. 💎 SOLID & Clean Code Principles
 24. **Single Responsibility (SRP)**: God Object detector filtering out standard DTO getters/setters.
 25. **Open/Closed (OCP)**: Detects fragile `dynamic_cast<T*>` and `typeid` cascades vs extensible polymorphic hierarchies.
 26. **Liskov Substitution (LSP)**: Detects overridden methods throwing `std::runtime_error("unsupported")` or breaking parent contracts.
 27. **Interface Segregation (ISP)**: Fat Abstract Classes (>8 pure virtual methods) vs Focused Role Interfaces (1-3 pure virtual methods).
-28. **Dependency Inversion (DIP)**: Flags hardcoded `std::make_unique<ConcreteClass>()` / `new ConcreteClass()` in business services vs injected interface pointers/references.
+28. **Dependency Inversion (DIP)**: Flags hardcoded concrete instantiations in business services vs injected interface abstractions.
 29. **Composition over Inheritance**: Deep inheritance tree analyzer (flags hierarchies with depth $\ge 3$).
-30. **Law of Demeter (LoD)**: Train-wreck call detector (`a->getB()->getC()->doSomething()`) with built-in exclusions for `std::ranges`, `std::string`, `std::optional`, and fluent builders.
-31. **High Cohesion & Low Coupling**: Efferent coupling (Fan-Out) metric analyzing cross-namespace `#include` dependencies.
+30. **Law of Demeter (LoD)**: Train-wreck call detector (`a->getB()->getC()->doSomething()`) with built-in exclusions for STL and fluent APIs.
+31. **High Cohesion & Low Coupling**: Efferent coupling (Fan-Out) metric analyzing cross-namespace dependencies.
 32. **Keep It Simple, Stupid (KISS)**: Long parameter lists ($\ge 6$) and high cyclomatic branching complexity.
 33. **Don't Repeat Yourself (DRY)**: Structural cross-method duplicate code logic detector.
 
@@ -123,7 +196,7 @@ DPX-Cpp implements specialized heuristic filters for modern idiomatic C++:
 * **Standard Operators Excluded:** `operator==`, `operator!=`, `operator<` comparing members are ignored by OCP cascades.
 * **STL & Fluent API Excluded from LoD:** `std::string`, `std::optional`, `std::ranges`, `std::vector`, and fluent builders do not trigger Law of Demeter violations.
 * **Container Exemption in DIP:** Instantiations of STL containers (`std::vector`, `std::map`) and value objects are whitelisted.
-* **Trivial Forwarder Filtering in DRY:** 1-line getters, return statements, and default forwards are ignored by duplication detection.
+* **Disambiguation Engine:** Mutual exclusion between `Abstract Factory` and `Factory Method`, and clean partitioning between `Strategy`, `Bridge`, `Proxy`, and `Observer`.
 
 ---
 
@@ -131,7 +204,7 @@ DPX-Cpp implements specialized heuristic filters for modern idiomatic C++:
 
 | Project / Repository | Files | Scan Duration | Identified Patterns & Principles |
 | :--- | :---: | :---: | :--- |
-| **[`JakubVojvoda/design-patterns-cpp`](https://github.com/JakubVojvoda/design-patterns-cpp)** | 24 | **6.21 s** | Abstract Factory, Composite, Observer, Strategy, Singleton, Chain of Resp., Flyweight, ISP Role Interfaces |
+| **[`JakubVojvoda/design-patterns-cpp`](https://github.com/JakubVojvoda/design-patterns-cpp)** | 24 | **5.74 s** | **23/23 (100%) GoF Design Patterns** cleanly detected with 0 false positives |
 | **[`gabime/spdlog`](https://github.com/gabime/spdlog) (`spdlog/sinks`)** | 28 | **0.058 s** | DIP Injected Abstractions, RAII Lifecycle, Cross-Namespace Cycles (`global ⇄ sinks`), SRP Metrics |
 
 ---
@@ -155,19 +228,26 @@ uv sync
 uv run pattern-detector scan path/to/cpp/project
 
 # 2. Generate an Interactive Dark-Mode HTML Dashboard
-uv run pattern-detector scan path/to/cpp/project --html reports/cpp_patterns_dashboard.html
+uv run pattern-detector scan path/to/cpp/project --html reports/dashboard.html
 
 # 3. Export GitHub-Flavored Markdown Report
 uv run pattern-detector scan path/to/cpp/project --markdown reports/report.md
 
-# 4. Filter by specific pattern types with confidence threshold
-uv run pattern-detector scan path/to/cpp/project -p strategy -p singleton -c 0.75
+# 4. Trace Forward Data Flow (Data Flow Out)
+uv run pattern-detector dataflow transformedData --path ./src
 
-# 5. List all 35 catalog rules
+# 5. Trace Backward Data Flow Slice (Data Flow In)
+uv run pattern-detector dataflow reportValue --path ./src --direction in
+
+# 6. Trace Relationship Path connecting two entities
+uv run pattern-detector dataflow transformedData --to reportValue --path ./src
+
+# 7. Export Data Flow Graph to Mermaid.js or JSON
+uv run pattern-detector dataflow transformedData --mermaid
+uv run pattern-detector dataflow transformedData --json dataflow.json
+
+# 8. List all 35 catalog rules
 uv run pattern-detector rules
-
-# 6. Display Hexagonal DDD Architecture info
-uv run pattern-detector info
 ```
 
 ---
@@ -181,34 +261,32 @@ from pattern_detector.bootstrap.container import create_container
 from pattern_detector.ports.inbound import ScanOptions
 
 container = create_container()
-scanner = container.get_scanner()
 
+# 1. Scan for Design Patterns & SOLID violations
+scanner = container.get_scanner()
 options = ScanOptions(
     min_confidence=0.70,
     output_html_path="reports/dashboard.html",
     output_json_path="reports/report.json",
 )
-
 report = scanner.scan_path("path/to/cpp/project", options=options)
 print(f"Scanned {report.scanned_files_count} files, found {report.total_detections_count} patterns.")
+
+# 2. Trace Forward Data Flow
+dataflow_graph = container.scanning_service.analyze_data_flow(
+    target_path="path/to/cpp/project",
+    target_entity="transformedData",
+    direction="OUT",
+)
+print(dataflow_graph.to_mermaid())
 ```
-
----
-
-## 📊 Interactive HTML Dashboard
-
-DPX-Cpp exports a standalone, dark-themed HTML report featuring:
-- **Metrics Bar**: Total detections, confidence levels (Very High, High, Medium, Low).
-- **Category Filter Pills**: CREATIONAL, STRUCTURAL, BEHAVIORAL, PRINCIPLE, ARCHITECTURAL.
-- **Search & Filter**: Real-time filtering by class name, file path, or pattern keyword.
-- **Evidence Trail**: Heuristic scores, explanations, and exact source code file:line navigation.
 
 ---
 
 ## 🧪 Testing & Code Quality
 
 ```bash
-# Run 100% full test suite with coverage (43 tests)
+# Run full test suite with coverage (48 tests, 100% pass)
 uv run pytest --cov=pattern_detector -v
 
 # Run Ruff linter and code formatter
@@ -221,4 +299,4 @@ uv run mypy src/pattern_detector
 ---
 
 ## 📄 License
-MIT License. Developed for advanced static code analysis and architecture verification.
+MIT License. Developed for advanced static code analysis, architecture verification, and data flow modeling.
