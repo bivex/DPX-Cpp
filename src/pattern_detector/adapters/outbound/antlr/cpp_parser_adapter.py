@@ -257,8 +257,16 @@ class CppAntlrParserAdapter(ParserPort):
         return cleaned
 
     def parse_source(self, source_code: str, file_path: str = "") -> NamespaceModel:
-        # Fast path for large or macro-heavy files to prevent ANTLR ATN backtracking
-        if len(source_code) > 30_000 or "#define" in source_code or "#ifdef" in source_code:
+        # Fast path for large, templated, or macro-heavy files to prevent ANTLR ATN backtracking
+        if (
+            len(source_code) > 10_000
+            or "#define" in source_code
+            or "#ifdef" in source_code
+            or "#if" in source_code
+            or "__declspec" in source_code
+            or "__attribute__" in source_code
+            or "template" in source_code
+        ):
             return self._fallback_regex_parse(source_code, file_path)
 
         cleaned_code = self._clean_source(source_code)
@@ -301,7 +309,35 @@ class CppAntlrParserAdapter(ParserPort):
         cleaned = re.sub(r"//[^\n]*", "", cleaned)
         cleaned = re.sub(r"#\s*(?:pragma|define|undef|ifdef|ifndef|endif|else|elif|line)\b[^\n]*", "", cleaned)
 
-        pattern = re.compile(r"\b(?:class|struct)\s+(?:[A-Za-z0-9_]+\s+)?([A-Za-z0-9_]+)(?:\s*:\s*([^{]+))?\s*\{")
+        CONTROL_KEYWORDS = {
+            "if",
+            "for",
+            "while",
+            "switch",
+            "catch",
+            "return",
+            "sizeof",
+            "decltype",
+            "typeid",
+            "dynamic_cast",
+            "static_cast",
+            "reinterpret_cast",
+            "const_cast",
+            "alignof",
+            "lock",
+            "throw",
+            "case",
+            "new",
+            "delete",
+            "final",
+            "override",
+            "const",
+            "explicit",
+        }
+
+        pattern = re.compile(
+            r"\b(?:class|struct)\s+(?:(?:alignas\([^)]*\)|[A-Z0-9_]+_API|[A-Z0-9_]+_EXPORT|SPDLOG_API)\s+)?([A-Za-z0-9_]+)(?:\s+final)?(?:\s*:\s*([^{]+))?\s*\{"
+        )
         for cm in pattern.finditer(cleaned):
             c_name = cm.group(1)
             c_bases_raw = cm.group(2) or ""
@@ -333,11 +369,14 @@ class CppAntlrParserAdapter(ParserPort):
             # Extract fields
             for f_match in re.finditer(r"\b(?:std::(?:shared_ptr|unique_ptr)<[^>]+>|[a-zA-Z0-9_:]+)\s+([a-zA-Z0-9_]+)\s*;", c_body):
                 f_name = f_match.group(1)
-                if f_name not in ("default", "delete", "override", "const", "return", "auto"):
+                if f_name not in ("default", "delete", "override", "const", "return", "auto") and f_name not in CONTROL_KEYWORDS:
                     fields.append(f_name)
 
             for m in re.finditer(r"\b([A-Za-z0-9_~]+)\s*\(([^)]*)\)\s*(?:const)?\s*(?:noexcept)?\s*(?:final)?\s*(?:override)?\s*(?:=\s*0|;|\{)", c_body):
                 m_name = m.group(1)
+                if m_name in CONTROL_KEYWORDS or m_name in fields:
+                    continue
+
                 m_params_raw = m.group(2) or ""
                 is_pure = "= 0" in m.group(0)
                 qualified_name = f"{c_name}::{m_name}"
