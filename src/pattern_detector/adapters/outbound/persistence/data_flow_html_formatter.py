@@ -53,11 +53,12 @@ class DataFlowHtmlFormatter:
         page_title = f"🌲 Data Flow Analysis Dashboard ({report.direction.value})"
         
         graphs_dict: dict[str, Any] = {}
-        for s in report.summaries:
+        sorted_summaries = sorted(report.summaries, key=lambda x: (x.downstream_reach, len(x.readers)), reverse=True)
+        for s in sorted_summaries[:100]:
             if s.graph:
                 graphs_dict[s.name] = self._prepare_vis_graph(s.graph)
 
-        initial_root = report.summaries[0].name if report.summaries else ""
+        initial_root = sorted_summaries[0].name if sorted_summaries else ""
         all_graphs_json = json.dumps(graphs_dict)
         variables_summary_json = json.dumps([
             {

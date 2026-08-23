@@ -45,3 +45,9 @@ temp*/
 *.swp
 *.swo
 .DS_Store
+
+# Generated reports
+reports/
+*.html
+*.dot
+

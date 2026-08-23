@@ -66,6 +66,7 @@ class DataFlowGraph:
     variant: DataFlowVariant = DataFlowVariant.SIMPLIFIED
     nodes: dict[str, DataFlowNode] = field(default_factory=dict)
     edges: list[DataFlowEdge] = field(default_factory=list)
+    max_depth: int = 0
     _edge_set: set[tuple[str, str, str]] = field(default_factory=set, repr=False)
 
     def add_node(

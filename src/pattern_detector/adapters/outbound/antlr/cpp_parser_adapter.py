@@ -342,23 +342,27 @@ class CppAntlrParserAdapter(ParserPort):
         return cleaned
 
     def parse_source(self, source_code: str, file_path: str = "") -> NamespaceModel:
-        # Fast path for large, templated, or macro-heavy files to prevent ANTLR ATN backtracking
+        # Fast path for large, templated, GUI, or macro-heavy files to prevent ANTLR ATN backtracking
         if (
-            len(source_code) > 10_000
+            len(source_code) > 3_000
             or "#define" in source_code
             or "#ifdef" in source_code
             or "#if" in source_code
             or "__declspec" in source_code
             or "__attribute__" in source_code
             or "template" in source_code
+            or "::" in source_code
         ):
             return self._fallback_regex_parse(source_code, file_path)
 
         cleaned_code = self._clean_source(source_code)
+        cleaned_code = re.sub(r"\bnamespace\s+([a-zA-Z0-9_]+)::([a-zA-Z0-9_:]+)", r"namespace \1_\2", cleaned_code)
         input_stream = InputStream(cleaned_code)
         lexer = CPP14Lexer(input_stream)
+        lexer.removeErrorListeners()
         token_stream = CommonTokenStream(lexer)
         parser = CPP14Parser(token_stream)
+        parser.removeErrorListeners()
         parser._errHandler = BailErrorStrategy()
 
         try:

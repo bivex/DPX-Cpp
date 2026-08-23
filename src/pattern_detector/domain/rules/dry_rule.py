@@ -31,8 +31,14 @@ class DryRule(BasePatternRule):
         body_map: dict[str, list[tuple[str, Any]]] = {}
 
         for fn in model.all_functions():
-            simple_name = fn.name.split(".")[-1]
-            if simple_name in ("toString", "hashCode", "equals", "compareTo"):
+            simple_name = fn.name.split("::")[-1].split(".")[-1]
+            if (
+                simple_name.startswith("get")
+                or simple_name.startswith("set")
+                or simple_name.startswith("is")
+                or simple_name.startswith("has")
+                or simple_name in ("toString", "hashCode", "equals", "compareTo")
+            ):
                 continue
             body = (fn.body_text or "").strip()
             # Normalize whitespace and comments

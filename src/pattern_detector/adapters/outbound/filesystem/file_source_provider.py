@@ -26,14 +26,29 @@ class FileSourceProvider(SourceProviderPort):
                 pass
             return sources
 
+        IGNORED_DIRS = {
+            "build",
+            "cmake-build-debug",
+            "cmake-build-release",
+            ".git",
+            "node_modules",
+            "dist",
+            "out",
+            ".venv",
+            "venv",
+            "__pycache__",
+        }
+
         for file_path in target.rglob("*"):
             if file_path.is_file() and file_path.suffix in valid_exts:
                 try:
                     rel_parts = file_path.relative_to(target).parts
                 except ValueError:
                     rel_parts = file_path.parts
-                # Skip hidden files/directories relative to root target
-                if any(part.startswith(".") and part not in (".", "..") for part in rel_parts):
+                # Skip hidden files/directories and build artifact directories
+                if any(part.startswith(".") and part not in (".", "..") for part in rel_parts) or any(
+                    part in IGNORED_DIRS for part in rel_parts
+                ):
                     continue
                 try:
                     content = file_path.read_text(encoding="utf-8", errors="replace")

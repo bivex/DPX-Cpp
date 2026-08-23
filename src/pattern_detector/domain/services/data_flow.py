@@ -41,14 +41,20 @@ class DataFlowService:
             is_root=True,
         )
 
-        # Pre-build inverted index for O(1) reader lookups
-        readers_by_var: dict[str, list] = defaultdict(list)
-        for fn in model.all_functions():
-            for r_var in fn.reads_variables:
-                readers_by_var[r_var].append(fn)
-            # Fallback for dynamic variables in body text if not in parsed reads
-            if not fn.reads_variables and root_variable in fn.body_text:
-                readers_by_var[root_variable].append(fn)
+        # Pre-build / retrieve cached inverted index for O(1) reader lookups
+        if not hasattr(model, "_readers_by_var"):
+            readers_by_var: dict[str, list] = defaultdict(list)
+            for fn in model.all_functions():
+                for r_var in fn.reads_variables:
+                    readers_by_var[r_var].append(fn)
+            model._readers_by_var = readers_by_var  # type: ignore[attr-defined]
+        readers_by_var = model._readers_by_var  # type: ignore[attr-defined]
+
+        # Fallback for dynamic variables in body text if not in parsed reads
+        if not readers_by_var.get(root_variable):
+            for fn in model.all_functions():
+                if root_variable in fn.body_text:
+                    readers_by_var[root_variable].append(fn)
 
         visited_vars: set[str] = set()
         queue: deque[tuple[str, int]] = deque([(root_variable, 0)])
@@ -57,6 +63,7 @@ class DataFlowService:
             var_name, depth = queue.popleft()
             if depth >= max_depth:
                 continue
+            graph.max_depth = max(graph.max_depth, depth)
 
             if var_name in visited_vars and depth > 0:
                 continue
@@ -116,11 +123,14 @@ class DataFlowService:
             is_root=True,
         )
 
-        # Pre-build inverted index for O(1) writer lookups
-        writers_by_var: dict[str, list] = defaultdict(list)
-        for fn in model.all_functions():
-            for w_var in fn.writes_variables + fn.modifies_variables:
-                writers_by_var[w_var].append(fn)
+        # Pre-build / retrieve cached inverted index for O(1) writer lookups
+        if not hasattr(model, "_writers_by_var"):
+            writers_by_var: dict[str, list] = defaultdict(list)
+            for fn in model.all_functions():
+                for w_var in fn.writes_variables + fn.modifies_variables:
+                    writers_by_var[w_var].append(fn)
+            model._writers_by_var = writers_by_var  # type: ignore[attr-defined]
+        writers_by_var = model._writers_by_var  # type: ignore[attr-defined]
 
         visited_vars: set[str] = set()
         queue: deque[tuple[str, int]] = deque([(root_variable, 0)])
@@ -129,6 +139,7 @@ class DataFlowService:
             var_name, depth = queue.popleft()
             if depth >= max_depth:
                 continue
+            graph.max_depth = max(graph.max_depth, depth)
 
             if var_name in visited_vars and depth > 0:
                 continue
@@ -280,20 +291,7 @@ class DataFlowService:
 
             reach = len(graph.nodes) - 1  # exclude root itself
             total_edges_sum += len(graph.edges)
-
-            # Compute max depth in DAG
-            adj: dict[str, list[str]] = {}
-            for e in graph.edges:
-                adj.setdefault(e.from_id, []).append(e.to_id)
-
-            def get_depth(u: str, visited: set[str]) -> int:
-                max_d = 0
-                for v in adj.get(u, []):
-                    if v not in visited:
-                        max_d = max(max_d, 1 + get_depth(v, visited | {v}))
-                return max_d
-
-            m_depth = get_depth(var_name, {var_name})
+            m_depth = graph.max_depth
 
             # Determine impact level
             if reach >= 6 or m_depth >= 4:
