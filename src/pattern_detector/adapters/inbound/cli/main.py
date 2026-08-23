@@ -190,6 +190,14 @@ def dataflow(
             help="Output Mermaid.js graph code.",
         ),
     ] = False,
+    html_output: Annotated[
+        str | None,
+        typer.Option(
+            "--html",
+            "-H",
+            help="Export interactive HTML report using Vis.js visualizer.",
+        ),
+    ] = None,
     json_output: Annotated[
         str | None,
         typer.Option(
@@ -220,9 +228,17 @@ def dataflow(
         )
         console.print(summary_report.to_rich_table())
 
+        if html_output:
+            html_content = container.data_flow_html_formatter.format_summary_report(summary_report)
+            Path(html_output).parent.mkdir(parents=True, exist_ok=True)
+            with open(html_output, "w", encoding="utf-8") as f:
+                f.write(html_content)
+            console.print(f"\n[bold green]✔[/bold green] Interactive HTML report exported to: [underline]{html_output}[/underline]")
+
         if json_output:
             import json
 
+            Path(json_output).parent.mkdir(parents=True, exist_ok=True)
             with open(json_output, "w", encoding="utf-8") as f:
                 json.dump(summary_report.to_json(), f, indent=2)
             console.print(f"\n[bold green]✔[/bold green] Data flow summary JSON exported to: [underline]{json_output}[/underline]")
@@ -247,9 +263,17 @@ def dataflow(
             title += f" ➔ '{to_entity}'"
         console.print(Panel(graph.to_rich_tree(), title=f"📊 [bold cyan]{title}[/bold cyan]", border_style="bright_blue"))
 
+    if html_output:
+        html_content = container.data_flow_html_formatter.format_single_graph(graph)
+        Path(html_output).parent.mkdir(parents=True, exist_ok=True)
+        with open(html_output, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        console.print(f"\n[bold green]✔[/bold green] Interactive HTML report exported to: [underline]{html_output}[/underline]")
+
     if json_output:
         import json
 
+        Path(json_output).parent.mkdir(parents=True, exist_ok=True)
         with open(json_output, "w", encoding="utf-8") as f:
             json.dump(graph.to_json(), f, indent=2)
         console.print(f"\n[bold green]✔[/bold green] Data flow graph JSON exported to: [underline]{json_output}[/underline]")

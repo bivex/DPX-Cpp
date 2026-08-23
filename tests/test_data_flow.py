@@ -185,3 +185,31 @@ def test_data_flow_all_variables_summary_matrix(tmp_path: Path) -> None:
     assert result_json.exit_code == 0
     assert json_dest.exists()
 
+
+def test_data_flow_html_report_export(tmp_path: Path) -> None:
+    runner = CliRunner()
+    sample_file = tmp_path / "data_flow_html_sample.cpp"
+    sample_file.write_text(SAMPLE_CPP)
+
+    # 1. Test single-variable HTML export
+    html_single = tmp_path / "single_flow.html"
+    res_single = runner.invoke(
+        app, ["dataflow", "transformedData", "--path", str(sample_file), "--html", str(html_single)]
+    )
+    assert res_single.exit_code == 0
+    assert html_single.exists()
+    content_single = html_single.read_text(encoding="utf-8")
+    assert "vis.Network" in content_single
+    assert "transformedData" in content_single
+
+    # 2. Test batch summary HTML export
+    html_all = tmp_path / "all_flows.html"
+    res_all = runner.invoke(app, ["dataflow", "--all", "--path", str(sample_file), "--html", str(html_all)])
+    assert res_all.exit_code == 0
+    assert html_all.exists()
+    content_all = html_all.read_text(encoding="utf-8")
+    assert "vis.Network" in content_all
+    assert "auxData" in content_all
+    assert "reportValue" in content_all
+
+

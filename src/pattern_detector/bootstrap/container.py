@@ -6,6 +6,7 @@ from pattern_detector.adapters.outbound.antlr import CppAntlrParserAdapter
 from pattern_detector.adapters.outbound.filesystem import FileSourceProvider
 from pattern_detector.adapters.outbound.persistence import (
     ConsoleReportFormatter,
+    DataFlowHtmlFormatter,
     HtmlReportFormatter,
     HtmlResultRepository,
     JsonResultRepository,
@@ -42,6 +43,7 @@ class Container:
         report_formatter: ReportFormatterPort | None = None,
         html_formatter: ReportFormatterPort | None = None,
         markdown_formatter: ReportFormatterPort | None = None,
+        data_flow_html_formatter: DataFlowHtmlFormatter | None = None,
         detector_service: PatternDetectorService | None = None,
     ) -> None:
         # Outbound Driven Adapters
@@ -49,6 +51,7 @@ class Container:
         self.parser: ParserPort = parser or CppAntlrParserAdapter()
 
         self.html_formatter: ReportFormatterPort = html_formatter or HtmlReportFormatter()
+        self.data_flow_html_formatter: DataFlowHtmlFormatter = data_flow_html_formatter or DataFlowHtmlFormatter()
         self.markdown_formatter: ReportFormatterPort = markdown_formatter or MarkdownReportFormatter()
         self.report_formatter: ReportFormatterPort = report_formatter or ConsoleReportFormatter()
 
