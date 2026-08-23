@@ -8,6 +8,7 @@ from pattern_detector.adapters.outbound.persistence.file_result_repositories imp
 )
 from pattern_detector.adapters.outbound.persistence.html_report_formatter import HtmlReportFormatter
 from pattern_detector.adapters.outbound.persistence.json_result_repository import JsonResultRepository
+from pattern_detector.adapters.outbound.persistence.llm_report_formatter import LlmReportFormatter
 from pattern_detector.adapters.outbound.persistence.markdown_report_formatter import MarkdownReportFormatter
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
     "HtmlReportFormatter",
     "HtmlResultRepository",
     "JsonResultRepository",
+    "LlmReportFormatter",
     "MarkdownReportFormatter",
     "MarkdownResultRepository",
 ]

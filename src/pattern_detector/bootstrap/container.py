@@ -10,6 +10,7 @@ from pattern_detector.adapters.outbound.persistence import (
     HtmlReportFormatter,
     HtmlResultRepository,
     JsonResultRepository,
+    LlmReportFormatter,
     MarkdownReportFormatter,
     MarkdownResultRepository,
 )
@@ -44,6 +45,7 @@ class Container:
         html_formatter: ReportFormatterPort | None = None,
         markdown_formatter: ReportFormatterPort | None = None,
         data_flow_html_formatter: DataFlowHtmlFormatter | None = None,
+        llm_formatter: LlmReportFormatter | None = None,
         detector_service: PatternDetectorService | None = None,
     ) -> None:
         # Outbound Driven Adapters
@@ -52,6 +54,7 @@ class Container:
 
         self.html_formatter: ReportFormatterPort = html_formatter or HtmlReportFormatter()
         self.data_flow_html_formatter: DataFlowHtmlFormatter = data_flow_html_formatter or DataFlowHtmlFormatter()
+        self.llm_formatter: LlmReportFormatter = llm_formatter or LlmReportFormatter()
         self.markdown_formatter: ReportFormatterPort = markdown_formatter or MarkdownReportFormatter()
         self.report_formatter: ReportFormatterPort = report_formatter or ConsoleReportFormatter()
 

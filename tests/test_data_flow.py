@@ -213,3 +213,24 @@ def test_data_flow_html_report_export(tmp_path: Path) -> None:
     assert "reportValue" in content_all
 
 
+def test_data_flow_llm_output(tmp_path: Path) -> None:
+    runner = CliRunner()
+    sample_file = tmp_path / "data_flow_llm_sample.cpp"
+    sample_file.write_text(SAMPLE_CPP)
+
+    # 1. Single variable --llm
+    res_single = runner.invoke(app, ["dataflow", "transformedData", "--path", str(sample_file), "--llm"])
+    assert res_single.exit_code == 0
+    assert '<data_flow_analysis direction="OUT" root_variable="transformedData">' in res_single.stdout
+    assert "<direct_readers" in res_single.stdout
+    assert "<propagation_paths>" in res_single.stdout
+
+    # 2. All variables --llm
+    res_all = runner.invoke(app, ["dataflow", "--all", "--path", str(sample_file), "--llm"])
+    assert res_all.exit_code == 0
+    assert "<data_flow_project_summary" in res_all.stdout
+    assert 'name="transformedData"' in res_all.stdout
+    assert 'name="runningTotal"' in res_all.stdout
+
+
+

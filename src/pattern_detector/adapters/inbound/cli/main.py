@@ -70,6 +70,14 @@ def scan(
             help="Export results to a Markdown report file.",
         ),
     ] = None,
+    llm: Annotated[
+        bool,
+        typer.Option(
+            "--llm",
+            "-L",
+            help="Output token-efficient structured XML/Markdown context optimized for LLMs and AI coding agents.",
+        ),
+    ] = False,
     verbose: Annotated[
         bool,
         typer.Option(
@@ -79,7 +87,7 @@ def scan(
         ),
     ] = False,
 ) -> None:
-    """Scan a Clojure source code file or directory for software design patterns."""
+    """Scan a C++ source code file or directory for software design patterns."""
     target_path = str(Path(path).resolve())
 
     container = create_container()
@@ -93,6 +101,11 @@ def scan(
         output_markdown_path=markdown_output,
         verbose=verbose,
     )
+
+    if llm:
+        report = scanner.scan_path(target_path, options=options)
+        print(container.llm_formatter.format_scan_report(report))
+        return
 
     with console.status(f"[cyan]Scanning [bold]{path}[/bold] using ANTLR parser & Domain Rules...[/cyan]"):
         report = scanner.scan_path(target_path, options=options)
@@ -190,6 +203,14 @@ def dataflow(
             help="Output Mermaid.js graph code.",
         ),
     ] = False,
+    llm: Annotated[
+        bool,
+        typer.Option(
+            "--llm",
+            "-L",
+            help="Output token-efficient structured XML/text context for LLMs and AI agents.",
+        ),
+    ] = False,
     html_output: Annotated[
         str | None,
         typer.Option(
@@ -226,6 +247,11 @@ def dataflow(
             file_filter=file_filter,
             max_depth=max_depth,
         )
+
+        if llm:
+            print(container.llm_formatter.format_data_flow_summary(summary_report))
+            return
+
         console.print(summary_report.to_rich_table())
 
         if html_output:
@@ -253,6 +279,10 @@ def dataflow(
         to_entity=to_entity,
         max_depth=max_depth,
     )
+
+    if llm:
+        print(container.llm_formatter.format_data_flow_graph(graph))
+        return
 
     if mermaid:
         console.print(f"[bold green]Mermaid Diagram for Data Flow ({graph.direction.value}):[/bold green]\n")

@@ -6,7 +6,7 @@
 [![C++](https://img.shields.io/badge/C%2B%2B-14%20%2F%2017%20%2020%20%2F%2023-blue.svg?style=flat&logo=cplusplus)](https://en.cppreference.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2B%20DDD-brightgreen.svg?style=flat)]()
 [![ANTLR](https://img.shields.io/badge/Parser-ANTLR%204.13.2-red.svg?style=flat)](https://www.antlr.org/)
-[![Tests](https://img.shields.io/badge/Tests-50%20passed%20(100%25)-success.svg?style=flat)]()
+[![Tests](https://img.shields.io/badge/Tests-52%20passed%20(100%25)-success.svg?style=flat)]()
 [![Code Style](https://img.shields.io/badge/Linter-Ruff%20%26%20Mypy%20Strict-black.svg?style=flat)]()
 [![Rules](https://img.shields.io/badge/Supported%20Rules-35%20(23%20GoF%20%2B%2010%20SOLID%2FPrinciples%20%2B%202%20Arch)-orange.svg?style=flat)]()
 [![Data Flow](https://img.shields.io/badge/Data%20Flow-Understand%20Parity%20(Out%20%2F%20In)-purple.svg?style=flat)]()
@@ -233,26 +233,30 @@ uv run pattern-detector scan path/to/cpp/project --html reports/dashboard.html
 # 3. Export GitHub-Flavored Markdown Report
 uv run pattern-detector scan path/to/cpp/project --markdown reports/report.md
 
-# 4. Analyze Data Flow for ALL variables in a file or project (Summary Matrix)
+# 4. Generate Token-Efficient Context for LLMs & AI Prompts (--llm)
+uv run pattern-detector scan path/to/cpp/project --llm
+uv run pattern-detector dataflow --all --path ./src --llm
+
+# 5. Analyze Data Flow for ALL variables in a file or project (Summary Matrix)
 uv run pattern-detector dataflow --all --path ./src/MyFile.cpp
 
-# 5. Generate Interactive Dark-Mode Data Flow HTML Dashboard (Powered by Vis.js Network)
+# 6. Generate Interactive Dark-Mode Data Flow HTML Dashboard (Powered by Vis.js Network)
 uv run pattern-detector dataflow --all --path ./src --html reports/dataflow_dashboard.html
 
-# 6. Trace Forward Data Flow for a specific variable (Data Flow Out)
+# 7. Trace Forward Data Flow for a specific variable (Data Flow Out)
 uv run pattern-detector dataflow transformedData --path ./src --html reports/flow_transformedData.html
 
-# 7. Trace Backward Data Flow Slice (Data Flow In)
+# 8. Trace Backward Data Flow Slice (Data Flow In)
 uv run pattern-detector dataflow reportValue --path ./src --direction in
 
-# 8. Trace Relationship Path connecting two entities
+# 9. Trace Relationship Path connecting two entities
 uv run pattern-detector dataflow transformedData --to reportValue --path ./src
 
-# 9. Export Data Flow Graph to Mermaid.js or JSON
+# 10. Export Data Flow Graph to Mermaid.js or JSON
 uv run pattern-detector dataflow transformedData --mermaid
 uv run pattern-detector dataflow --all --path ./src --json dataflow_summary.json
 
-# 10. List all 35 catalog rules
+# 11. List all 35 catalog rules
 uv run pattern-detector rules
 ```
 

@@ -99,3 +99,26 @@ def test_cli_html_and_markdown_export() -> None:
 
         assert Path(html_out).exists()
         assert Path(md_out).exists()
+
+
+def test_llm_report_formatter() -> None:
+    from pattern_detector.adapters.outbound.persistence.llm_report_formatter import LlmReportFormatter
+    from typer.testing import CliRunner
+    from pattern_detector.adapters.inbound.cli.main import app
+
+    formatter = LlmReportFormatter()
+    report = _create_sample_report()
+    rendered = formatter.format_scan_report(report)
+
+    assert "<codebase_architecture_analysis>" in rendered
+    assert "<design_patterns>" in rendered
+    assert 'type="observer"' in rendered
+    assert 'target="system-state"' in rendered
+
+    # Test CLI --llm flag
+    runner = CliRunner()
+    examples_dir = str(Path(__file__).parent.parent / "examples" / "cpp_samples")
+    result = runner.invoke(app, ["scan", examples_dir, "--llm"])
+    assert result.exit_code == 0
+    assert "<codebase_architecture_analysis>" in result.stdout
+
