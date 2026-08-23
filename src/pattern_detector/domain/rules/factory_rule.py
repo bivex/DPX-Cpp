@@ -92,4 +92,44 @@ class FactoryPatternRule(BasePatternRule):
                     )
                 )
 
+        # 2. OOP Factory Method Pattern in C++ (Creator / Factory with virtual creation methods)
+        for proto in model.all_protocols():
+            name_lower = proto.name.lower()
+            if any(k in name_lower for k in ("creator", "factory", "provider")) and "builder" not in name_lower:
+                creation_methods = [
+                    m
+                    for m in proto.methods
+                    if m.name.lower().startswith(("create", "make", "new"))
+                ]
+                rec_impls = model.find_records_implementing(proto.name)
+                if creation_methods or rec_impls:
+                    evidences = [
+                        self.evidence(
+                            description=f"Protocol '{proto.name}' defines Factory Method creation contract: {', '.join(m.name for m in creation_methods or proto.methods)}",
+                            weight=0.55,
+                            location=proto.location,
+                            code_suffix="FACTORY_METHOD_PROTOCOL",
+                        )
+                    ]
+                    for rec in rec_impls:
+                        evidences.append(
+                            self.evidence(
+                                description=f"Concrete creator '{rec.name}' overrides factory method(s) to produce specific products",
+                                weight=0.35,
+                                location=rec.location,
+                                code_suffix="CONCRETE_CREATOR_IMPL",
+                            )
+                        )
+                    detections.append(
+                        self.create_detection(
+                            target_name=proto.name,
+                            target_kind="factory_method_protocol",
+                            evidences=evidences,
+                            primary_location=proto.location,
+                            related_locations=[r.location for r in rec_impls],
+                            summary=f"Factory Method pattern: '{proto.name}' declares factory creation contract implemented by {len(rec_impls)} concrete creator(s)",
+                            base_score=0.30,
+                        )
+                    )
+
         return detections

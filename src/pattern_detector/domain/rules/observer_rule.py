@@ -161,21 +161,24 @@ class ObserverPatternRule(BasePatternRule):
                     )
                 )
 
+        def is_obs_collection(field_name: str) -> bool:
+            f = field_name.lower()
+            if any(f.endswith(suffix) for suffix in ("_state", "_id", "_name", "_count", "_type", "_ptr", "_val", "_flag", "_status")):
+                return False
+            return any(k in f for k in ("observers", "listeners", "subscribers", "views", "watchers", "observer_list", "listener_list"))
+
         # Subject classes managing observer lists
         for rec in model.all_records():
             name_lower = rec.name.lower()
-            has_obs_field = any(
-                k in f.lower()
-                for f in rec.fields
-                for k in ("observer", "listener", "subscriber", "views", "listeners", "watchers")
-            )
+            obs_fields = [f for f in rec.fields if is_obs_collection(f)]
+            has_obs_field = len(obs_fields) > 0
             has_obs_methods = any(
                 m.name.lower().startswith(("attach", "detach", "register", "unregister", "subscribe", "notify"))
                 for m in rec.methods
             )
-            if "subject" in name_lower or has_obs_field or has_obs_methods:
+            if has_obs_field or (has_obs_methods and "subject" in name_lower):
                 evidences = []
-                if "subject" in name_lower:
+                if "subject" in name_lower or "observable" in name_lower:
                     evidences.append(
                         self.evidence(
                             description=f"Class '{rec.name}' represents Observable Subject managing event subscribers",
@@ -187,7 +190,7 @@ class ObserverPatternRule(BasePatternRule):
                 if has_obs_field:
                     evidences.append(
                         self.evidence(
-                            description=f"Maintains list/collection of observers: {', '.join([f for f in rec.fields if any(k in f.lower() for k in ('observer', 'listener', 'subscriber', 'views', 'listeners', 'watchers'))])}",
+                            description=f"Maintains list/collection of observers: {', '.join(obs_fields)}",
                             weight=0.40,
                             location=rec.location,
                             code_suffix="OBSERVER_COLLECTION_FIELD",
@@ -202,7 +205,7 @@ class ObserverPatternRule(BasePatternRule):
                             code_suffix="OBSERVER_MANAGEMENT_METHODS",
                         )
                     )
-                if len(evidences) >= 2 or (len(evidences) >= 1 and "subject" in name_lower):
+                if evidences:
                     detections.append(
                         self.create_detection(
                             target_name=rec.name,

@@ -121,8 +121,14 @@ class PatternDetectorService:
                 ):
                     continue
 
-            # Abstract Factory vs Builder deduplication
-            if d.pattern_type == PatternType.ABSTRACT_FACTORY and "builder" in target_lower:
+            # Abstract Factory vs Builder / Factory Method deduplication
+            if d.pattern_type == PatternType.ABSTRACT_FACTORY and ("builder" in target_lower or target_lower == "creator"):
+                continue
+
+            # Factory Method deduplication against Abstract Factory
+            if d.pattern_type == PatternType.FACTORY_METHOD and (
+                PatternType.ABSTRACT_FACTORY in other_patterns or "abstract" in target_lower
+            ):
                 continue
 
             # Command vs Bridge Abstraction / Composite deduplication

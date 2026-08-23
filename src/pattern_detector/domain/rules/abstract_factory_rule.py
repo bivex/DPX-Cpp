@@ -25,10 +25,10 @@ class AbstractFactoryRule(BasePatternRule):
 
         for proto in model.all_protocols():
             name_lower = proto.name.lower()
-            if "builder" in name_lower:
+            if "builder" in name_lower or name_lower == "creator":
                 continue
 
-            is_factory_proto = "factory" in name_lower or "creator" in name_lower
+            is_factory_proto = "factory" in name_lower
 
             factory_methods = [
                 m
