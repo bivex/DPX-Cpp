@@ -9,6 +9,7 @@
 [![Tests](https://img.shields.io/badge/Tests-43%20passed%20(100%25)-success.svg?style=flat)]()
 [![Code Style](https://img.shields.io/badge/Linter-Ruff%20%26%20Mypy%20Strict-black.svg?style=flat)]()
 [![Rules](https://img.shields.io/badge/Supported%20Rules-35%20(23%20GoF%20%2B%2010%20SOLID%2FPrinciples%20%2B%202%20Arch)-orange.svg?style=flat)]()
+[![Template](https://img.shields.io/badge/GitHub-Template%20Repository-purple.svg?style=flat)]()
 
 ---
 
@@ -52,6 +53,7 @@ The system strictly follows **Domain-Driven Design (DDD)** and **Hexagonal Archi
                     │                    Driven Adapters                     │
                     │                                                        │
                     │   • ANTLR4 C++ Parser (CPP14Lexer.g4 / CPP14Parser.g4) │
+                    │   • Fast Brace-Balanced Macro-Tolerant AST Parser      │
                     │   • FileSystem Source Provider (.cpp, .hpp recursive)  │
                     │   • Interactive HTML Dashboard Formatter & Repository  │
                     │   • GitHub-Flavored Markdown Formatter & Repository    │
@@ -64,7 +66,7 @@ The system strictly follows **Domain-Driven Design (DDD)** and **Hexagonal Archi
 
 ## 📐 Catalog of 35 Supported Rules & Principles
 
-DPX-Cpp analyzes C++ codebases across **4 major categories**:
+DPX-Cpp analyzes C++ codebases across **5 major categories**:
 
 ### 1. 🏗 Creational Patterns (GoF)
 1. **Singleton**: Meyers' Singleton (`static T& getInstance() { static T inst; return inst; }`), deleted copy/move constructors, private constructors, static instance fields.
@@ -113,6 +115,27 @@ DPX-Cpp analyzes C++ codebases across **4 major categories**:
 
 ---
 
+## 🛡️ False-Positive Prevention & Precision
+
+DPX-Cpp implements specialized heuristic filters for modern idiomatic C++:
+
+* **DTO / POD Struct Whitelist:** Classes with getters/setters (`get*`, `set*`, `is*`, `has*`) are never misidentified as SRP God Objects.
+* **Standard Operators Excluded:** `operator==`, `operator!=`, `operator<` comparing members are ignored by OCP cascades.
+* **STL & Fluent API Excluded from LoD:** `std::string`, `std::optional`, `std::ranges`, `std::vector`, and fluent builders do not trigger Law of Demeter violations.
+* **Container Exemption in DIP:** Instantiations of STL containers (`std::vector`, `std::map`) and value objects are whitelisted.
+* **Trivial Forwarder Filtering in DRY:** 1-line getters, return statements, and default forwards are ignored by duplication detection.
+
+---
+
+## 🚀 Real-World Benchmarks
+
+| Project / Repository | Files | Scan Duration | Identified Patterns & Principles |
+| :--- | :---: | :---: | :--- |
+| **[`JakubVojvoda/design-patterns-cpp`](https://github.com/JakubVojvoda/design-patterns-cpp)** | 24 | **6.21 s** | Abstract Factory, Composite, Observer, Strategy, Singleton, Chain of Resp., Flyweight, ISP Role Interfaces |
+| **[`gabime/spdlog`](https://github.com/gabime/spdlog) (`spdlog/sinks`)** | 28 | **0.058 s** | DIP Injected Abstractions, RAII Lifecycle, Cross-Namespace Cycles (`global ⇄ sinks`), SRP Metrics |
+
+---
+
 ## ⚡ Quick Start
 
 ### Installation with `uv`
@@ -149,6 +172,29 @@ uv run pattern-detector info
 
 ---
 
+## 💻 Python SDK API Usage
+
+You can also integrate DPX-Cpp programmatically into CI/CD pipelines or Python tools:
+
+```python
+from pattern_detector.bootstrap.container import create_container
+from pattern_detector.ports.inbound import ScanOptions
+
+container = create_container()
+scanner = container.get_scanner()
+
+options = ScanOptions(
+    min_confidence=0.70,
+    output_html_path="reports/dashboard.html",
+    output_json_path="reports/report.json",
+)
+
+report = scanner.scan_path("path/to/cpp/project", options=options)
+print(f"Scanned {report.scanned_files_count} files, found {report.total_detections_count} patterns.")
+```
+
+---
+
 ## 📊 Interactive HTML Dashboard
 
 DPX-Cpp exports a standalone, dark-themed HTML report featuring:
@@ -162,7 +208,7 @@ DPX-Cpp exports a standalone, dark-themed HTML report featuring:
 ## 🧪 Testing & Code Quality
 
 ```bash
-# Run 100% full test suite with coverage
+# Run 100% full test suite with coverage (43 tests)
 uv run pytest --cov=pattern_detector -v
 
 # Run Ruff linter and code formatter
