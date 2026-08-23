@@ -130,11 +130,11 @@ def list_rules() -> None:
 @app.command(name="dataflow")
 def dataflow(
     target: Annotated[
-        str,
+        str | None,
         typer.Argument(
-            help="Target variable, field, or object to trace forward or backward.",
+            help="Target variable, field, or object. If omitted or '--all', analyzes ALL variables in file/project.",
         ),
-    ],
+    ] = None,
     path: Annotated[
         str,
         typer.Option(
@@ -143,6 +143,22 @@ def dataflow(
             help="File or directory path containing C++ source code.",
         ),
     ] = ".",
+    all_vars: Annotated[
+        bool,
+        typer.Option(
+            "--all",
+            "-a",
+            help="Analyze and summarize data flow for ALL variables in the file/project.",
+        ),
+    ] = False,
+    file_filter: Annotated[
+        str | None,
+        typer.Option(
+            "--file",
+            "-f",
+            help="Filter analysis to variables inside a specific source file.",
+        ),
+    ] = None,
     direction: Annotated[
         str,
         typer.Option(
@@ -179,7 +195,7 @@ def dataflow(
         typer.Option(
             "--json",
             "-j",
-            help="Export graph data to a JSON file.",
+            help="Export graph or summary report data to a JSON file.",
         ),
     ] = None,
     max_depth: Annotated[
@@ -190,10 +206,29 @@ def dataflow(
         ),
     ] = 15,
 ) -> None:
-    """Trace forward (Data Flow Out) or backward (Data Flow In) propagation graph for an entity."""
+    """Trace forward (Data Flow Out) or backward (Data Flow In) propagation graph for one or ALL variables."""
     target_path = str(Path(path).resolve())
     container = create_container()
 
+    # If no target specified or --all requested: Analyze ALL variables
+    if target is None or all_vars:
+        summary_report = container.scanning_service.analyze_all_data_flows(
+            target_path=target_path,
+            direction=direction,
+            file_filter=file_filter,
+            max_depth=max_depth,
+        )
+        console.print(summary_report.to_rich_table())
+
+        if json_output:
+            import json
+
+            with open(json_output, "w", encoding="utf-8") as f:
+                json.dump(summary_report.to_json(), f, indent=2)
+            console.print(f"\n[bold green]✔[/bold green] Data flow summary JSON exported to: [underline]{json_output}[/underline]")
+        return
+
+    # Single variable flow analysis
     graph = container.scanning_service.analyze_data_flow(
         target_path=target_path,
         target_entity=target,
@@ -214,6 +249,7 @@ def dataflow(
 
     if json_output:
         import json
+
         with open(json_output, "w", encoding="utf-8") as f:
             json.dump(graph.to_json(), f, indent=2)
         console.print(f"\n[bold green]✔[/bold green] Data flow graph JSON exported to: [underline]{json_output}[/underline]")

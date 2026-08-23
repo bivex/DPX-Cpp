@@ -1,11 +1,18 @@
+"""Data Flow Analysis Service (SciTools Understand Parity)."""
+
+from __future__ import annotations
+
 from collections import defaultdict, deque
+from typing import Any
 
 from pattern_detector.domain.code_model import CodeModel
 from pattern_detector.domain.data_flow import (
     DataFlowDirection,
     DataFlowGraph,
+    DataFlowSummaryReport,
     DataFlowVariant,
     NodeKind,
+    VariableFlowSummary,
 )
 
 
@@ -215,3 +222,105 @@ class DataFlowService:
                 filtered_graph.add_edge(edge.from_id, edge.to_id, edge.kind, edge.location)
 
         return filtered_graph
+
+    def analyze_all_variables(
+        self,
+        model: CodeModel,
+        target_path: str = "",
+        direction: DataFlowDirection = DataFlowDirection.OUT,
+        file_filter: str | None = None,
+        max_depth: int = 15,
+    ) -> DataFlowSummaryReport:
+        """Analyze data flow for all discovered variables in the model or specific file."""
+        from pattern_detector.domain.data_flow import DataFlowSummaryReport, VariableFlowSummary
+
+        vars_map: dict[str, Any] = {}
+        for s in model.all_states():
+            if file_filter and s.location and file_filter not in s.location.file_path:
+                continue
+            vars_map[s.name] = s.location
+
+        for r in model.all_records():
+            if file_filter and r.location and file_filter not in r.location.file_path:
+                continue
+            for f in r.fields:
+                if f not in vars_map:
+                    vars_map[f] = r.location
+
+        for fn in model.all_functions():
+            if file_filter and fn.location and file_filter not in fn.location.file_path:
+                continue
+            for v in fn.reads_variables + fn.writes_variables + fn.modifies_variables:
+                if v not in vars_map:
+                    vars_map[v] = fn.location
+
+        summaries: list[VariableFlowSummary] = []
+        total_edges_sum = 0
+
+        for var_name, loc in vars_map.items():
+            if direction == DataFlowDirection.IN:
+                graph = self.trace_data_flow_in(model, var_name, max_depth=max_depth)
+            else:
+                graph = self.trace_data_flow_out(model, var_name, max_depth=max_depth)
+
+            # Extract readers and writers
+            readers = [
+                e.to_id.replace("fn_", "") for e in graph.edges if e.from_id == var_name and e.kind == "READS"
+            ] if direction == DataFlowDirection.OUT else [
+                e.to_id for e in graph.edges if e.from_id != var_name and e.kind == "READS_FROM"
+            ]
+
+            writers = [
+                e.from_id.replace("fn_", "") for e in graph.edges if e.to_id == var_name and e.kind in ("WRITES", "MODIFIES")
+            ] if direction == DataFlowDirection.OUT else [
+                e.to_id.replace("fn_", "") for e in graph.edges if e.from_id == var_name and e.kind in ("WRITTEN_BY", "MODIFIED_BY")
+            ]
+
+            reach = len(graph.nodes) - 1  # exclude root itself
+            total_edges_sum += len(graph.edges)
+
+            # Compute max depth in DAG
+            adj: dict[str, list[str]] = {}
+            for e in graph.edges:
+                adj.setdefault(e.from_id, []).append(e.to_id)
+
+            def get_depth(u: str, visited: set[str]) -> int:
+                max_d = 0
+                for v in adj.get(u, []):
+                    if v not in visited:
+                        max_d = max(max_d, 1 + get_depth(v, visited | {v}))
+                return max_d
+
+            m_depth = get_depth(var_name, {var_name})
+
+            # Determine impact level
+            if reach >= 6 or m_depth >= 4:
+                impact = "CRITICAL"
+            elif reach >= 3 or m_depth >= 2:
+                impact = "HIGH"
+            elif reach >= 1 or len(readers) >= 1:
+                impact = "MEDIUM"
+            else:
+                impact = "LOW"
+
+            summaries.append(
+                VariableFlowSummary(
+                    name=var_name,
+                    file_path=loc.file_path if loc else "",
+                    line=loc.line if loc else 1,
+                    readers=sorted(list(dict.fromkeys(readers))),
+                    writers=sorted(list(dict.fromkeys(writers))),
+                    downstream_reach=reach,
+                    max_depth=m_depth,
+                    impact_level=impact,
+                    graph=graph,
+                )
+            )
+
+        return DataFlowSummaryReport(
+            target_path=target_path,
+            direction=direction,
+            summaries=summaries,
+            total_variables=len(summaries),
+            total_edges=total_edges_sum,
+        )

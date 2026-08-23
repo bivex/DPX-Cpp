@@ -76,6 +76,30 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
                 code_model, target_entity, variant=df_variant, max_depth=max_depth
             )
 
+    def analyze_all_data_flows(
+        self,
+        target_path: str,
+        direction: str = "OUT",
+        file_filter: str | None = None,
+        max_depth: int = 15,
+        file_extensions: list[str] | None = None,
+    ) -> Any:
+        """Analyze data flow for all variables across a file or codebase."""
+        from pattern_detector.domain.data_flow import DataFlowDirection
+
+        exts = file_extensions or [".cpp", ".hpp", ".h", ".cc", ".cxx", ".hxx", ".hh", ".C"]
+        sources = self._source_provider.get_sources(target_path, extensions=exts)
+        code_model = self._parser.parse_sources(sources)
+
+        df_direction = DataFlowDirection.IN if direction.upper() == "IN" else DataFlowDirection.OUT
+        return self._data_flow_service.analyze_all_variables(
+            model=code_model,
+            target_path=target_path,
+            direction=df_direction,
+            file_filter=file_filter,
+            max_depth=max_depth,
+        )
+
     def detect(self, model: CodeModel) -> list[Detection]:
         """Directly detect patterns in an already constructed CodeModel."""
         report = self._detector_service.detect_all(model)

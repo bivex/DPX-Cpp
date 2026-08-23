@@ -163,3 +163,25 @@ def test_data_flow_cli_command(tmp_path: Path) -> None:
     )
     assert result_j.exit_code == 0
     assert json_dest.exists()
+
+
+def test_data_flow_all_variables_summary_matrix(tmp_path: Path) -> None:
+    runner = CliRunner()
+    sample_file = tmp_path / "data_flow_batch.cpp"
+    sample_file.write_text(SAMPLE_CPP)
+
+    # Test CLI dataflow --all
+    result_all = runner.invoke(app, ["dataflow", "--all", "--path", str(sample_file)])
+    assert result_all.exit_code == 0
+    assert "Data Flow Summary Matrix" in result_all.stdout
+    assert "auxData" in result_all.stdout
+    assert "transformedData" in result_all.stdout
+    assert "outputResult" in result_all.stdout
+    assert "runningTotal" in result_all.stdout
+
+    # Test summary JSON output
+    json_dest = tmp_path / "summary.json"
+    result_json = runner.invoke(app, ["dataflow", "--all", "--path", str(sample_file), "--json", str(json_dest)])
+    assert result_json.exit_code == 0
+    assert json_dest.exists()
+

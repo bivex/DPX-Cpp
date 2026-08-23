@@ -207,3 +207,92 @@ class DataFlowGraph:
                 for e in self.edges
             ],
         }
+
+
+@dataclass
+class VariableFlowSummary:
+    """Summary of data flow characteristics for a single variable."""
+
+    name: str
+    file_path: str = ""
+    line: int = 1
+    readers: list[str] = field(default_factory=list)
+    writers: list[str] = field(default_factory=list)
+    downstream_reach: int = 0
+    max_depth: int = 0
+    impact_level: str = "LOW"  # CRITICAL, HIGH, MEDIUM, LOW
+    graph: DataFlowGraph | None = None
+
+
+@dataclass
+class DataFlowSummaryReport:
+    """Project or file-level data flow analysis summary across all variables."""
+
+    target_path: str
+    direction: DataFlowDirection = DataFlowDirection.OUT
+    summaries: list[VariableFlowSummary] = field(default_factory=list)
+    total_variables: int = 0
+    total_edges: int = 0
+
+    def to_rich_table(self) -> Any:
+        """Render summary report as a Rich Table."""
+        from rich.table import Table
+
+        title = f"🌲 Data Flow Summary Matrix ({self.direction.value}): {self.total_variables} Variables Analyzed"
+        table = Table(title=title, border_style="bright_blue", show_header=True, header_style="bold cyan")
+        table.add_column("Variable / Field", style="bold yellow", no_wrap=True)
+        table.add_column("Location", style="dim")
+        table.add_column("Readers", justify="center")
+        table.add_column("Writers", justify="center")
+        table.add_column("Reach (Nodes)", justify="center", style="magenta")
+        table.add_column("Max Depth", justify="center")
+        table.add_column("Impact Level", justify="center")
+
+        for s in sorted(self.summaries, key=lambda x: (x.downstream_reach, len(x.readers)), reverse=True):
+            loc_str = f"{s.file_path.split('/')[-1]}:{s.line}" if s.file_path else "global"
+            if s.impact_level == "CRITICAL":
+                impact_styled = "[bold red]CRITICAL[/bold red]"
+            elif s.impact_level == "HIGH":
+                impact_styled = "[bold yellow]HIGH[/bold yellow]"
+            elif s.impact_level == "MEDIUM":
+                impact_styled = "[cyan]MEDIUM[/cyan]"
+            else:
+                impact_styled = "[dim]LOW[/dim]"
+
+            readers_str = f"{len(s.readers)} fn" if s.readers else "[dim]0[/dim]"
+            writers_str = f"{len(s.writers)} fn" if s.writers else "[dim]0[/dim]"
+
+            table.add_row(
+                s.name,
+                loc_str,
+                readers_str,
+                writers_str,
+                str(s.downstream_reach),
+                str(s.max_depth),
+                impact_styled,
+            )
+
+        return table
+
+    def to_json(self) -> dict[str, Any]:
+        """Serialize report to JSON."""
+        return {
+            "target_path": self.target_path,
+            "direction": self.direction.value,
+            "total_variables": self.total_variables,
+            "total_edges": self.total_edges,
+            "variables": [
+                {
+                    "name": s.name,
+                    "file_path": s.file_path,
+                    "line": s.line,
+                    "readers": s.readers,
+                    "writers": s.writers,
+                    "downstream_reach": s.downstream_reach,
+                    "max_depth": s.max_depth,
+                    "impact_level": s.impact_level,
+                }
+                for s in self.summaries
+            ],
+        }
+
