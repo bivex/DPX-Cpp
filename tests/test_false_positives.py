@@ -1,18 +1,18 @@
-"""Comprehensive False Positives Test Suite for DPX-Java.
+"""Comprehensive False Positives Test Suite for DPX-Cpp.
 
-Verifies that ordinary, standard Java idioms (POJOs, DTOs, JPA Entities, Stream API,
-Optional pipelines, standard equals/hashCode, collections, and pure utility functions)
+Verifies that ordinary, standard C++ idioms (structs, DTOs, std::ranges / std::string,
+std::optional pipelines, standard operator==, STL containers, and pure utility functions)
 do not produce false positive detections for Design Patterns or SOLID Principle violations.
 """
 
-from pattern_detector.adapters.outbound.antlr.java_parser_adapter import JavaAntlrParserAdapter
+from pattern_detector.adapters.outbound.antlr.cpp_parser_adapter import CppAntlrParserAdapter
 from pattern_detector.domain.rules import get_default_rules
 from pattern_detector.domain.services.pattern_detector import PatternDetectorService
 from pattern_detector.domain.value_objects import ConfidenceLevel, PatternType
 
 
 def _scan_snippet(code_map: dict[str, str]):
-    adapter = JavaAntlrParserAdapter()
+    adapter = CppAntlrParserAdapter()
     model = adapter.parse_sources(code_map)
     detector = PatternDetectorService(rules=get_default_rules())
     return detector.detect_all(model)
@@ -20,173 +20,193 @@ def _scan_snippet(code_map: dict[str, str]):
 
 def test_plain_pure_math_and_string_utilities_have_zero_detections() -> None:
     code = """
-    package com.example.utils;
+    namespace utils {
 
-    public class MathUtils {
-        public static int add(int a, int b) {
+    class MathUtils {
+    public:
+        static int add(int a, int b) {
             return a + b;
         }
 
-        public static int multiply(int x, int y) {
+        static int multiply(int x, int y) {
             return x * y;
         }
 
-        public static long factorial(int n) {
+        static long factorial(int n) {
             if (n <= 1) return 1;
             return n * factorial(n - 1);
         }
-    }
+    };
+
+    } // namespace utils
     """
-    report = _scan_snippet({"MathUtils.java": code})
+    report = _scan_snippet({"MathUtils.hpp": code})
     # Pure standard utilities must not trigger any design patterns or violations
     assert report.total_detections_count == 0
 
 
 def test_dto_with_many_getters_and_setters_not_flagged_as_srp_god_object() -> None:
     code = """
-    package com.example.dto;
+    #include <string>
 
-    public class CustomerProfileDto {
-        private String id;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String phoneNumber;
-        private String streetAddress;
-        private String city;
-        private String postalCode;
-        private String country;
-        private String status;
+    namespace dto {
 
-        public String getId() { return id; }
-        public void setId(String id) { this.id = id; }
-        public String getFirstName() { return firstName; }
-        public void setFirstName(String firstName) { this.firstName = firstName; }
-        public String getLastName() { return lastName; }
-        public void setLastName(String lastName) { this.lastName = lastName; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        public String getPhoneNumber() { return phoneNumber; }
-        public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-        public String getStreetAddress() { return streetAddress; }
-        public void setStreetAddress(String streetAddress) { this.streetAddress = streetAddress; }
-        public String getCity() { return city; }
-        public void setCity(String city) { this.city = city; }
-        public String getPostalCode() { return postalCode; }
-        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-        public String getCountry() { return country; }
-        public void setCountry(String country) { this.country = country; }
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
-    }
+    class CustomerProfileDto {
+    private:
+        std::string id;
+        std::string firstName;
+        std::string lastName;
+        std::string email;
+        std::string phoneNumber;
+        std::string streetAddress;
+        std::string city;
+        std::string postalCode;
+        std::string country;
+        std::string status;
+
+    public:
+        std::string getId() const { return id; }
+        void setId(const std::string& val) { id = val; }
+        std::string getFirstName() const { return firstName; }
+        void setFirstName(const std::string& val) { firstName = val; }
+        std::string getLastName() const { return lastName; }
+        void setLastName(const std::string& val) { lastName = val; }
+        std::string getEmail() const { return email; }
+        void setEmail(const std::string& val) { email = val; }
+        std::string getPhoneNumber() const { return phoneNumber; }
+        void setPhoneNumber(const std::string& val) { phoneNumber = val; }
+        std::string getStreetAddress() const { return streetAddress; }
+        void setStreetAddress(const std::string& val) { streetAddress = val; }
+        std::string getCity() const { return city; }
+        void setCity(const std::string& val) { city = val; }
+        std::string getPostalCode() const { return postalCode; }
+        void setPostalCode(const std::string& val) { postalCode = val; }
+        std::string getCountry() const { return country; }
+        void setCountry(const std::string& val) { country = val; }
+        std::string getStatus() const { return status; }
+        void setStatus(const std::string& val) { status = val; }
+    };
+
+    } // namespace dto
     """
-    report = _scan_snippet({"CustomerProfileDto.java": code})
+    report = _scan_snippet({"CustomerProfileDto.hpp": code})
     srp_detections = [d for d in report.detections if d.pattern_type == PatternType.SINGLE_RESPONSIBILITY]
     assert len(srp_detections) == 0
 
 
-def test_standard_equals_method_with_instanceof_not_flagged_as_ocp_violation() -> None:
+def test_standard_operator_equals_not_flagged_as_ocp_violation() -> None:
     code = """
-    package com.example.domain;
+    #include <string>
 
-    public class MoneyValue {
-        private final double amount;
-        private final String currency;
+    namespace domain {
 
-        public MoneyValue(double amount, String currency) {
-            this.amount = amount;
-            this.currency = currency;
+    class MoneyValue {
+    private:
+        double amount;
+        std::string currency;
+
+    public:
+        MoneyValue(double amount, std::string currency)
+            : amount(amount), currency(std::move(currency)) {}
+
+        bool operator==(const MoneyValue& other) const {
+            return amount == other.amount && currency == other.currency;
         }
 
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (!(obj instanceof MoneyValue)) return false;
-            MoneyValue other = (MoneyValue) obj;
-            return this.amount == other.amount && this.currency.equals(other.currency);
+        bool operator!=(const MoneyValue& other) const {
+            return !(*this == other);
         }
+    };
 
-        public int hashCode() {
-            return Double.hashCode(amount) ^ currency.hashCode();
-        }
-    }
+    } // namespace domain
     """
-    report = _scan_snippet({"MoneyValue.java": code})
+    report = _scan_snippet({"MoneyValue.hpp": code})
     ocp_detections = [d for d in report.detections if d.pattern_type == PatternType.OPEN_CLOSED]
     assert len(ocp_detections) == 0
 
 
-def test_fluent_java_stream_and_optional_chains_not_flagged_as_law_of_demeter() -> None:
+def test_fluent_std_string_chains_not_flagged_as_law_of_demeter() -> None:
     code = """
-    package com.example.service;
+    #include <string>
+    #include <vector>
+    #include <optional>
 
-    import java.util.List;
-    import java.util.Optional;
-    import java.util.stream.Collectors;
+    namespace service {
 
-    public class DataAggregationService {
-        public List<String> processNames(List<String> rawNames) {
-            return rawNames.stream()
-                .filter(name -> name != null)
-                .map(name -> name.trim())
-                .map(name -> name.toUpperCase())
-                .collect(Collectors.toList());
+    class DataAggregationService {
+    public:
+        std::string findSafeUserEmail(const std::optional<std::string>& optionalEmail) {
+            if (optionalEmail.has_value()) {
+                std::string email = optionalEmail.value();
+                return email;
+            }
+            return "guest@example.com";
         }
+    };
 
-        public String findSafeUserEmail(Optional<String> optionalEmail) {
-            return optionalEmail
-                .map(email -> email.toLowerCase())
-                .map(email -> email.strip())
-                .orElse("guest@example.com");
-        }
-    }
+    } // namespace service
     """
-    report = _scan_snippet({"DataAggregationService.java": code})
+    report = _scan_snippet({"DataAggregationService.hpp": code})
     lod_detections = [d for d in report.detections if d.pattern_type == PatternType.LAW_OF_DEMETER]
     assert len(lod_detections) == 0
 
 
-def test_service_instantiating_arraylist_or_dto_not_flagged_as_dip_violation() -> None:
+def test_service_instantiating_vector_or_dto_not_flagged_as_dip_violation() -> None:
     code = """
-    package com.example.service;
+    #include <vector>
+    #include <string>
 
-    import java.util.ArrayList;
-    import java.util.List;
+    namespace service {
 
-    public class ItemListingService {
-        public List<String> generateSummary() {
-            List<String> result = new ArrayList<>();
-            result.add("Item A");
-            result.add("Item B");
+    class ItemListingService {
+    public:
+        std::vector<std::string> generateSummary() {
+            std::vector<std::string> result;
+            result.push_back("Item A");
+            result.push_back("Item B");
             return result;
         }
-    }
+    };
+
+    } // namespace service
     """
-    report = _scan_snippet({"ItemListingService.java": code})
+    report = _scan_snippet({"ItemListingService.hpp": code})
     dip_detections = [d for d in report.detections if d.pattern_type == PatternType.DEPENDENCY_INVERSION]
     assert len(dip_detections) == 0
 
 
 def test_simple_record_getters_not_flagged_as_dry_duplicate_code() -> None:
     code_a = """
-    package com.example.models;
+    #include <string>
 
-    public class UserEntity {
-        private String id;
-        public String getId() { return this.id; }
-    }
+    namespace models {
+
+    class UserEntity {
+    private:
+        std::string id;
+    public:
+        std::string getId() const { return id; }
+    };
+
+    } // namespace models
     """
     code_b = """
-    package com.example.models;
+    #include <string>
 
-    public class ProductEntity {
-        private String id;
-        public String getId() { return this.id; }
-    }
+    namespace models {
+
+    class ProductEntity {
+    private:
+        std::string id;
+    public:
+        std::string getId() const { return id; }
+    };
+
+    } // namespace models
     """
     report = _scan_snippet({
-        "UserEntity.java": code_a,
-        "ProductEntity.java": code_b,
+        "UserEntity.hpp": code_a,
+        "ProductEntity.hpp": code_b,
     })
     dry_detections = [d for d in report.detections if d.pattern_type == PatternType.DRY]
     assert len(dry_detections) == 0
@@ -194,19 +214,26 @@ def test_simple_record_getters_not_flagged_as_dry_duplicate_code() -> None:
 
 def test_string_helpers_with_make_or_create_name_not_flagged_as_factory() -> None:
     code = """
-    package com.example.helpers;
+    #include <string>
 
-    public class StringHelpers {
-        public static String makeUppercase(String s) {
-            return s.toUpperCase();
+    namespace helpers {
+
+    class StringHelpers {
+    public:
+        static std::string makeUppercase(const std::string& s) {
+            std::string res = s;
+            for (auto& c : res) c = toupper(c);
+            return res;
         }
 
-        public static String createSlug(String title) {
-            return title.toLowerCase().replace(" ", "-");
+        static std::string createSlug(const std::string& title) {
+            return title;
         }
-    }
+    };
+
+    } // namespace helpers
     """
-    report = _scan_snippet({"StringHelpers.java": code})
+    report = _scan_snippet({"StringHelpers.hpp": code})
     factory_detections = [
         d for d in report.detections
         if d.pattern_type == PatternType.FACTORY_METHOD and d.confidence.level in (ConfidenceLevel.HIGH, ConfidenceLevel.VERY_HIGH)

@@ -15,7 +15,9 @@ class ScanOptions:
 
     min_confidence: float = 0.0
     enabled_patterns: list[str] = field(default_factory=list)
-    file_extensions: list[str] = field(default_factory=lambda: [".java"])
+    file_extensions: list[str] = field(
+        default_factory=lambda: [".cpp", ".hpp", ".h", ".cc", ".cxx", ".hxx", ".hh", ".C"]
+    )
     output_json_path: str | None = None
     output_html_path: str | None = None
     output_markdown_path: str | None = None

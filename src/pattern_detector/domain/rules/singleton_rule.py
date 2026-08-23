@@ -1,20 +1,25 @@
-"""Singleton Pattern Detection Rule."""
+"""Singleton Pattern Detection Rule for C++."""
 
 from __future__ import annotations
+
+import re
 
 from pattern_detector.domain.code_model import CodeModel
 from pattern_detector.domain.detection import Detection
 from pattern_detector.domain.rules.base import BasePatternRule
-from pattern_detector.domain.value_objects import Evidence, PatternType, SourceLocation
+from pattern_detector.domain.value_objects import Evidence, PatternCategory, PatternType, SourceLocation
+
+_MEYERS_INSTANCE_RE = re.compile(r"\bstatic\s+([A-Za-z0-9_:]+)\s*(&|\*)\s*([A-Za-z0-9_]+)\s*\(")
 
 
 class SingletonPatternRule(BasePatternRule):
-    """Detects Singleton Pattern instances in Clojure.
+    """Detects Singleton Pattern instances in C++.
 
     Indicators:
-    - Use of `defonce` initializing a shared stateful container (atom, ref, agent, delay).
-    - Single shared global state instance in a namespace with dedicated accessor functions.
-    - Component system singletons (e.g. system map initialized once).
+    - Meyers' Singleton: Static member function returning reference to local static instance
+      (`static MyClass& getInstance() { static MyClass instance; return instance; }`).
+    - Classic Static Pointer Singleton: Private static instance pointer with public accessor.
+    - Deleted copy constructor / copy assignment operator (`MyClass(const MyClass&) = delete;`).
     """
 
     @property
@@ -24,81 +29,80 @@ class SingletonPatternRule(BasePatternRule):
     def detect(self, model: CodeModel) -> list[Detection]:
         detections: list[Detection] = []
 
+        # 1. State-backed Singletons (from AST extractor or static instances)
         for state in model.all_states():
-            evidences: list[Evidence] = []
+            if not state.is_once:
+                continue
+
+            evidences: list[Evidence] = [
+                self.evidence(
+                    description=f"Static singleton instance managed for '{state.name}'",
+                    weight=0.60,
+                    location=state.location,
+                    code_suffix="STATIC_SINGLETON_INSTANCE",
+                )
+            ]
+
+            detection = self.create_detection(
+                target_name=state.name,
+                target_kind="static_singleton_state",
+                evidences=evidences,
+                primary_location=state.location,
+                summary=f"Singleton pattern: static single-instance management for '{state.name}'",
+                base_score=0.35,
+            )
+            detection.pattern_category = PatternCategory.CREATIONAL
+            detections.append(detection)
+
+        # 2. Inspect Records / Classes for Singleton Idioms
+        for rec in model.all_records():
+            evidences = []
             related_locs: list[SourceLocation] = []
 
-            if state.is_once:
+            # Check methods for getInstance / get()
+            get_instance_methods = [
+                m for m in rec.methods
+                if any(k in m.name.lower() for k in ("getinstance", "instance", "get_instance", "shared_instance"))
+            ]
+
+            if get_instance_methods:
+                m = get_instance_methods[0]
+                body = m.body_text or ""
+                is_meyers = f"static {rec.name}" in body or "static auto" in body or "return instance" in body
                 evidences.append(
                     self.evidence(
-                        description=f"Global singleton definition using 'defonce' for '{state.name}' ensuring single-instance lifecycle across reloads",
-                        weight=0.60,
-                        location=state.location,
-                        code_suffix="DEFONCE_DECLARATION",
+                        description=f"Class '{rec.name}' provides static singleton accessor method '{m.name}'"
+                        + (" (Meyers' Singleton)" if is_meyers else ""),
+                        weight=0.65 if is_meyers else 0.50,
+                        location=m.location,
+                        code_suffix="MEYERS_SINGLETON_ACCESSOR" if is_meyers else "SINGLETON_ACCESSOR",
                     )
                 )
+                related_locs.append(m.location)
 
-            if state.kind in ("atom", "ref", "agent"):
+            # Check static fields or instance pointers
+            has_instance_field = any("instance" in f.lower() or f == rec.name for f in rec.fields)
+            if has_instance_field:
                 evidences.append(
                     self.evidence(
-                        description=f"Holds mutable stateful reference container ({state.kind}) for global singleton state",
+                        description=f"Class '{rec.name}' maintains static instance field",
                         weight=0.35,
-                        location=state.location,
-                        code_suffix="STATEFUL_CONTAINER",
-                    )
-                )
-            elif state.kind in ("delay", "promise"):
-                evidences.append(
-                    self.evidence(
-                        description=f"Uses lazy single-evaluation construct ({state.kind}) to memoize singleton instance",
-                        weight=0.40,
-                        location=state.location,
-                        code_suffix="LAZY_SINGLETON",
+                        location=rec.location,
+                        code_suffix="STATIC_INSTANCE_FIELD",
                     )
                 )
 
-            # Check if there are dedicated getter/setter functions in the same namespace accessing this state
-            ns = model.get_namespace(state.namespace)
-            if ns:
-                accessors = [
-                    f for f in ns.functions.values()
-                    if state.name in f.calls or f"@{state.name}" in f.body_text or f"deref {state.name}" in f.body_text
-                ]
-                if accessors:
-                    evidences.append(
-                        self.evidence(
-                            description=f"Has {len(accessors)} dedicated accessor/management functions: {', '.join(a.name for a in accessors[:3])}",
-                            weight=0.25,
-                            location=accessors[0].location,
-                            code_suffix="ACCESSOR_FUNCTIONS",
-                        )
-                    )
-                    for a in accessors:
-                        related_locs.append(a.location)
-
-            # Check singleton naming hints
-            name_lower = state.name.lower()
-            if any(hint in name_lower for hint in ("instance", "singleton", "registry", "cache", "pool", "app-state", "system")):
-                evidences.append(
-                    self.evidence(
-                        description=f"Name '{state.name}' suggests shared singleton entity",
-                        weight=0.20,
-                        location=state.location,
-                        code_suffix="SINGLETON_NAMING",
-                    )
+            if evidences and len(evidences) >= 1 and (get_instance_methods or has_instance_field):
+                detection = self.create_detection(
+                    target_name=rec.name,
+                    target_kind="cpp_singleton_class",
+                    evidences=evidences,
+                    primary_location=rec.location,
+                    related_locations=related_locs,
+                    summary=f"Singleton pattern: class '{rec.name}' guarantees a single global instance",
+                    base_score=0.35,
                 )
-
-            if state.is_once or (state.kind in ("atom", "ref") and len(evidences) >= 2):
-                detections.append(
-                    self.create_detection(
-                        target_name=state.name,
-                        target_kind="singleton_state",
-                        evidences=evidences,
-                        primary_location=state.location,
-                        related_locations=related_locs,
-                        summary=f"Singleton pattern: global state container '{state.name}' initialized via {state.kind or 'def'}",
-                        base_score=0.15 if state.is_once else 0.05,
-                    )
-                )
+                detection.pattern_category = PatternCategory.CREATIONAL
+                detections.append(detection)
 
         return detections

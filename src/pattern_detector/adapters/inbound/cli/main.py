@@ -16,7 +16,7 @@ from pattern_detector.ports.inbound import ScanOptions
 
 app = typer.Typer(
     name="pattern-detector",
-    help="Hexagonal DDD Pattern Scanner & Detector for Java / OOP code.",
+    help="Hexagonal DDD Pattern Scanner & Detector for C++ (C++14/17/20).",
     add_completion=False,
 )
 console = Console()
@@ -135,8 +135,8 @@ def info() -> None:
         "• [bold cyan]Core Domain:[/bold cyan] Agnostic CodeModel, Evidence & Confidence Score Engine, Specification Rules\n"
         "• [bold cyan]Inbound Ports:[/bold cyan] ScannerPort, DetectorPort\n"
         "• [bold cyan]Outbound Ports:[/bold cyan] ParserPort, SourceProviderPort, ResultRepositoryPort, ReportFormatterPort\n"
-        "• [bold cyan]Active Grammar Adapter:[/bold cyan] ANTLR 4.13.2 Java Grammar (JavaLexer.g4 / JavaParser.g4)\n"
-        "• [bold cyan]Supported Extensions:[/bold cyan] .java\n"
+        "• [bold cyan]Active Grammar Adapter:[/bold cyan] ANTLR 4.13.2 C++ Grammar (CPP14Lexer.g4 / CPP14Parser.g4)\n"
+        "• [bold cyan]Supported Extensions:[/bold cyan] .cpp, .hpp, .h, .cc, .cxx, .hxx, .hh, .C\n"
     )
     console.print(Panel(info_text, title="ℹ System Info", border_style="cyan"))
 

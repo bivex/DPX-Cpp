@@ -22,7 +22,7 @@ from pattern_detector.ports.inbound import ScanOptions
 
 
 def _create_sample_report() -> DetectionReport:
-    loc = SourceLocation(file_path="src/app/Core.java", line=15, column=1)
+    loc = SourceLocation(file_path="src/app/Core.hpp", line=15, column=1)
     ev = Evidence(description="Watched atom with add-watch callback", weight=0.6, rule_code="WATCHED_STATE", location=loc)
     det = Detection(
         pattern_type=PatternType.OBSERVER,
@@ -84,7 +84,7 @@ def test_cli_html_and_markdown_export() -> None:
     container = create_container()
     scanner = container.get_scanner()
 
-    examples_dir = str(Path(__file__).parent.parent / "examples" / "java_samples")
+    examples_dir = str(Path(__file__).parent.parent / "examples" / "cpp_samples")
 
     with tempfile.TemporaryDirectory() as tmpdir:
         html_out = str(Path(tmpdir) / "dashboard.html")

@@ -1,6 +1,6 @@
-"""Unit tests for SOLID Principles, Clean Code, Coupling & Cohesion Rules."""
+"""Unit tests for SOLID Principles, Clean Code, Coupling & Cohesion Rules for C++."""
 
-from pattern_detector.adapters.outbound.antlr.java_parser_adapter import JavaAntlrParserAdapter
+from pattern_detector.adapters.outbound.antlr.cpp_parser_adapter import CppAntlrParserAdapter
 from pattern_detector.domain.rules.cohesion_coupling_rule import CohesionCouplingRule
 from pattern_detector.domain.rules.composition_over_inheritance_rule import CompositionOverInheritanceRule
 from pattern_detector.domain.rules.dip_rule import DependencyInversionRule
@@ -16,79 +16,86 @@ from pattern_detector.domain.value_objects import PatternCategory, PatternType
 
 def test_srp_god_object_violation() -> None:
     code = """
-    package com.example.service;
+    namespace service {
 
-    public class MegaGodManager {
-        private String dbUrl;
-        private String httpPort;
-        private String jwtSecret;
-        private String cacheHost;
-        private int retryCount;
-        private boolean isDev;
-        private String logFile;
+    class MegaGodManager {
+    public:
+        void saveToDatabase() {}
+        void deleteFromDatabase() {}
+        void queryDatabase() {}
+        void handleHttpRequest() {}
+        void getHttpEndpoint() {}
+        void serializeToJson() {}
+        void parseXml() {}
+        void authenticateUser() {}
+        void calculateTaxes() {}
+        void computeDiscounts() {}
+        void processOrder() {}
+        void validatePayment() {}
+    };
 
-        public void saveToDatabase() {}
-        public void deleteFromDatabase() {}
-        public void queryDatabase() {}
-        public void handleHttpRequest() {}
-        public void getHttpEndpoint() {}
-        public void serializeToJson() {}
-        public void parseXml() {}
-        public void authenticateUser() {}
-        public void calculateTaxes() {}
-        public void computeDiscounts() {}
-        public void processOrder() {}
-        public void validatePayment() {}
-    }
+    } // namespace service
     """
-    model = JavaAntlrParserAdapter().parse_sources({"MegaGodManager.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"MegaGodManager.hpp": code})
     detections = SingleResponsibilityRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.SINGLE_RESPONSIBILITY
     assert detections[0].pattern_category == PatternCategory.PRINCIPLE
 
 
-def test_ocp_instanceof_cascade_violation() -> None:
+def test_ocp_dynamic_cast_cascade_violation() -> None:
     code = """
-    package com.example.graphics;
+    #include <iostream>
 
-    public class ShapeDrawer {
-        public void drawShape(Object shape) {
-            if (shape instanceof Circle) {
-                System.out.println("Drawing circle");
-            } else if (shape instanceof Square) {
-                System.out.println("Drawing square");
-            } else if (shape instanceof Triangle) {
-                System.out.println("Drawing triangle");
+    namespace graphics {
+
+    class ShapeDrawer {
+    public:
+        void drawShape(Shape* shape) {
+            if (dynamic_cast<Circle*>(shape)) {
+                std::cout << "Drawing circle" << std::endl;
+            } else if (dynamic_cast<Square*>(shape)) {
+                std::cout << "Drawing square" << std::endl;
+            } else if (dynamic_cast<Triangle*>(shape)) {
+                std::cout << "Drawing triangle" << std::endl;
             }
         }
-    }
+    };
+
+    } // namespace graphics
     """
-    model = JavaAntlrParserAdapter().parse_sources({"ShapeDrawer.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"ShapeDrawer.hpp": code})
     detections = OpenClosedPrincipleRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.OPEN_CLOSED
-    assert "instanceof" in detections[0].evidences[0].description
+    assert "dynamic_cast" in detections[0].evidences[0].description
 
 
 def test_lsp_unsupported_operation_violation() -> None:
     code = """
-    package com.example.collections;
+    #include <stdexcept>
 
-    public interface ReadOnlyList {
-        void get(int index);
-        void add(Object item);
-    }
+    namespace collections {
 
-    public class ImmutableListImpl implements ReadOnlyList {
-        public void get(int index) {}
+    class IReadOnlyList {
+    public:
+        virtual ~IReadOnlyList() = default;
+        virtual void get(int index) = 0;
+        virtual void add(int item) = 0;
+    };
 
-        public void add(Object item) {
-            throw new UnsupportedOperationException("Immutable list cannot be modified");
+    class ImmutableListImpl : public IReadOnlyList {
+    public:
+        void get(int index) override {}
+
+        void add(int item) override {
+            throw std::runtime_error("UnsupportedOperation: Immutable list cannot be modified");
         }
-    }
+    };
+
+    } // namespace collections
     """
-    model = JavaAntlrParserAdapter().parse_sources({"ImmutableListImpl.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"ImmutableListImpl.hpp": code})
     detections = LiskovSubstitutionRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.LISKOV_SUBSTITUTION
@@ -96,21 +103,25 @@ def test_lsp_unsupported_operation_violation() -> None:
 
 def test_isp_fat_interface_violation() -> None:
     code = """
-    package com.example.worker;
+    namespace worker {
 
-    public interface MonolithicWorker {
-        void code();
-        void test();
-        void deploy();
-        void manageInfrastructure();
-        void reviewBudget();
-        void designGraphics();
-        void recruitEmployees();
-        void handleCustomerSupport();
-        void cleanOffice();
-    }
+    class IMonolithicWorker {
+    public:
+        virtual ~IMonolithicWorker() = default;
+        virtual void code() = 0;
+        virtual void test() = 0;
+        virtual void deploy() = 0;
+        virtual void manageInfrastructure() = 0;
+        virtual void reviewBudget() = 0;
+        virtual void designGraphics() = 0;
+        virtual void recruitEmployees() = 0;
+        virtual void handleCustomerSupport() = 0;
+        virtual void cleanOffice() = 0;
+    };
+
+    } // namespace worker
     """
-    model = JavaAntlrParserAdapter().parse_sources({"MonolithicWorker.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"MonolithicWorker.hpp": code})
     detections = InterfaceSegregationRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.INTERFACE_SEGREGATION
@@ -118,16 +129,21 @@ def test_isp_fat_interface_violation() -> None:
 
 def test_dip_concrete_instantiation_violation() -> None:
     code = """
-    package com.example.service;
+    #include <memory>
 
-    public class OrderProcessingService {
-        public void processOrder() {
-            MySqlDatabaseRepository repo = new MySqlDatabaseRepository();
-            repo.saveOrder();
+    namespace service {
+
+    class OrderProcessingService {
+    public:
+        void processOrder() {
+            auto repo = std::make_unique<MySqlDatabaseRepository>();
+            repo->saveOrder();
         }
-    }
+    };
+
+    } // namespace service
     """
-    model = JavaAntlrParserAdapter().parse_sources({"OrderProcessingService.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"OrderProcessingService.hpp": code})
     detections = DependencyInversionRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.DEPENDENCY_INVERSION
@@ -135,14 +151,16 @@ def test_dip_concrete_instantiation_violation() -> None:
 
 def test_composition_over_inheritance_deep_hierarchy() -> None:
     code = """
-    package com.example.hierarchy;
+    namespace hierarchy {
 
-    public class BaseEntity {}
-    public class AuditableEntity extends BaseEntity {}
-    public class VersionedEntity extends AuditableEntity {}
-    public class ConcreteUserEntity extends VersionedEntity {}
+    class BaseEntity {};
+    class AuditableEntity : public BaseEntity {};
+    class VersionedEntity : public AuditableEntity {};
+    class ConcreteUserEntity : public VersionedEntity {};
+
+    } // namespace hierarchy
     """
-    model = JavaAntlrParserAdapter().parse_sources({"Hierarchy.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"Hierarchy.hpp": code})
     detections = CompositionOverInheritanceRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.COMPOSITION_OVER_INHERITANCE
@@ -150,16 +168,22 @@ def test_composition_over_inheritance_deep_hierarchy() -> None:
 
 def test_law_of_demeter_train_wreck_violation() -> None:
     code = """
-    package com.example.shipping;
+    #include <iostream>
+    #include <string>
 
-    public class ShippingService {
-        public void calculateShipping(Order order) {
-            String zip = order.getCustomer().getAddress().getLocation().getPostalCode();
-            System.out.println("Zip: " + zip);
+    namespace shipping {
+
+    class ShippingService {
+    public:
+        void calculateShipping(Order& order) {
+            std::string zip = order.getCustomer().getAddress().getLocation().getPostalCode();
+            std::cout << "Zip: " << zip << std::endl;
         }
-    }
+    };
+
+    } // namespace shipping
     """
-    model = JavaAntlrParserAdapter().parse_sources({"ShippingService.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"ShippingService.hpp": code})
     detections = LawOfDemeterRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.LAW_OF_DEMETER
@@ -167,15 +191,21 @@ def test_law_of_demeter_train_wreck_violation() -> None:
 
 def test_kiss_long_parameter_list_violation() -> None:
     code = """
-    package com.example.complex;
+    #include <iostream>
+    #include <string>
 
-    public class ComplexCalculator {
-        public void computeMetrics(int a, int b, String name, double rate, boolean flag, String mode, Object ctx) {
-            System.out.println("Computing");
+    namespace complex {
+
+    class ComplexCalculator {
+    public:
+        void computeMetrics(int a, int b, std::string name, double rate, bool flag, std::string mode, void* ctx) {
+            std::cout << "Computing" << std::endl;
         }
-    }
+    };
+
+    } // namespace complex
     """
-    model = JavaAntlrParserAdapter().parse_sources({"ComplexCalculator.java": code})
+    model = CppAntlrParserAdapter().parse_sources({"ComplexCalculator.hpp": code})
     detections = KissRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.KISS
@@ -183,34 +213,40 @@ def test_kiss_long_parameter_list_violation() -> None:
 
 def test_dry_duplicate_code_violation() -> None:
     code_a = """
-    package com.example.dups;
+    namespace dups {
 
-    public class AlphaProcessor {
-        public double calculateStandardDiscount(double price, int count) {
+    class AlphaProcessor {
+    public:
+        double calculateStandardDiscount(double price, int count) {
             double base = price * count;
             if (base > 100.0) {
                 return base * 0.85;
             }
             return base * 0.95;
         }
-    }
+    };
+
+    } // namespace dups
     """
     code_b = """
-    package com.example.dups;
+    namespace dups {
 
-    public class BetaProcessor {
-        public double computePartnerDiscount(double price, int count) {
+    class BetaProcessor {
+    public:
+        double computePartnerDiscount(double price, int count) {
             double base = price * count;
             if (base > 100.0) {
                 return base * 0.85;
             }
             return base * 0.95;
         }
-    }
+    };
+
+    } // namespace dups
     """
-    model = JavaAntlrParserAdapter().parse_sources({
-        "AlphaProcessor.java": code_a,
-        "BetaProcessor.java": code_b,
+    model = CppAntlrParserAdapter().parse_sources({
+        "AlphaProcessor.hpp": code_a,
+        "BetaProcessor.hpp": code_b,
     })
     detections = DryRule().detect(model)
     assert len(detections) >= 1
@@ -219,23 +255,22 @@ def test_dry_duplicate_code_violation() -> None:
 
 def test_cohesion_coupling_high_fan_out() -> None:
     code_hub = """
-    package com.example.hub;
+    #include "Mod1.hpp"
+    #include "Mod2.hpp"
+    #include "Mod3.hpp"
+    #include "Mod4.hpp"
 
-    import com.example.mod1.Mod1;
-    import com.example.mod2.Mod2;
-    import com.example.mod3.Mod3;
-    import com.example.mod4.Mod4;
-
-    public class GlobalOrchestrator {}
+    namespace hub {
+    class GlobalOrchestrator {};
+    }
     """
-    model = JavaAntlrParserAdapter().parse_sources({
-        "GlobalOrchestrator.java": code_hub,
-        "Mod1.java": "package com.example.mod1; public class Mod1 {}",
-        "Mod2.java": "package com.example.mod2; public class Mod2 {}",
-        "Mod3.java": "package com.example.mod3; public class Mod3 {}",
-        "Mod4.java": "package com.example.mod4; public class Mod4 {}",
+    model = CppAntlrParserAdapter().parse_sources({
+        "GlobalOrchestrator.hpp": code_hub,
+        "Mod1.hpp": "namespace mod1 { class Mod1 {}; }",
+        "Mod2.hpp": "namespace mod2 { class Mod2 {}; }",
+        "Mod3.hpp": "namespace mod3 { class Mod3 {}; }",
+        "Mod4.hpp": "namespace mod4 { class Mod4 {}; }",
     })
     detections = CohesionCouplingRule().detect(model)
     assert len(detections) >= 1
     assert detections[0].pattern_type == PatternType.HIGH_COHESION_LOW_COUPLING
-

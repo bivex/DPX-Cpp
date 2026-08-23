@@ -7,6 +7,7 @@ without direct dependency on any AST framework.
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass, field
 
@@ -321,20 +322,34 @@ class CodeModel:
         all_ns_names = set(self.namespaces.keys())
 
         for ns_name, ns in self.namespaces.items():
-            # 1. Inspect explicit requires
+            # 1. Inspect explicit requires & #include imports
             for req in ns.requires:
-                # Match required namespace names (e.g. "[foo.bar :as b]" or "foo.bar")
-                matches = re.findall(r"[a-zA-Z0-9_\.\-]+", req)
-                if matches:
-                    dep_name = matches[0].strip("[]()")
-                    if dep_name in all_ns_names and dep_name != ns_name:
-                        graph[ns_name].add(dep_name)
+                clean_req = os.path.splitext(os.path.basename(req))[0]
+                for other_name, other_ns in self.namespaces.items():
+                    if other_name != ns_name:
+                        if (
+                            clean_req == other_name
+                            or clean_req in other_ns.records
+                            or (other_ns.file_path and clean_req in os.path.basename(other_ns.file_path))
+                        ):
+                            graph[ns_name].add(other_name)
 
-            # 2. Inspect qualified function calls
+            for imp in ns.imports:
+                clean_imp = os.path.splitext(os.path.basename(imp))[0]
+                for other_name, other_ns in self.namespaces.items():
+                    if other_name != ns_name:
+                        if (
+                            clean_imp == other_name
+                            or clean_imp in other_ns.records
+                            or (other_ns.file_path and clean_imp in os.path.basename(other_ns.file_path))
+                        ):
+                            graph[ns_name].add(other_name)
+
+            # 2. Inspect qualified calls / member calls (e.g. other_ns::func or other_ns::Class)
             for fn in ns.functions.values():
                 for call in fn.calls:
-                    if "/" in call:
-                        prefix = call.split("/")[0]
+                    if "::" in call:
+                        prefix = call.split("::")[0]
                         if prefix in all_ns_names and prefix != ns_name:
                             graph[ns_name].add(prefix)
 

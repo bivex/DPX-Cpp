@@ -22,18 +22,19 @@ class CohesionCouplingRule(BasePatternRule):
 
     def detect(self, model: CodeModel) -> list[Detection]:
         detections: list[Detection] = []
+        graph = model.build_namespace_dependency_graph()
 
         # Analyze namespace/package coupling
         for ns in model.namespaces.values():
-            internal_requires = [r for r in ns.requires if any(other in r for other in model.namespaces if other != ns.name)]
+            deps = sorted(graph.get(ns.name, set()))
 
-            if len(internal_requires) >= 4:
-                deps_str = ", ".join(internal_requires)
+            if len(deps) >= 4:
+                deps_str = ", ".join(deps)
                 loc = SourceLocation(file_path=ns.file_path, line=1, column=1)
                 evidences = [
                     self.evidence(
-                        description=f"Package '{ns.name}' has high efferent coupling (Fan-Out = {len(internal_requires)}), depending on: {deps_str}",
-                        weight=min(0.65, 0.35 + 0.08 * len(internal_requires)),
+                        description=f"Package '{ns.name}' has high efferent coupling (Fan-Out = {len(deps)}), depending on: {deps_str}",
+                        weight=min(0.65, 0.35 + 0.08 * len(deps)),
                         location=loc,
                         code_suffix="HIGH_EFFERENT_COUPLING",
                     ),
@@ -50,7 +51,7 @@ class CohesionCouplingRule(BasePatternRule):
                     target_kind="high_coupling_module",
                     evidences=evidences,
                     primary_location=loc,
-                    summary=f"Tight Coupling (Fan-Out {len(internal_requires)}): Package '{ns.name}' depends on {len(internal_requires)} other modules",
+                    summary=f"Tight Coupling (Fan-Out {len(deps)}): Package '{ns.name}' depends on {len(deps)} other modules",
                     base_score=0.35,
                 )
                 detection.pattern_category = PatternCategory.PRINCIPLE

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Scanner Report - /Volumes/External/Code/DPX-Cpp/examples/cpp_samples</title>
+    <style>
+        :root {
+            --bg: #090d13;
+            --card-bg: #121822;
+            --border: #232d3d;
+            --text: #cbd5e1;
+            --heading: #f8fafc;
+            --accent: #38bdf8;
+            --green: #22c55e;
+            --cyan: #0ea5e9;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 30px 20px; line-height: 1.5; }
+        .container { max-width: 1240px; margin: 0 auto; }
+        header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }
+        h1 { color: var(--heading); font-size: 26px; display: flex; align-items: center; gap: 10px; }
+        .subtitle { color: #94a3b8; font-size: 14px; margin-top: 5px; }
+        
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+        .kpi-title { font-size: 12px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: var(--heading); margin-top: 5px; }
+
+        .category-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .cat-filter-btn { padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card-bg); color: var(--heading); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.1s, opacity 0.2s; }
+        .cat-filter-btn:hover { transform: translateY(-1px); opacity: 0.9; }
+        .cat-filter-btn.active { ring: 2px solid #38bdf8; }
+        .cat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .btn-all { background: #1e293b; color: #f8fafc; border-color: #475569; }
+
+        .search-bar { width: 100%; padding: 14px 18px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--heading); font-size: 14px; margin-bottom: 25px; outline: none; transition: border-color 0.2s; }
+        .search-bar:focus { border-color: var(--accent); }
+
+        .pattern-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+        .pattern-card:hover { border-color: #38bdf888; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .card-header { background: #17202e; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); }
+        .header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .card-index { color: #64748b; font-weight: 700; font-size: 13px; }
+        
+        .category-badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }
+        .pattern-badge { padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 12px; }
+        .target-name { color: var(--heading); font-size: 14px; }
+        
+        .confidence-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .badge-vh { background: #14532d55; color: #4ade80; border: 1px solid #22c55e; }
+        .badge-h { background: #0c4a6e55; color: #38bdf8; border: 1px solid #0284c7; }
+        .badge-m { background: #78350f55; color: #fbbf24; border: 1px solid #d97706; }
+        .badge-l { background: #7f1d1d55; color: #f87171; border: 1px solid #dc2626; }
+
+        .card-body { padding: 16px 18px; font-size: 13px; }
+        .summary-text { margin-bottom: 10px; color: #e2e8f0; font-size: 14px; }
+        .primary-loc { margin-bottom: 12px; color: #94a3b8; }
+        code { background: #0b0f17; padding: 3px 6px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #7dd3fc; border: 1px solid #1e293b; }
+
+        .evidence-section { margin-top: 14px; }
+        .evidence-list { list-style: none; margin-top: 8px; }
+        .evidence-item { margin-bottom: 7px; padding-left: 12px; border-left: 3px solid; }
+        .weight-tag { font-weight: 700; font-family: monospace; font-size: 13px; }
+        .rule-code { color: #94a3b8; font-size: 11px; font-family: monospace; }
+        .location-tag { color: #7dd3fc; font-size: 11px; margin-left: 6px; }
+        .related-locs { margin-top: 12px; color: #94a3b8; }
+        .related-locs ul { margin-left: 20px; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Software Design Pattern Detection Report</h1>
+            <div class="subtitle">Hexagonal DDD Pattern Scanner • Project: <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples</code></div>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Total Detections</div>
+                <div class="kpi-value">17</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">High Confidence (≥70%)</div>
+                <div class="kpi-value" style="color: #4ade80;">17</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Med / Low (<70%)</div>
+                <div class="kpi-value" style="color: #fbbf24;">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Files Scanned</div>
+                <div class="kpi-value">2</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Scan Duration</div>
+                <div class="kpi-value">3.092s</div>
+            </div>
+        </div>
+
+        <div class="category-filters">
+            <button class="cat-filter-btn btn-all" data-filter="all"><strong>All Categories</strong>: 17</button>
+            
+                    <button class="cat-filter-btn" data-filter="creational" style="border-color: #059669; background: #064e3b44; color: #34d399;">
+                        <span class="cat-dot" style="background: #10b981;"></span>
+                        <strong>Creational</strong>: 2
+                    </button>
+                    
+                    <button class="cat-filter-btn" data-filter="structural" style="border-color: #0284c7; background: #0c4a6e44; color: #38bdf8;">
+                        <span class="cat-dot" style="background: #0ea5e9;"></span>
+                        <strong>Structural</strong>: 2
+                    </button>
+                    
+                    <button class="cat-filter-btn" data-filter="behavioral" style="border-color: #9333ea; background: #581c8744; color: #c084fc;">
+                        <span class="cat-dot" style="background: #a855f7;"></span>
+                        <strong>Behavioral</strong>: 2
+                    </button>
+                    
+                    <button class="cat-filter-btn" data-filter="principle" style="border-color: #4f46e5; background: #312e8144; color: #818cf8;">
+                        <span class="cat-dot" style="background: #6366f1;"></span>
+                        <strong>Principles & SOLID</strong>: 11
+                    </button>
+                    
+        </div>
+
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔎 Instant search by pattern name, category, target function, or rule (e.g. observer, adapter, wrap-routes, with-db)...">
+
+        <div id="cardsContainer">
+            
+                <div class="pattern-card" data-pattern="liskov_substitution" data-category="principle" data-target="LockedDocument::save" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#1</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #f472b6; background: #83184344; border: 1px solid #db2777;">
+                                LISKOV_SUBSTITUTION
+                            </span>
+                            <span class="target-name">lsp_broken_hierarchy: <strong>LockedDocument::save</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">88% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> LSP Violation: Class &#x27;LockedDocument&#x27; breaks parent contract in &#x27;LockedDocument::save&#x27;</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:67:5-69:6</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+70%</span> <span class="rule-code">[LISKOV_SUBSTITUTION_LSP_UNSUPPORTED_OPERATION]</span> Class &#x27;LockedDocument&#x27; overrides method &#x27;LockedDocument::save&#x27; refusing parent contract behavior, violating LSP substitutability <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:67:5-69:6</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+40%</span> <span class="rule-code">[LISKOV_SUBSTITUTION_LSP_CONTRACT_BREACH]</span> Client expecting base type (ReadOnlyDocument) cannot transparently substitute with &#x27;LockedDocument&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:65:1-70:2</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="composite" data-category="structural" data-target="IGraphicNode" style="border-left: 4px solid #0ea5e9;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#2</span>
+                            <span class="category-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
+                                STRUCTURAL
+                            </span>
+                            <span class="pattern-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
+                                COMPOSITE
+                            </span>
+                            <span class="target-name">composite_hierarchy: <strong>IGraphicNode</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">87% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> Composite pattern: protocol &#x27;IGraphicNode&#x27; unifies leaf and composite container records in part-whole hierarchy</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (3 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #0ea5e9;"><span class="weight-tag" style="color: #38bdf8;">+50%</span> <span class="rule-code">[COMPOSITE_COMPOSITE_PROTOCOL]</span> Protocol &#x27;IGraphicNode&#x27; defines uniform component interface for both leaves and containers <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</span></li><li class="evidence-item" style="border-left-color: #0ea5e9;"><span class="weight-tag" style="color: #38bdf8;">+45%</span> <span class="rule-code">[COMPOSITE_COMPOSITE_CONTAINER_RECORDS]</span> Identified composite container record(s) holding child hierarchies: GraphicGroup <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:81:1-95:2</span></li><li class="evidence-item" style="border-left-color: #0ea5e9;"><span class="weight-tag" style="color: #38bdf8;">+35%</span> <span class="rule-code">[COMPOSITE_LEAF_ELEMENT_RECORDS]</span> Identified leaf element record(s): ShapeLeaf <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:71:1-79:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:71:1-79:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:81:1-95:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="single_responsibility" data-category="principle" data-target="SuperManagerService" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#3</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                SINGLE_RESPONSIBILITY
+                            </span>
+                            <span class="target-name">god_class_srp_violation: <strong>SuperManagerService</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">86% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> SRP Violation (God Class): &#x27;SuperManagerService&#x27; mixes 4 concerns across 16 methods</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:12:1-30:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+60%</span> <span class="rule-code">[SINGLE_RESPONSIBILITY_SRP_MIXED_CONCERNS]</span> Class &#x27;SuperManagerService&#x27; mixes 4 disparate concerns (http_web (1 methods), serialization (1 methods), auth_security (1 methods), business_logic (2 methods)), violating SRP <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:12:1-30:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+40%</span> <span class="rule-code">[SINGLE_RESPONSIBILITY_SRP_HIGH_METHOD_COUNT]</span> High method count (16 methods) indicates bloated class responsibility <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:12:1-30:2</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="IUniversalDevice" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#4</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
+                                INTERFACE_SEGREGATION
+                            </span>
+                            <span class="target-name">fat_interface_isp_violation: <strong>IUniversalDevice</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">86% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> ISP Violation (Fat Interface): &#x27;IUniversalDevice&#x27; has 9 methods; should be split into smaller role interfaces</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:73:1-85:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+65%</span> <span class="rule-code">[INTERFACE_SEGREGATION_ISP_FAT_INTERFACE]</span> Interface &#x27;IUniversalDevice&#x27; is a Fat Interface defining 9 methods (printDocument, scanDocument, faxDocument, bindBooklet, staplePages, laminatePaper...), violating ISP <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:73:1-85:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[INTERFACE_SEGREGATION_ISP_UNNEEDED_DEPENDENCY]</span> Clients and implementors are forced to depend on methods they may not use <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:73:1-85:2</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="dry" data-category="principle" data-target="CustomerDataService::formatCustomerRecord" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#5</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #e879f9; background: #701a7544; border: 1px solid #c026d3;">
+                                DRY
+                            </span>
+                            <span class="target-name">dry_code_duplication: <strong>CustomerDataService::formatCustomerRecord</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">86% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> DRY Violation: Duplicate logic shared across 2 methods (CustomerDataService::formatCustomerRecord, ClientReportService::formatClientRecord)</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:133:5-138:6</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+65%</span> <span class="rule-code">[DRY_DRY_CODE_DUPLICATION]</span> Identical duplicate code logic detected across 2 methods: CustomerDataService::formatCustomerRecord, ClientReportService::formatClientRecord <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:133:5-138:6</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[DRY_DRY_EXTRACTION_RECOMMENDED]</span> Duplicate logic creates maintenance hazards when business rules change; extract into shared utility or base class <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:143:5-148:6</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:143:5-148:6</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="open_closed" data-category="principle" data-target="ShapeAreaCalculator::calculateArea" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#6</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
+                                OPEN_CLOSED
+                            </span>
+                            <span class="target-name">ocp_dynamic_cast_violation: <strong>ShapeAreaCalculator::calculateArea</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">85% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> OCP Violation: Method &#x27;ShapeAreaCalculator::calculateArea&#x27; uses 3 RTTI/dynamic_cast checks instead of virtual dispatch</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:44:5-53:6</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+65%</span> <span class="rule-code">[OPEN_CLOSED_OCP_DYNAMIC_CAST_CASCADE]</span> Method &#x27;ShapeAreaCalculator::calculateArea&#x27; performs explicit RTTI type inspection (CircleShape, SquareShape, TriangleShape) using dynamic_cast cascades, violating OCP <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:44:5-53:6</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[OPEN_CLOSED_OCP_FRAGILE_MODIFICATION]</span> Adding new types requires modifying this method rather than extending via virtual polymorphic dispatch <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:44:5-53:6</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="kiss" data-category="principle" data-target="PaymentProcessor::processTransaction" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#7</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #a3e635; background: #36531444; border: 1px solid #65a30d;">
+                                KISS
+                            </span>
+                            <span class="target-name">kiss_complexity_parameters: <strong>PaymentProcessor::processTransaction</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-vh">85% [VERY_HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> KISS Violation (Long Parameter List): Method &#x27;PaymentProcessor::processTransaction&#x27; takes 7 parameters</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:104:5-127:6</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+65%</span> <span class="rule-code">[KISS_KISS_LONG_PARAMETER_LIST]</span> Method &#x27;PaymentProcessor::processTransaction&#x27; has 7 parameters, violating KISS (Long Parameter List) <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:104:5-127:6</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[KISS_KISS_PARAMETER_OBJECT_RECOMMENDED]</span> Excessive parameters increase cognitive load and error probability; consider a Parameter Object / Builder <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:104:5-127:6</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="open_closed" data-category="principle" data-target="ICompressionStrategy" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#8</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
+                                OPEN_CLOSED
+                            </span>
+                            <span class="target-name">ocp_polymorphic_hierarchy: <strong>ICompressionStrategy</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">83% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> OCP Adherence: Interface &#x27;ICompressionStrategy&#x27; supports open extension with 2 implementations</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+60%</span> <span class="rule-code">[OPEN_CLOSED_OCP_POLYMORPHIC_ABSTRACTION]</span> Abstract interface &#x27;ICompressionStrategy&#x27; enables open extension through 2 polymorphic implementations: ZipCompression, RarCompression <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[OPEN_CLOSED_OCP_EXTENSIBLE_DESIGN]</span> New behaviors can be added by implementing the interface without modifying existing consumers <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:35:1-40:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:42:1-47:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="open_closed" data-category="principle" data-target="IGraphicNode" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#9</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
+                                OPEN_CLOSED
+                            </span>
+                            <span class="target-name">ocp_polymorphic_hierarchy: <strong>IGraphicNode</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">83% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> OCP Adherence: Interface &#x27;IGraphicNode&#x27; supports open extension with 2 implementations</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+60%</span> <span class="rule-code">[OPEN_CLOSED_OCP_POLYMORPHIC_ABSTRACTION]</span> Abstract interface &#x27;IGraphicNode&#x27; enables open extension through 2 polymorphic implementations: ShapeLeaf, GraphicGroup <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[OPEN_CLOSED_OCP_EXTENSIBLE_DESIGN]</span> New behaviors can be added by implementing the interface without modifying existing consumers <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:71:1-79:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:81:1-95:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="dependency_inversion" data-category="principle" data-target="OrderService" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#10</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
+                                DEPENDENCY_INVERSION
+                            </span>
+                            <span class="target-name">dip_concrete_coupling: <strong>OrderService</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">83% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> DIP Violation: High-level &#x27;OrderService&#x27; directly creates concrete classes: SqliteDatabase</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:93:1-99:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+60%</span> <span class="rule-code">[DEPENDENCY_INVERSION_DIP_HARDCODED_CONCRETE_INSTANTIATION]</span> Class &#x27;OrderService&#x27; directly instantiates concrete dependencies (SqliteDatabase), violating DIP <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:93:1-99:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+35%</span> <span class="rule-code">[DEPENDENCY_INVERSION_DIP_INVERSION_REQUIRED]</span> High-level modules should depend on abstract interfaces (std::shared_ptr&lt;IInterface&gt; / std::unique_ptr&lt;IInterface&gt;), not concrete classes <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/PrinciplesAndCleanCodeDemo.hpp:93:1-99:2</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="bridge" data-category="structural" data-target="WindowAbstraction" style="border-left: 4px solid #0ea5e9;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#11</span>
+                            <span class="category-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
+                                STRUCTURAL
+                            </span>
+                            <span class="pattern-badge" style="color: #67e8f9; background: #164e6344; border: 1px solid #0891b2;">
+                                BRIDGE
+                            </span>
+                            <span class="target-name">bridge_abstraction: <strong>WindowAbstraction</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">81% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> Bridge pattern: abstraction record &#x27;WindowAbstraction&#x27; decouples domain logic from &#x27;IDisplayBackend&#x27; backend implementation</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:104:1-117:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #0ea5e9;"><span class="weight-tag" style="color: #38bdf8;">+55%</span> <span class="rule-code">[BRIDGE_BRIDGE_ABSTRACTION_RECORD]</span> Record &#x27;WindowAbstraction&#x27; maintains decoupled bridge reference to implementation driver field: backend_ <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:104:1-117:2</span></li><li class="evidence-item" style="border-left-color: #0ea5e9;"><span class="weight-tag" style="color: #38bdf8;">+40%</span> <span class="rule-code">[BRIDGE_BRIDGE_DRIVER_PROTOCOL]</span> Driver implementation protocol &#x27;IDisplayBackend&#x27; defines concrete backend interface <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:98:1-102:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:98:1-102:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="singleton" data-category="creational" data-target="AppConfig" style="border-left: 4px solid #10b981;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#12</span>
+                            <span class="category-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
+                                CREATIONAL
+                            </span>
+                            <span class="pattern-badge" style="color: #4ade80; background: #14532d44; border: 1px solid #16a34a;">
+                                SINGLETON
+                            </span>
+                            <span class="target-name">cpp_singleton_class: <strong>AppConfig</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">77% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> Singleton pattern: class &#x27;AppConfig&#x27; guarantees a single global instance</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:11:1-26:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (1 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #10b981;"><span class="weight-tag" style="color: #34d399;">+65%</span> <span class="rule-code">[SINGLETON_MEYERS_SINGLETON_ACCESSOR]</span> Class &#x27;AppConfig&#x27; provides static singleton accessor method &#x27;AppConfig::&amp;getInstance&#x27; (Meyers&#x27; Singleton) <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:13:5-16:6</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:13:5-16:6</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="ICompressionStrategy" style="border-left: 4px solid #a855f7;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#13</span>
+                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
+                                BEHAVIORAL
+                            </span>
+                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
+                                STRATEGY
+                            </span>
+                            <span class="target-name">protocol_strategy: <strong>ICompressionStrategy</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">75% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;ICompressionStrategy&#x27; with 2 interchangeable concrete implementations</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (3 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;ICompressionStrategy&#x27; defines strategy interface with methods: compress <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ZipCompression&#x27; provides concrete strategy implementation for protocol &#x27;ICompressionStrategy&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:35:1-40:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;RarCompression&#x27; provides concrete strategy implementation for protocol &#x27;ICompressionStrategy&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:42:1-47:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:35:1-40:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:42:1-47:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="strategy" data-category="behavioral" data-target="IGraphicNode" style="border-left: 4px solid #a855f7;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#14</span>
+                            <span class="category-badge" style="color: #c084fc; background: #581c8744; border: 1px solid #9333ea;">
+                                BEHAVIORAL
+                            </span>
+                            <span class="pattern-badge" style="color: #a78bfa; background: #4c1d9544; border: 1px solid #7c3aed;">
+                                STRATEGY
+                            </span>
+                            <span class="target-name">protocol_strategy: <strong>IGraphicNode</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">75% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> Strategy pattern: protocol &#x27;IGraphicNode&#x27; with 2 interchangeable concrete implementations</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (3 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+45%</span> <span class="rule-code">[STRATEGY_PROTOCOL_STRATEGY_INTERFACE]</span> Protocol &#x27;IGraphicNode&#x27; defines strategy interface with methods: render <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;ShapeLeaf&#x27; provides concrete strategy implementation for protocol &#x27;IGraphicNode&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:71:1-79:2</span></li><li class="evidence-item" style="border-left-color: #a855f7;"><span class="weight-tag" style="color: #c084fc;">+25%</span> <span class="rule-code">[STRATEGY_RECORD_STRATEGY_IMPL]</span> Record &#x27;GraphicGroup&#x27; provides concrete strategy implementation for protocol &#x27;IGraphicNode&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:81:1-95:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:71:1-79:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:81:1-95:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="ICompressionStrategy" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#15</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
+                                INTERFACE_SEGREGATION
+                            </span>
+                            <span class="target-name">segregated_role_interface: <strong>ICompressionStrategy</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">75% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> ISP Adherence: Role interface &#x27;ICompressionStrategy&#x27; is segregated and focused (1 methods)</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+50%</span> <span class="rule-code">[INTERFACE_SEGREGATION_ISP_ROLE_INTERFACE]</span> Interface &#x27;ICompressionStrategy&#x27; follows ISP as a cohesive role interface with only 1 method(s) <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+30%</span> <span class="rule-code">[INTERFACE_SEGREGATION_ISP_CLEAN_IMPLEMENTATION]</span> Implemented by 2 targeted classes without bloated contract obligations <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:29:1-33:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:35:1-40:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:42:1-47:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="interface_segregation" data-category="principle" data-target="IGraphicNode" style="border-left: 4px solid #6366f1;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#16</span>
+                            <span class="category-badge" style="color: #818cf8; background: #312e8144; border: 1px solid #4f46e5;">
+                                PRINCIPLES &amp; SOLID
+                            </span>
+                            <span class="pattern-badge" style="color: #38bdf8; background: #0c4a6e44; border: 1px solid #0284c7;">
+                                INTERFACE_SEGREGATION
+                            </span>
+                            <span class="target-name">segregated_role_interface: <strong>IGraphicNode</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">75% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> ISP Adherence: Role interface &#x27;IGraphicNode&#x27; is segregated and focused (1 methods)</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (2 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+50%</span> <span class="rule-code">[INTERFACE_SEGREGATION_ISP_ROLE_INTERFACE]</span> Interface &#x27;IGraphicNode&#x27; follows ISP as a cohesive role interface with only 1 method(s) <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</span></li><li class="evidence-item" style="border-left-color: #6366f1;"><span class="weight-tag" style="color: #818cf8;">+30%</span> <span class="rule-code">[INTERFACE_SEGREGATION_ISP_CLEAN_IMPLEMENTATION]</span> Implemented by 2 targeted classes without bloated contract obligations <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:65:1-69:2</span></li>
+                            </ul>
+                        </div>
+                        <div class="related-locs"><strong>Related Locations:</strong><ul><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:71:1-79:2</code></li><li><code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:81:1-95:2</code></li></ul></div>
+                    </div>
+                </div>
+                
+                <div class="pattern-card" data-pattern="singleton" data-category="creational" data-target="AppConfig::instance" style="border-left: 4px solid #10b981;">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <span class="card-index">#17</span>
+                            <span class="category-badge" style="color: #34d399; background: #064e3b44; border: 1px solid #059669;">
+                                CREATIONAL
+                            </span>
+                            <span class="pattern-badge" style="color: #4ade80; background: #14532d44; border: 1px solid #16a34a;">
+                                SINGLETON
+                            </span>
+                            <span class="target-name">static_singleton_state: <strong>AppConfig::instance</strong></span>
+                        </div>
+                        <span class="confidence-badge badge-h">74% [HIGH]</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="summary-text"><strong>Summary:</strong> Singleton pattern: static single-instance management for &#x27;AppConfig::instance&#x27;</p>
+                        <p class="primary-loc"><strong>Primary Location:</strong> <code>/Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:13:5-16:6</code></p>
+                        <div class="evidence-section">
+                            <strong>Evidence Trail (1 heuristics):</strong>
+                            <ul class="evidence-list">
+                                <li class="evidence-item" style="border-left-color: #10b981;"><span class="weight-tag" style="color: #34d399;">+60%</span> <span class="rule-code">[SINGLETON_STATIC_SINGLETON_INSTANCE]</span> Static singleton instance managed for &#x27;AppConfig::instance&#x27; <span class="location-tag">📍 /Volumes/External/Code/DPX-Cpp/examples/cpp_samples/DesignPatternsDemo.hpp:13:5-16:6</span></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.pattern-card');
+        const filterBtns = document.querySelectorAll('.cat-filter-btn');
+        let selectedCategory = 'all';
+
+        function filterCards() {
+            const query = searchInput.value.toLowerCase();
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const pattern = card.dataset.pattern || '';
+                const category = card.dataset.category || '';
+                const target = card.dataset.target || '';
+
+                const matchesCategory = (selectedCategory === 'all' || category === selectedCategory);
+                const matchesSearch = (text.includes(query) || pattern.includes(query) || category.includes(query) || target.includes(query));
+
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterCards);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectedCategory = btn.dataset.filter;
+                filterBtns.forEach(b => b.style.outline = 'none');
+                btn.style.outline = '2px solid #38bdf8';
+                filterCards();
+            });
+        });
+    </script>
+</body>
+</html>

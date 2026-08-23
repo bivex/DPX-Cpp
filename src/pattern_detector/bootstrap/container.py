@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pattern_detector.adapters.outbound.antlr import JavaAntlrParserAdapter
+from pattern_detector.adapters.outbound.antlr import CppAntlrParserAdapter
 from pattern_detector.adapters.outbound.filesystem import FileSourceProvider
 from pattern_detector.adapters.outbound.persistence import (
     ConsoleReportFormatter,
@@ -45,7 +45,7 @@ class Container:
     ) -> None:
         # Outbound Driven Adapters
         self.source_provider: SourceProviderPort = source_provider or FileSourceProvider()
-        self.parser: ParserPort = parser or JavaAntlrParserAdapter()
+        self.parser: ParserPort = parser or CppAntlrParserAdapter()
 
         self.html_formatter: ReportFormatterPort = html_formatter or HtmlReportFormatter()
         self.markdown_formatter: ReportFormatterPort = markdown_formatter or MarkdownReportFormatter()

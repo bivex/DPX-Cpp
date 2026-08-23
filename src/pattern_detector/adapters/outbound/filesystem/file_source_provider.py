@@ -12,7 +12,7 @@ class FileSourceProvider(SourceProviderPort):
 
     def get_sources(self, path: str, extensions: list[str] | None = None) -> dict[str, str]:
         target = Path(path)
-        valid_exts = set(extensions) if extensions else {".java"}
+        valid_exts = set(extensions) if extensions else {".cpp", ".hpp", ".h", ".cc", ".cxx", ".hxx", ".hh", ".C"}
         sources: dict[str, str] = {}
 
         if not target.exists():

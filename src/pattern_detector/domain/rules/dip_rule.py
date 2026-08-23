@@ -1,4 +1,4 @@
-"""Dependency Inversion Principle (DIP) Detection Rule."""
+"""Dependency Inversion Principle (DIP) Detection Rule for C++."""
 
 from __future__ import annotations
 
@@ -9,16 +9,16 @@ from pattern_detector.domain.detection import Detection
 from pattern_detector.domain.rules.base import BasePatternRule
 from pattern_detector.domain.value_objects import PatternCategory, PatternType
 
-_NEW_EXPR_RE = re.compile(r"\bnew\s+([A-Za-z0-9_]+)\s*\(")
+_NEW_EXPR_RE = re.compile(r"\b(?:new\s+([A-Za-z0-9_]+)|std::make_unique<([A-Za-z0-9_]+)>|std::make_shared<([A-Za-z0-9_]+)>)")
 
 
 class DependencyInversionRule(BasePatternRule):
-    """Detects violations and adherences to the Dependency Inversion Principle (DIP).
+    """Detects violations and adherences to the Dependency Inversion Principle (DIP) in C++.
 
     Indicators:
-    - DIP Adherence: Service class depends on injected interface abstractions (Repositories, Drivers, Services).
+    - DIP Adherence: High-level class depends on injected abstract base class / interface (references, raw/smart pointers).
     - DIP Violation: High-level business service directly instantiates concrete low-level infrastructure
-      classes (e.g. `new MySqlDatabase()`, `new FileLogger()`) inside its body or constructors.
+      classes (e.g. `new SqliteDatabase()`, `std::make_unique<FileLogger>()`) inside its body or constructors.
     """
 
     @property
@@ -38,13 +38,13 @@ class DependencyInversionRule(BasePatternRule):
                     if proto_name.lower() in f.lower() or f.lower() in proto_name.lower():
                         interface_deps.append(proto_name)
 
-            # Check direct new instantiation of low-level dependencies inside methods
+            # Check direct instantiation of low-level dependencies inside methods
             concrete_instantiations: list[str] = []
             for m in rec.methods:
                 body = m.body_text or ""
-                news = _NEW_EXPR_RE.findall(body)
-                for cl in news:
-                    # If instantiating a class ending in Repository, Service, Client, Database, Logger
+                matches = _NEW_EXPR_RE.findall(body)
+                for raw_match in matches:
+                    cl = next((item for item in raw_match if item), "")
                     if any(cl.endswith(sfx) for sfx in ("Repository", "Service", "Client", "Database", "Dao", "Gateway", "Sender")):
                         concrete_instantiations.append(cl)
 
@@ -59,26 +59,26 @@ class DependencyInversionRule(BasePatternRule):
                         code_suffix="DIP_HARDCODED_CONCRETE_INSTANTIATION",
                     ),
                     self.evidence(
-                        description="High-level service is tightly coupled to low-level implementation classes instead of abstractions",
+                        description="High-level modules should depend on abstract interfaces (std::shared_ptr<IInterface> / std::unique_ptr<IInterface>), not concrete classes",
                         weight=0.35,
                         location=rec.location,
-                        code_suffix="DIP_TIGHT_COUPLING",
+                        code_suffix="DIP_INVERSION_REQUIRED",
                     ),
                 ]
 
                 detection = self.create_detection(
                     target_name=rec.name,
-                    target_kind="dip_concrete_instantiation_violation",
+                    target_kind="dip_concrete_coupling",
                     evidences=evidences,
                     primary_location=rec.location,
-                    summary=f"DIP Violation: '{rec.name}' instantiates concrete ({', '.join(unique_news)}) instead of injecting interfaces",
-                    base_score=0.40,
+                    summary=f"DIP Violation: High-level '{rec.name}' directly creates concrete classes: {', '.join(unique_news)}",
+                    base_score=0.35,
                 )
                 detection.pattern_category = PatternCategory.PRINCIPLE
                 detections.append(detection)
 
-            # 2. DIP Adherence: Clean dependency injection of abstractions
-            elif interface_deps and ("Service" in rec.name or "Manager" in rec.name or "Facade" in rec.name or "Controller" in rec.name):
+            # 2. DIP Adherence: Clean abstraction injection
+            elif interface_deps:
                 unique_deps = sorted(set(interface_deps))
                 evidences = [
                     self.evidence(

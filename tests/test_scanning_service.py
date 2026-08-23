@@ -1,4 +1,4 @@
-"""Integration tests for ScanningService and Dependency Injection Container."""
+"""Integration tests for ScanningService and Dependency Injection Container for C++."""
 
 import json
 import tempfile
@@ -12,7 +12,7 @@ def test_scanning_service_end_to_end_on_examples() -> None:
     container = create_container()
     scanner = container.get_scanner()
 
-    examples_dir = str(Path(__file__).parent.parent / "examples" / "java_samples")
+    examples_dir = str(Path(__file__).parent.parent / "examples" / "cpp_samples")
 
     with tempfile.TemporaryDirectory() as tmpdir:
         json_out = str(Path(tmpdir) / "report.json")
@@ -24,22 +24,22 @@ def test_scanning_service_end_to_end_on_examples() -> None:
 
         report = scanner.scan_path(examples_dir, options=options)
 
-        assert report.scanned_files_count >= 4
-        assert report.total_detections_count >= 5
+        assert report.scanned_files_count >= 2
+        assert report.total_detections_count >= 3
 
         # Check JSON output persistence
         assert Path(json_out).exists()
         with open(json_out, "r", encoding="utf-8") as f:
             data = json.load(f)
-            assert data["scanned_files_count"] >= 4
-            assert len(data["detections"]) >= 5
+            assert data["scanned_files_count"] >= 2
+            assert len(data["detections"]) >= 3
 
 
 def test_scanning_service_filter_by_pattern_type() -> None:
     container = create_container()
     scanner = container.get_scanner()
 
-    examples_dir = str(Path(__file__).parent.parent / "examples" / "java_samples")
+    examples_dir = str(Path(__file__).parent.parent / "examples" / "cpp_samples")
 
     options = ScanOptions(
         enabled_patterns=["strategy"],

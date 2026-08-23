@@ -1,7 +1,7 @@
 [project]
 name = "pattern-detector"
 version = "0.1.0"
-description = "Hexagonal DDD Pattern Scanner & Detector with ANTLR4 parser"
+description = "Design Patterns X for C++ (C++14/17/20) - Hexagonal DDD Pattern Detector powered by ANTLR4"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

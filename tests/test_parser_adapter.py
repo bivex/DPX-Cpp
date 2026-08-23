@@ -1,68 +1,80 @@
-"""Tests for ANTLR Java Parser Adapter."""
+"""Tests for ANTLR C++ Parser Adapter."""
 
-from pattern_detector.adapters.outbound.antlr.java_parser_adapter import JavaAntlrParserAdapter
+from pattern_detector.adapters.outbound.antlr.cpp_parser_adapter import CppAntlrParserAdapter
 
 
-def test_parse_package_and_classes() -> None:
+def test_parse_namespace_and_classes() -> None:
     code = """
-    package com.example.service;
+    #include <string>
+    #include <iostream>
 
-    import java.util.List;
-    import java.util.Map;
+    namespace service {
 
-    public class UserService {
-        private String dbUrl;
-        private static final UserService INSTANCE = new UserService();
-
-        public void processUser(String id) {
-            System.out.println("Processing: " + id);
+    class UserService {
+    private:
+        std::string dbUrl;
+    public:
+        static UserService& getInstance() {
+            static UserService instance;
+            return instance;
         }
-    }
-    """
-    adapter = JavaAntlrParserAdapter()
-    ns = adapter.parse_source(code, file_path="UserService.java")
 
-    assert ns.name == "com.example.service"
+        void processUser(const std::string& id) {
+            std::cout << "Processing: " << id << std::endl;
+        }
+    };
+
+    } // namespace service
+    """
+    adapter = CppAntlrParserAdapter()
+    ns = adapter.parse_source(code, file_path="UserService.hpp")
+
+    assert ns.name == "service"
     assert len(ns.imports) == 2
     assert "UserService" in ns.records
     rec = ns.records["UserService"]
-    assert "dbUrl" in rec.fields
-    assert "INSTANCE" in rec.fields
-    assert "INSTANCE" in ns.states
-    assert ns.states["INSTANCE"].kind == "atom"
-    assert ns.states["INSTANCE"].is_once is True
+    assert rec.name == "UserService"
+    assert "UserService::instance" in ns.states
+    assert ns.states["UserService::instance"].kind == "atom"
+    assert ns.states["UserService::instance"].is_once is True
 
 
 def test_parse_interfaces_and_implementations() -> None:
     code = """
-    package com.example.repo;
+    #include <string>
+    #include <iostream>
 
-    public interface CrudRepository {
-        void save(Object entity);
-        Object findById(String id);
-    }
+    namespace repo {
 
-    public class DatabaseRepository implements CrudRepository {
-        private String connectionString;
+    class ICrudRepository {
+    public:
+        virtual ~ICrudRepository() = default;
+        virtual void save(const std::string& entity) = 0;
+        virtual std::string findById(const std::string& id) = 0;
+    };
 
-        public void save(Object entity) {
-            System.out.println("Saving: " + entity);
+    class DatabaseRepository : public ICrudRepository {
+    public:
+        void save(const std::string& entity) override {
+            std::cout << "Saving: " << entity << std::endl;
         }
 
-        public Object findById(String id) {
-            return null;
+        std::string findById(const std::string& id) override {
+            return "";
         }
-    }
+    };
+
+    } // namespace repo
     """
-    adapter = JavaAntlrParserAdapter()
-    ns = adapter.parse_source(code, file_path="DatabaseRepository.java")
+    adapter = CppAntlrParserAdapter()
+    ns = adapter.parse_source(code, file_path="DatabaseRepository.hpp")
 
-    assert "CrudRepository" in ns.protocols
-    proto = ns.protocols["CrudRepository"]
+    assert "ICrudRepository" in ns.protocols
+    proto = ns.protocols["ICrudRepository"]
     assert len(proto.methods) == 2
     assert proto.has_method("save")
     assert proto.has_method("findById")
 
     assert "DatabaseRepository" in ns.records
     rec = ns.records["DatabaseRepository"]
-    assert rec.implements_protocol("CrudRepository")
+    assert rec.implements_protocol("ICrudRepository")

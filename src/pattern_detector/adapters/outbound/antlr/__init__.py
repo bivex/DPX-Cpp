@@ -1,7 +1,7 @@
-"""ANTLR Java Outbound Adapter exports."""
+"""ANTLR Outbound Adapters."""
 
-from pattern_detector.adapters.outbound.antlr.java_parser_adapter import JavaAntlrParserAdapter
+from __future__ import annotations
 
-__all__ = [
-    "JavaAntlrParserAdapter",
-]
+from pattern_detector.adapters.outbound.antlr.cpp_parser_adapter import CppAntlrParserAdapter
+
+__all__ = ["CppAntlrParserAdapter"]

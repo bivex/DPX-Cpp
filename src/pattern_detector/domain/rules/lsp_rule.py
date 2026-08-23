@@ -32,18 +32,19 @@ class LiskovSubstitutionRule(BasePatternRule):
                 body = method.body_text or ""
                 # Check for refusal of parent contract
                 has_unsupported_op = any(
-                    exc in body
+                    exc.lower() in body.lower()
                     for exc in (
-                        "UnsupportedOperationException",
-                        "NotImplementedException",
-                        "OperationNotSupportedException",
+                        "unsupportedoperation",
+                        "notimplemented",
+                        "unsupported",
+                        "logic_error",
                     )
                 )
 
                 if has_unsupported_op:
                     evidences: list[Evidence] = [
                         self.evidence(
-                            description=f"Class '{rec.name}' overrides method '{method.name}' throwing UnsupportedOperationException, violating LSP substitutability",
+                            description=f"Class '{rec.name}' overrides method '{method.name}' refusing parent contract behavior, violating LSP substitutability",
                             weight=0.70,
                             location=method.location,
                             code_suffix="LSP_UNSUPPORTED_OPERATION",
@@ -57,12 +58,12 @@ class LiskovSubstitutionRule(BasePatternRule):
                     ]
 
                     detection = self.create_detection(
-                        target_name=f"{rec.name}.{method.name.split('.')[-1]}",
-                        target_kind="lsp_contract_violation",
+                        target_name=f"{rec.name}::{method.name.split('::')[-1]}",
+                        target_kind="lsp_broken_hierarchy",
                         evidences=evidences,
                         primary_location=method.location,
-                        summary=f"LSP Violation: '{rec.name}.{method.name.split('.')[-1]}' rejects base contract by throwing UnsupportedOperationException",
-                        base_score=0.45,
+                        summary=f"LSP Violation: Class '{rec.name}' breaks parent contract in '{method.name}'",
+                        base_score=0.35,
                     )
                     detection.pattern_category = PatternCategory.PRINCIPLE
                     detections.append(detection)

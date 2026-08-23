@@ -1,4 +1,4 @@
-"""Open/Closed Principle (OCP) Detection Rule."""
+"""Open/Closed Principle (OCP) Detection Rule for C++."""
 
 from __future__ import annotations
 
@@ -9,16 +9,17 @@ from pattern_detector.domain.detection import Detection
 from pattern_detector.domain.rules.base import BasePatternRule
 from pattern_detector.domain.value_objects import Evidence, PatternCategory, PatternType
 
-_INSTANCEOF_RE = re.compile(r"\binstanceof\s+([A-Za-z0-9_]+)")
+_DYNAMIC_CAST_RE = re.compile(r"\bdynamic_cast\s*<\s*([A-Za-z0-9_:]+)\s*[\*&]\s*>\s*\(")
+_TYPEID_RE = re.compile(r"\btypeid\s*\([^)]+\)")
 
 
 class OpenClosedPrincipleRule(BasePatternRule):
-    """Detects violations and adherences to the Open/Closed Principle (OCP).
+    """Detects violations and adherences to the Open/Closed Principle (OCP) in C++.
 
     Indicators:
-    - OCP Violation (Type-testing cascade): Method body containing cascades of `instanceof`
-      or switch-on-type checks instead of polymorphic dispatch.
-    - OCP Adherence: Extensible polymorphic interface design with clean implementations.
+    - OCP Violation (RTTI / Type-testing cascade): Method body containing cascades of `dynamic_cast`
+      or `typeid` checks instead of polymorphic virtual dispatch.
+    - OCP Adherence: Extensible polymorphic pure virtual interface design with clean implementations.
     """
 
     @property
@@ -28,23 +29,27 @@ class OpenClosedPrincipleRule(BasePatternRule):
     def detect(self, model: CodeModel) -> list[Detection]:
         detections: list[Detection] = []
 
-        # 1. Detect instanceof cascades inside method bodies (OCP Violations)
+        # 1. Detect dynamic_cast / typeid cascades inside method bodies (OCP Violations)
         for fn in model.all_functions():
-            if fn.name.split(".")[-1] in ("equals", "compareTo", "toString", "hashCode"):
+            simple_name = fn.name.split("::")[-1]
+            if simple_name in ("operator==", "operator!=", "operator<", "operator="):
                 continue
             body = fn.body_text or ""
-            instanceof_matches = _INSTANCEOF_RE.findall(body)
-            if len(instanceof_matches) >= 2:
-                types_str = ", ".join(instanceof_matches)
+            cast_matches = _DYNAMIC_CAST_RE.findall(body)
+            typeid_matches = _TYPEID_RE.findall(body)
+            total_type_checks = len(cast_matches) + len(typeid_matches)
+
+            if total_type_checks >= 2:
+                types_str = ", ".join(cast_matches) if cast_matches else "typeid inspections"
                 evidences: list[Evidence] = [
                     self.evidence(
-                        description=f"Method '{fn.name}' performs explicit type inspection on ({types_str}) using 'instanceof' cascades, violating OCP",
-                        weight=min(0.65, 0.40 + 0.10 * len(instanceof_matches)),
+                        description=f"Method '{fn.name}' performs explicit RTTI type inspection ({types_str}) using dynamic_cast cascades, violating OCP",
+                        weight=min(0.65, 0.40 + 0.10 * total_type_checks),
                         location=fn.location,
-                        code_suffix="OCP_INSTANCEOF_CASCADE",
+                        code_suffix="OCP_DYNAMIC_CAST_CASCADE",
                     ),
                     self.evidence(
-                        description="Adding new types requires modifying this method rather than extending via polymorphism",
+                        description="Adding new types requires modifying this method rather than extending via virtual polymorphic dispatch",
                         weight=0.35,
                         location=fn.location,
                         code_suffix="OCP_FRAGILE_MODIFICATION",
@@ -53,32 +58,32 @@ class OpenClosedPrincipleRule(BasePatternRule):
 
                 detection = self.create_detection(
                     target_name=fn.name,
-                    target_kind="ocp_type_switch_violation",
+                    target_kind="ocp_dynamic_cast_violation",
                     evidences=evidences,
                     primary_location=fn.location,
-                    summary=f"OCP Violation: Method '{fn.name}' uses {len(instanceof_matches)} instanceof checks instead of polymorphic dispatch",
+                    summary=f"OCP Violation: Method '{fn.name}' uses {total_type_checks} RTTI/dynamic_cast checks instead of virtual dispatch",
                     base_score=0.35,
                 )
                 detection.pattern_category = PatternCategory.PRINCIPLE
                 detections.append(detection)
 
-        # 2. Detect OCP Adherence (Polymorphic extensibility point)
+        # 2. Detect OCP Adherence (Polymorphic Interface + Concrete Specializations)
         for proto in model.all_protocols():
-            rec_impls = model.find_records_implementing(proto.name)
-            if len(rec_impls) >= 3 and len(proto.methods) >= 1:
-                impls_str = ", ".join(r.name for r in rec_impls)
+            implementing_classes = model.find_records_implementing(proto.name)
+            if len(implementing_classes) >= 2:
+                impl_names = ", ".join(r.name for r in implementing_classes[:4])
                 evidences = [
                     self.evidence(
-                        description=f"Interface '{proto.name}' is open for extension with {len(rec_impls)} polymorphic implementations: {impls_str}",
-                        weight=0.55,
+                        description=f"Abstract interface '{proto.name}' enables open extension through {len(implementing_classes)} polymorphic implementations: {impl_names}",
+                        weight=min(0.70, 0.40 + 0.10 * len(implementing_classes)),
                         location=proto.location,
-                        code_suffix="OCP_POLYMORPHIC_EXTENSION",
+                        code_suffix="OCP_POLYMORPHIC_ABSTRACTION",
                     ),
                     self.evidence(
-                        description=f"Standard contract defines {len(proto.methods)} methods without requiring caller modifications",
-                        weight=0.30,
+                        description="New behaviors can be added by implementing the interface without modifying existing consumers",
+                        weight=0.35,
                         location=proto.location,
-                        code_suffix="OCP_CLOSED_CONTRACT",
+                        code_suffix="OCP_EXTENSIBLE_DESIGN",
                     ),
                 ]
 
@@ -87,9 +92,9 @@ class OpenClosedPrincipleRule(BasePatternRule):
                     target_kind="ocp_polymorphic_hierarchy",
                     evidences=evidences,
                     primary_location=proto.location,
-                    related_locations=[r.location for r in rec_impls],
-                    summary=f"OCP Adherence: Interface '{proto.name}' provides polymorphic extensibility across {len(rec_impls)} classes",
-                    base_score=0.30,
+                    related_locations=[r.location for r in implementing_classes],
+                    summary=f"OCP Adherence: Interface '{proto.name}' supports open extension with {len(implementing_classes)} implementations",
+                    base_score=0.35,
                 )
                 detection.pattern_category = PatternCategory.PRINCIPLE
                 detections.append(detection)

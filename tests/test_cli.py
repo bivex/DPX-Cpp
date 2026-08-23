@@ -1,4 +1,4 @@
-"""Tests for Typer CLI commands in Java Pattern Detector."""
+"""Tests for Typer CLI commands in C++ Pattern Detector."""
 
 from typer.testing import CliRunner
 
@@ -19,11 +19,11 @@ def test_cli_info_command() -> None:
     result = runner.invoke(app, ["info"])
     assert result.exit_code == 0
     assert "Hexagonal DDD Architecture" in result.stdout
-    assert "JavaLexer.g4" in result.stdout
+    assert "CPP14Lexer.g4" in result.stdout
 
 
 def test_cli_scan_command() -> None:
-    result = runner.invoke(app, ["scan", "examples/java_samples"])
+    result = runner.invoke(app, ["scan", "examples/cpp_samples"])
     assert result.exit_code == 0
     assert "Detection Summary" in result.stdout
     assert "Identified Design Patterns" in result.stdout
