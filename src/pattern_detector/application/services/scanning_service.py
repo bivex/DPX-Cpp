@@ -5,9 +5,11 @@ from __future__ import annotations
 import time
 
 from pattern_detector.domain.code_model import CodeModel
+from pattern_detector.domain.data_flow import DataFlowGraph, DataFlowVariant
 from pattern_detector.domain.detection import Detection, DetectionReport
+from pattern_detector.domain.services.data_flow import DataFlowService
 from pattern_detector.domain.services.pattern_detector import PatternDetectorService
-from pattern_detector.ports.inbound import DetectorPort, ScannerPort, ScanOptions
+from pattern_detector.ports.inbound import DataFlowPort, DetectorPort, ScannerPort, ScanOptions
 from pattern_detector.ports.outbound import (
     ParserPort,
     ResultRepositoryPort,
@@ -15,11 +17,11 @@ from pattern_detector.ports.outbound import (
 )
 
 
-class ScanningService(ScannerPort, DetectorPort):
-    """Application Service implementing ScannerPort and DetectorPort.
+class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
+    """Application Service implementing ScannerPort, DetectorPort, and DataFlowPort.
 
-    Coordinates source fetching, AST/Clojure parsing into CodeModel,
-    pattern rule execution, filtering, and persisting results.
+    Coordinates source fetching, AST/C++ parsing into CodeModel,
+    pattern rule execution, data flow analysis, and persisting results.
     """
 
     def __init__(
@@ -27,6 +29,7 @@ class ScanningService(ScannerPort, DetectorPort):
         source_provider: SourceProviderPort,
         parser: ParserPort,
         detector_service: PatternDetectorService,
+        data_flow_service: DataFlowService | None = None,
         json_repository: ResultRepositoryPort | None = None,
         html_repository: ResultRepositoryPort | None = None,
         markdown_repository: ResultRepositoryPort | None = None,
@@ -34,9 +37,44 @@ class ScanningService(ScannerPort, DetectorPort):
         self._source_provider = source_provider
         self._parser = parser
         self._detector_service = detector_service
+        self._data_flow_service = data_flow_service or DataFlowService()
         self._json_repository = json_repository
         self._html_repository = html_repository
         self._markdown_repository = markdown_repository
+
+    def analyze_data_flow(
+        self,
+        target_path: str,
+        target_entity: str,
+        direction: str = "OUT",
+        variant: str = "simplified",
+        to_entity: str | None = None,
+        max_depth: int = 15,
+        file_extensions: list[str] | None = None,
+    ) -> DataFlowGraph:
+        """Trace data flow graph for target entity."""
+        exts = file_extensions or [".cpp", ".hpp", ".h", ".cc", ".cxx", ".hxx", ".hh", ".C"]
+        sources = self._source_provider.get_sources(target_path, extensions=exts)
+        code_model = self._parser.parse_sources(sources)
+
+        df_variant = (
+            DataFlowVariant(variant.lower())
+            if variant.lower() in [v.value for v in DataFlowVariant]
+            else DataFlowVariant.SIMPLIFIED
+        )
+
+        if to_entity:
+            return self._data_flow_service.trace_relationship(
+                code_model, target_entity, to_entity, max_depth=max_depth
+            )
+        elif direction.upper() == "IN":
+            return self._data_flow_service.trace_data_flow_in(
+                code_model, target_entity, variant=df_variant, max_depth=max_depth
+            )
+        else:
+            return self._data_flow_service.trace_data_flow_out(
+                code_model, target_entity, variant=df_variant, max_depth=max_depth
+            )
 
     def detect(self, model: CodeModel) -> list[Detection]:
         """Directly detect patterns in an already constructed CodeModel."""

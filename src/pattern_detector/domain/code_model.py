@@ -55,6 +55,9 @@ class FunctionModel:
     invocations: list[FunctionInvocation] = field(default_factory=list)
     returns_closure: bool = False
     instantiates_types: list[str] = field(default_factory=list)
+    reads_variables: list[str] = field(default_factory=list)
+    writes_variables: list[str] = field(default_factory=list)
+    modifies_variables: list[str] = field(default_factory=list)
     metadata: dict[str, str] = field(default_factory=dict)
 
     @property

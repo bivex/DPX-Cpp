@@ -26,6 +26,42 @@ from pattern_detector.domain.value_objects import SourceLocation
 from pattern_detector.ports.outbound import ParserPort
 
 
+def _extract_variable_accesses(
+    body_text: str,
+    known_variables: set[str],
+) -> tuple[list[str], list[str], list[str]]:
+    """Extract reads, writes, and modifications of known variables in body_text."""
+    reads: list[str] = []
+    writes: list[str] = []
+    modifies: list[str] = []
+
+    for var in known_variables:
+        if not var or len(var) < 2 or "::" in var:
+            continue
+        # Check modification (e.g. var += ..., var -= ..., var++, ++var)
+        if re.search(rf"\b{re.escape(var)}\s*(?:\+=|-=|\*=|/=|%=|\+\+|--)", body_text) or re.search(
+            rf"(?:\+\+|--)\s*{re.escape(var)}\b", body_text
+        ):
+            modifies.append(var)
+            reads.append(var)
+        elif re.search(rf"\b{re.escape(var)}\s*=(?!=)", body_text):
+            writes.append(var)
+            rhs_match = re.search(rf"\b{re.escape(var)}\s*=\s*([^;]+);", body_text)
+            body_without_lval = re.sub(rf"\b{re.escape(var)}\s*=[^;]*;", "", body_text)
+            if (rhs_match and re.search(rf"\b{re.escape(var)}\b", rhs_match.group(1))) or re.search(
+                rf"\b{re.escape(var)}\b", body_without_lval
+            ):
+                reads.append(var)
+        elif re.search(rf"\b{re.escape(var)}\b", body_text):
+            reads.append(var)
+
+    return (
+        sorted(list(dict.fromkeys(reads))),
+        sorted(list(dict.fromkeys(writes))),
+        sorted(list(dict.fromkeys(modifies))),
+    )
+
+
 class _CppAstExtractionVisitor(CPP14ParserVisitor):
     """Walks the C++ parse tree to extract agnostic CodeModel domain entities."""
 
@@ -245,6 +281,54 @@ class _CppAstExtractionVisitor(CPP14ParserVisitor):
 
         return self.visitChildren(ctx)
 
+    def visitFunctionDefinition(self, ctx: Any) -> Any:
+        try:
+            decltor = ctx.declarator()
+            if decltor:
+                fn_name = decltor.getText()
+                fn_name_clean = fn_name.split("(")[0].strip()
+                if fn_name_clean and fn_name_clean not in ("main",) and fn_name_clean not in self.functions:
+                    loc = self._get_location(ctx)
+                    body_text = self._get_text(ctx.functionBody()) if ctx.functionBody() else ""
+                    calls = sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", body_text)))
+                    param_match = re.search(r"\(([^)]*)\)", fn_name)
+                    param_list = [p.strip() for p in param_match.group(1).split(",") if p.strip()] if param_match else []
+
+                    fn_model = FunctionModel(
+                        name=fn_name_clean,
+                        namespace=self.current_namespace,
+                        location=loc,
+                        parameter_lists=[param_list],
+                        body_text=body_text,
+                        calls=calls,
+                        docstring="",
+                    )
+                    self.functions[fn_name_clean] = fn_model
+        except Exception:
+            pass
+        return self.visitChildren(ctx)
+
+    def visitSimpleDeclaration(self, ctx: Any) -> Any:
+        try:
+            decl_text = self._get_text(ctx).strip()
+            if ";" in decl_text and not decl_text.startswith("typedef") and not decl_text.startswith("using"):
+                vm = re.search(
+                    r"\b(?:extern\s+)?(?:int|double|float|char|bool|long|short|size_t|std::string|auto|[A-Za-z0-9_:]+)\s+([A-Za-z0-9_]+)\s*(?:=\s*[^;]+)?\s*;",
+                    decl_text,
+                )
+                if vm:
+                    v_name = vm.group(1)
+                    if v_name not in ("default", "delete", "const", "return", "auto") and v_name not in self.states:
+                        self.states[v_name] = StateModel(
+                            name=v_name,
+                            namespace=self.current_namespace,
+                            location=self._get_location(ctx),
+                            kind="atom",
+                        )
+        except Exception:
+            pass
+        return self.visitChildren(ctx)
+
 
 class CppAntlrParserAdapter(ParserPort):
     """Parses C++ (C++14/17/20) source and header files using ANTLR4 into agnostic CodeModel."""
@@ -280,6 +364,17 @@ class CppAntlrParserAdapter(ParserPort):
             tree = parser.translationUnit()
             visitor = _CppAstExtractionVisitor(file_path=file_path, source_code=source_code)
             visitor.visit(tree)
+
+            # Run Def-Use data flow variable access analysis for all functions
+            all_known_vars = set(visitor.states.keys())
+            for r in visitor.records.values():
+                all_known_vars.update(r.fields)
+
+            for fn in visitor.functions.values():
+                r_vars, w_vars, m_vars = _extract_variable_accesses(fn.body_text, all_known_vars)
+                fn.reads_variables = r_vars
+                fn.writes_variables = w_vars
+                fn.modifies_variables = m_vars
 
             return NamespaceModel(
                 name=visitor.primary_namespace,
@@ -423,6 +518,65 @@ class CppAntlrParserAdapter(ParserPort):
                     location=loc,
                     methods=pure_methods if pure_methods else [MethodSignature(name=m.name.split("::")[-1], location=loc) for m in methods],
                 )
+
+        # Extract global/extern variables
+        var_pattern = re.compile(
+            r"\b(?:extern\s+)?(?:int|double|float|char|bool|long|short|size_t|std::string|auto|[A-Za-z0-9_:]+)\s+([A-Za-z0-9_]+)\s*(?:=\s*[^;]+)?\s*;"
+        )
+        for vm in var_pattern.finditer(cleaned):
+            v_name = vm.group(1)
+            if v_name not in CONTROL_KEYWORDS and not v_name.startswith("return") and v_name not in ("default", "delete"):
+                visitor.states[v_name] = StateModel(
+                    name=v_name,
+                    namespace=ns_name,
+                    location=SourceLocation(file_path=file_path, line=1, column=1),
+                    kind="atom",
+                )
+
+        # Extract free / standalone functions
+        fn_pattern = re.compile(
+            r"\b(?:void|int|double|float|bool|char|std::string|auto|[A-Za-z0-9_:]+(?:\s*[*&])?)\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*\{"
+        )
+        for fn_m in fn_pattern.finditer(cleaned):
+            fn_name = fn_m.group(1)
+            if fn_name in CONTROL_KEYWORDS or fn_name.startswith("main") or any(r.name == fn_name for r in visitor.records.values()):
+                continue
+            fn_params_raw = fn_m.group(2) or ""
+            fn_loc = SourceLocation(file_path=file_path, line=1, column=1)
+
+            start_idx = fn_m.end()
+            depth = 1
+            pos = start_idx
+            while pos < len(cleaned) and depth > 0:
+                ch = cleaned[pos]
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                pos += 1
+            fn_body = cleaned[start_idx : pos - 1]
+
+            param_list = [p.strip() for p in fn_params_raw.split(",") if p.strip()]
+            free_fn = FunctionModel(
+                name=fn_name,
+                namespace=ns_name,
+                location=fn_loc,
+                parameter_lists=[param_list],
+                body_text=fn_body,
+                calls=sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", fn_body))),
+            )
+            visitor.functions[fn_name] = free_fn
+
+        # Run Def-Use data flow variable access analysis for all functions
+        all_known_vars = set(visitor.states.keys())
+        for r in visitor.records.values():
+            all_known_vars.update(r.fields)
+
+        for fn in visitor.functions.values():
+            r_vars, w_vars, m_vars = _extract_variable_accesses(fn.body_text, all_known_vars)
+            fn.reads_variables = r_vars
+            fn.writes_variables = w_vars
+            fn.modifies_variables = m_vars
 
         return NamespaceModel(
             name=ns_name,

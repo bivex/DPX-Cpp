@@ -127,16 +127,109 @@ def list_rules() -> None:
     console.print(table)
 
 
+@app.command(name="dataflow")
+def dataflow(
+    target: Annotated[
+        str,
+        typer.Argument(
+            help="Target variable, field, or object to trace forward or backward.",
+        ),
+    ],
+    path: Annotated[
+        str,
+        typer.Option(
+            "--path",
+            "-p",
+            help="File or directory path containing C++ source code.",
+        ),
+    ] = ".",
+    direction: Annotated[
+        str,
+        typer.Option(
+            "--direction",
+            "-d",
+            help="Direction of data flow: 'out' (forward) or 'in' (backward).",
+        ),
+    ] = "out",
+    variant: Annotated[
+        str,
+        typer.Option(
+            "--variant",
+            "-v",
+            help="Visualization variant: 'simplified', 'cluster', 'relationship'.",
+        ),
+    ] = "simplified",
+    to_entity: Annotated[
+        str | None,
+        typer.Option(
+            "--to",
+            help="Second entity to trace paths between (for relationship variant).",
+        ),
+    ] = None,
+    mermaid: Annotated[
+        bool,
+        typer.Option(
+            "--mermaid",
+            "-m",
+            help="Output Mermaid.js graph code.",
+        ),
+    ] = False,
+    json_output: Annotated[
+        str | None,
+        typer.Option(
+            "--json",
+            "-j",
+            help="Export graph data to a JSON file.",
+        ),
+    ] = None,
+    max_depth: Annotated[
+        int,
+        typer.Option(
+            "--max-depth",
+            help="Maximum propagation traversal depth.",
+        ),
+    ] = 15,
+) -> None:
+    """Trace forward (Data Flow Out) or backward (Data Flow In) propagation graph for an entity."""
+    target_path = str(Path(path).resolve())
+    container = create_container()
+
+    graph = container.scanning_service.analyze_data_flow(
+        target_path=target_path,
+        target_entity=target,
+        direction=direction,
+        variant=variant,
+        to_entity=to_entity,
+        max_depth=max_depth,
+    )
+
+    if mermaid:
+        console.print(f"[bold green]Mermaid Diagram for Data Flow ({graph.direction.value}):[/bold green]\n")
+        console.print(f"```mermaid\n{graph.to_mermaid()}\n```")
+    else:
+        title = f"Data Flow {graph.direction.value}: '{target}'"
+        if to_entity:
+            title += f" ➔ '{to_entity}'"
+        console.print(Panel(graph.to_rich_tree(), title=f"📊 [bold cyan]{title}[/bold cyan]", border_style="bright_blue"))
+
+    if json_output:
+        import json
+        with open(json_output, "w", encoding="utf-8") as f:
+            json.dump(graph.to_json(), f, indent=2)
+        console.print(f"\n[bold green]✔[/bold green] Data flow graph JSON exported to: [underline]{json_output}[/underline]")
+
+
 @app.command(name="info")
 def info() -> None:
     """Display architecture info and supported grammar configurations."""
     info_text = (
         "[bold magenta]Pattern Scanner & Detector (Hexagonal DDD Architecture)[/bold magenta]\n\n"
         "• [bold cyan]Core Domain:[/bold cyan] Agnostic CodeModel, Evidence & Confidence Score Engine, Specification Rules\n"
-        "• [bold cyan]Inbound Ports:[/bold cyan] ScannerPort, DetectorPort\n"
+        "• [bold cyan]Inbound Ports:[/bold cyan] ScannerPort, DetectorPort, DataFlowPort\n"
         "• [bold cyan]Outbound Ports:[/bold cyan] ParserPort, SourceProviderPort, ResultRepositoryPort, ReportFormatterPort\n"
         "• [bold cyan]Active Grammar Adapter:[/bold cyan] ANTLR 4.13.2 C++ Grammar (CPP14Lexer.g4 / CPP14Parser.g4)\n"
         "• [bold cyan]Supported Extensions:[/bold cyan] .cpp, .hpp, .h, .cc, .cxx, .hxx, .hh, .C\n"
+        "• [bold cyan]Features:[/bold cyan] 23/23 GoF Patterns, SOLID Principles, Data Flow Out / In Analysis\n"
     )
     console.print(Panel(info_text, title="ℹ System Info", border_style="cyan"))
 

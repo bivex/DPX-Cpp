@@ -38,3 +38,20 @@ class DetectorPort(Protocol):
     def detect(self, model: CodeModel) -> list[Detection]:
         """Detect patterns in CodeModel."""
         ...
+
+
+class DataFlowPort(Protocol):
+    """Inbound port for tracing forward/backward Data Flow graphs."""
+
+    def analyze_data_flow(
+        self,
+        target_path: str,
+        target_entity: str,
+        direction: str = "OUT",
+        variant: str = "simplified",
+        to_entity: str | None = None,
+        max_depth: int = 15,
+    ) -> Any:
+        """Trace data flow graph for target entity."""
+        ...
+
