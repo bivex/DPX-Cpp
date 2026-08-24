@@ -400,8 +400,8 @@ class CppAntlrParserAdapter(ParserPort):
         """Robust fallback AST extractor for complex macro or template-heavy C++ headers."""
         visitor = _CppAstExtractionVisitor(file_path=file_path, source_code=source_code)
 
-        # Extract namespace
-        ns_match = re.search(r"\bnamespace\s+([a-zA-Z0-9_:]+)", source_code)
+        # Extract namespace definition (ignore using namespace directives)
+        ns_match = re.search(r"(?<!using\s)\bnamespace\s+([a-zA-Z0-9_:]+)\s*\{", source_code)
         ns_name = ns_match.group(1) if ns_match else "global"
 
         # Pre-clean comments and macros for clean brace navigation
