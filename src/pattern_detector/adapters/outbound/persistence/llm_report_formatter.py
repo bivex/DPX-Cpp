@@ -4,13 +4,18 @@ from __future__ import annotations
 
 from pattern_detector.domain.data_flow import DataFlowGraph, DataFlowSummaryReport
 from pattern_detector.domain.detection import DetectionReport
+from pattern_detector.domain.insights import InsightsReport
 from pattern_detector.domain.value_objects import PatternCategory
 
 
 class LlmReportFormatter:
     """Formatter that generates clean, token-efficient architectural context for LLMs."""
 
-    def format_scan_report(self, report: DetectionReport) -> str:
+    def format_scan_report(
+        self,
+        report: DetectionReport,
+        insights_report: InsightsReport | None = None,
+    ) -> str:
         """Render DetectionReport as structured XML/Markdown context for LLMs."""
         lines: list[str] = [
             "<codebase_architecture_analysis>",
@@ -52,6 +57,20 @@ class LlmReportFormatter:
                 lines.append("        </evidence>")
                 lines.append("      </violation>")
             lines.append("    </architectural_violations_and_risks>")
+
+        if insights_report and insights_report.insights:
+            lines.append("    <pattern_data_insights>")
+            for ins in insights_report.insights:
+                loc = f"{ins.location.file_path}:{ins.location.line}" if ins.location else ""
+                lines.append(f'      <insight pattern="{ins.target_pattern.value}" target="{ins.target_name}" severity="{ins.severity.value}" category="{ins.category.value}" location="{loc}">')
+                lines.append(f"        <title>{ins.title}</title>")
+                lines.append(f"        <data_entity>{ins.data_entity}</data_entity>")
+                lines.append(f"        <description>{ins.description}</description>")
+                lines.append(f"        <suggestion>{ins.suggestion}</suggestion>")
+                if ins.code_snippet:
+                    lines.append(f"        <recommended_code><![CDATA[\n{ins.code_snippet}\n]]></recommended_code>")
+                lines.append("      </insight>")
+            lines.append("    </pattern_data_insights>")
 
         lines.extend([
             "  </project>",

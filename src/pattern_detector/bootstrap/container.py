@@ -20,6 +20,7 @@ from pattern_detector.application.services.scanning_service import ScanningServi
 from pattern_detector.domain.rules import get_default_rules
 from pattern_detector.domain.services.data_flow import DataFlowService
 from pattern_detector.domain.services.pattern_detector import PatternDetectorService
+from pattern_detector.domain.services.pattern_insights import PatternInsightsService
 from pattern_detector.ports.inbound import ScannerPort
 from pattern_detector.ports.outbound import (
     ParserPort,
@@ -71,6 +72,7 @@ class Container:
         # Domain Service & Rules
         self.detector_service: PatternDetectorService = detector_service or PatternDetectorService(rules=get_default_rules())
         self.data_flow_service: DataFlowService = DataFlowService()
+        self.insights_service: PatternInsightsService = PatternInsightsService()
 
         # Application Service (Inbound Port implementation)
         self.scanning_service: ScanningService = ScanningService(
@@ -78,6 +80,7 @@ class Container:
             parser=self.parser,
             detector_service=self.detector_service,
             data_flow_service=self.data_flow_service,
+            insights_service=self.insights_service,
             json_repository=self.json_repository,
             html_repository=self.html_repository,
             markdown_repository=self.markdown_repository,

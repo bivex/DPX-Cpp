@@ -11,8 +11,10 @@ from pattern_detector.domain.data_flow import (
     DataFlowVariant,
 )
 from pattern_detector.domain.detection import Detection, DetectionReport
+from pattern_detector.domain.insights import InsightsReport
 from pattern_detector.domain.services.data_flow import DataFlowService
 from pattern_detector.domain.services.pattern_detector import PatternDetectorService
+from pattern_detector.domain.services.pattern_insights import PatternInsightsService
 from pattern_detector.ports.inbound import DataFlowPort, DetectorPort, ScannerPort, ScanOptions
 from pattern_detector.ports.outbound import (
     ParserPort,
@@ -34,6 +36,7 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
         parser: ParserPort,
         detector_service: PatternDetectorService,
         data_flow_service: DataFlowService | None = None,
+        insights_service: PatternInsightsService | None = None,
         json_repository: ResultRepositoryPort | None = None,
         html_repository: ResultRepositoryPort | None = None,
         markdown_repository: ResultRepositoryPort | None = None,
@@ -43,6 +46,7 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
         self._parser = parser
         self._detector_service = detector_service
         self._data_flow_service = data_flow_service or DataFlowService()
+        self._insights_service = insights_service or PatternInsightsService()
         self._json_repository = json_repository
         self._html_repository = html_repository
         self._markdown_repository = markdown_repository
@@ -159,3 +163,28 @@ class ScanningService(ScannerPort, DetectorPort, DataFlowPort):
             self._sarif_repository.save(report, opts.output_sarif_path)
 
         return report
+
+    def generate_insights(
+        self,
+        target_path: str,
+        report: DetectionReport | None = None,
+        include_data_flow: bool = True,
+        file_extensions: list[str] | None = None,
+    ) -> InsightsReport:
+        """Analyze pattern-data interactions and generate actionable coder insights."""
+        exts = file_extensions or [".cpp", ".hpp", ".h", ".cc", ".cxx", ".hxx", ".hh", ".C"]
+        sources = self._source_provider.get_sources(target_path, extensions=exts)
+        code_model = self._parser.parse_sources(sources)
+
+        det_report = report or self._detector_service.detect_all(code_model, project_path=target_path)
+        df_summary = (
+            self._data_flow_service.analyze_all_variables(code_model, target_path=target_path)
+            if include_data_flow
+            else None
+        )
+
+        return self._insights_service.generate_insights(
+            model=code_model,
+            pattern_report=det_report,
+            data_flow_summary=df_summary,
+        )

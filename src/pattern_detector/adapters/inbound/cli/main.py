@@ -8,9 +8,12 @@ from typing import Annotated
 import typer
 from rich.console import Console
 from rich.panel import Panel
+from rich.syntax import Syntax
 from rich.table import Table
 
-from pattern_detector.bootstrap.container import create_container
+from pattern_detector.bootstrap.container import Container, create_container
+from pattern_detector.domain.detection import DetectionReport
+from pattern_detector.domain.insights import InsightSeverity, InsightsReport
 from pattern_detector.domain.pattern import PATTERN_CATALOG
 from pattern_detector.ports.inbound import ScanOptions
 
@@ -78,6 +81,14 @@ def scan(
             help="Export results to OASIS SARIF v2.1.0 JSON format for GitHub Code Scanning / CI-CD.",
         ),
     ] = None,
+    insights: Annotated[
+        bool,
+        typer.Option(
+            "--insights",
+            "-I",
+            help="Analyze pattern-dataflow interactions and generate actionable coder hints & code suggestions.",
+        ),
+    ] = False,
     llm: Annotated[
         bool,
         typer.Option(
@@ -113,7 +124,8 @@ def scan(
 
     if llm:
         report = scanner.scan_path(target_path, options=options)
-        print(container.llm_formatter.format_scan_report(report))
+        insights_report = container.scanning_service.generate_insights(target_path, report=report) if insights else None
+        print(container.llm_formatter.format_scan_report(report, insights_report=insights_report))
         return
 
     with console.status(f"[cyan]Scanning [bold]{path}[/bold] using ANTLR parser & Domain Rules...[/cyan]"):
@@ -121,6 +133,9 @@ def scan(
 
     # Render formatted report to terminal
     container.report_formatter.render_to_console(report, console, verbose=verbose)  # type: ignore[attr-defined]
+
+    if insights:
+        _render_insights_to_console(container, target_path, report)
 
     if json_output:
         console.print(f"[bold green]✔[/bold green] Full JSON detection report exported to: [underline]{json_output}[/underline]")
@@ -318,6 +333,105 @@ def dataflow(
         with open(json_output, "w", encoding="utf-8") as f:
             json.dump(graph.to_json(), f, indent=2)
         console.print(f"\n[bold green]✔[/bold green] Data flow graph JSON exported to: [underline]{json_output}[/underline]")
+
+
+def _render_insights_to_console(
+    container: Container,
+    target_path: str,
+    report: DetectionReport | None = None,
+) -> None:
+    """Render structured semantic insights and actionable coder suggestions to the console."""
+    with console.status("[cyan]Analyzing Pattern-Dataflow interactions and synthesizing coder insights...[/cyan]"):
+        insights_report: InsightsReport = container.scanning_service.generate_insights(
+            target_path=target_path,
+            report=report,
+        )
+
+    if not insights_report.insights:
+        console.print("[dim]No actionable data-flow or architectural risks detected for current patterns.[/dim]")
+        return
+
+    console.print()
+    console.print(
+        f"💡 [bold white on blue] ARCHITECTURAL & DATA FLOW CODER INSIGHTS [/bold white on blue] "
+        f"[bold cyan]{insights_report.total_insights}[/bold cyan] Recommendations "
+        f"([red]{insights_report.critical_count} Critical[/red], "
+        f"[yellow]{insights_report.warning_count} Warnings[/yellow], "
+        f"[green]{insights_report.suggestion_count} Suggestions[/green])\n"
+    )
+
+    for i, ins in enumerate(insights_report.insights, start=1):
+        sev_color = {
+            InsightSeverity.CRITICAL: "red",
+            InsightSeverity.WARNING: "yellow",
+            InsightSeverity.SUGGESTION: "green",
+            InsightSeverity.INFO: "blue",
+        }.get(ins.severity, "white")
+
+        sev_badge = f"[bold {sev_color}][{ins.severity.value}][/bold {sev_color}]"
+        loc_str = f" [dim]({ins.location.file_path}:{ins.location.line})[/dim]" if ins.location and ins.location.file_path else ""
+
+        body_lines: list[str] = [
+            f"[bold]Target Pattern:[/bold] [magenta]{ins.target_pattern.value.upper()}[/magenta] on [cyan]{ins.target_name}[/cyan]{loc_str}",
+            f"[bold]Data Entity / State:[/bold] [yellow]{ins.data_entity}[/yellow]",
+            f"[bold]Analysis:[/bold] {ins.description}",
+            "",
+            f"👉 [bold green]Actionable Suggestion:[/bold green] {ins.suggestion}",
+        ]
+
+        if ins.affected_components:
+            body_lines.append(f"[bold]Propagates to:[/bold] [dim]{', '.join(ins.affected_components)}[/dim]")
+
+        content = "\n".join(body_lines)
+        if ins.code_snippet:
+            syntax_block = Syntax(ins.code_snippet, "cpp", theme="monokai", line_numbers=False)
+            panel_content = Panel(
+                f"{content}\n",
+                title=f"#{i} {sev_badge} [bold white]{ins.title}[/bold white]",
+                border_style=sev_color,
+                subtitle="[dim]C++ Recommended Implementation[/dim]",
+            )
+            console.print(panel_content)
+            console.print(Panel(syntax_block, border_style="dim", title="[dim]Suggested C++ Code[/dim]"))
+        else:
+            console.print(
+                Panel(
+                    content,
+                    title=f"#{i} {sev_badge} [bold white]{ins.title}[/bold white]",
+                    border_style=sev_color,
+                )
+            )
+
+
+@app.command(name="insights")
+def insights_cmd(
+    path: Annotated[
+        str,
+        typer.Argument(
+            help="File or directory path to analyze for pattern-dataflow insights.",
+        ),
+    ] = ".",
+    llm: Annotated[
+        bool,
+        typer.Option(
+            "--llm",
+            "-L",
+            help="Output token-efficient structured XML/Markdown context for LLMs.",
+        ),
+    ] = False,
+) -> None:
+    """Analyze the fusion of Design Patterns and Data Flow to deliver actionable developer hints."""
+    target_path = str(Path(path).resolve())
+    container = create_container()
+
+    if llm:
+        scanner = container.get_scanner()
+        report = scanner.scan_path(target_path)
+        insights_rep = container.scanning_service.generate_insights(target_path, report=report)
+        print(container.llm_formatter.format_scan_report(report, insights_report=insights_rep))
+        return
+
+    _render_insights_to_console(container, target_path)
 
 
 @app.command(name="info")
