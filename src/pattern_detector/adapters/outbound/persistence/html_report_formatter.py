@@ -1,9 +1,11 @@
-"""HTML Report Formatter implementing ReportFormatterPort."""
+"""HTML Report Formatter implementing ReportFormatterPort with AI Context & LLM Prompts."""
 
 from __future__ import annotations
 
 import html
+import json
 
+from pattern_detector.adapters.outbound.persistence.llm_report_formatter import LlmReportFormatter
 from pattern_detector.domain.detection import DetectionReport
 from pattern_detector.domain.value_objects import ConfidenceLevel, PatternCategory, PatternType
 from pattern_detector.ports.outbound import ReportFormatterPort
@@ -93,13 +95,17 @@ PATTERN_TYPE_COLORS: dict[PatternType, dict[str, str]] = {
 
 
 class HtmlReportFormatter(ReportFormatterPort):
-    """Renders a standalone, responsive, interactive HTML dashboard for DetectionReport."""
+    """Renders a standalone, responsive, interactive HTML dashboard for DetectionReport with AI Prompt Generator."""
 
     def format(self, report: DetectionReport, verbose: bool = False) -> str:
         vh_count = sum(1 for d in report.detections if d.level == ConfidenceLevel.VERY_HIGH)
         h_count = sum(1 for d in report.detections if d.level == ConfidenceLevel.HIGH)
         m_count = sum(1 for d in report.detections if d.level == ConfidenceLevel.MEDIUM)
         l_count = sum(1 for d in report.detections if d.level == ConfidenceLevel.LOW)
+
+        # Generate structured LLM context prompt
+        llm_formatter = LlmReportFormatter()
+        llm_prompt_text = llm_formatter.format_scan_report(report)
 
         cards_html: list[str] = []
         for idx, det in enumerate(report.detections, 1):
@@ -136,6 +142,15 @@ class HtmlReportFormatter(ReportFormatterPort):
                 rel_items = "".join(f"<li><code>{html.escape(str(loc))}</code></li>" for loc in det.related_locations)
                 related_html = f'<div class="related-locs"><strong>Related Locations:</strong><ul>{rel_items}</ul></div>'
 
+            finding_prompt = (
+                f"Refactor and review the following C++ pattern/violation:\n"
+                f"- Pattern: {det.pattern_type.value} ({cat_style['name']})\n"
+                f"- Target: {det.target_name} ({det.target_kind})\n"
+                f"- Location: {det.primary_location}\n"
+                f"- Summary: {det.summary}\n\n"
+                f"Please provide an idiomatic C++17/20 refactoring to adhere to clean architecture and SOLID principles."
+            )
+
             cards_html.append(
                 f"""
                 <div class="pattern-card" data-pattern="{html.escape(det.pattern_type.value)}" data-category="{html.escape(det.pattern_category.value)}" data-target="{html.escape(det.target_name)}" style="border-left: 4px solid {cat_style["accent"]};">
@@ -150,7 +165,10 @@ class HtmlReportFormatter(ReportFormatterPort):
                             </span>
                             <span class="target-name">{html.escape(det.target_kind)}: <strong>{html.escape(det.target_name)}</strong></span>
                         </div>
-                        <span class="confidence-badge {badge_class}">{det.confidence.percentage_str} [{det.level.value}]</span>
+                        <div class="header-right">
+                            <span class="confidence-badge {badge_class}">{det.confidence.percentage_str} [{det.level.value}]</span>
+                            <button class="btn-copy-card-ai" onclick='copySingleAiPrompt({json.dumps(finding_prompt)})' title="Copy AI Refactoring Prompt">🤖 Copy for AI</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <p class="summary-text"><strong>Summary:</strong> {html.escape(det.summary)}</p>
@@ -185,7 +203,7 @@ class HtmlReportFormatter(ReportFormatterPort):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Scanner Report - {html.escape(report.project_path or "Codebase")}</title>
+    <title>Pattern Scanner Report - DPX-Cpp Architecture HUD - {html.escape(report.project_path or "Codebase")}</title>
     <style>
         :root {{
             --bg: #090d13;
@@ -198,14 +216,61 @@ class HtmlReportFormatter(ReportFormatterPort):
             --cyan: #0ea5e9;
             --yellow: #f59e0b;
             --red: #ef4444;
+            --violet: #a855f7;
         }}
         * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif; }}
         body {{ background: var(--bg); color: var(--text); padding: 30px 20px; line-height: 1.5; }}
-        .container {{ max-width: 1240px; margin: 0 auto; }}
-        header {{ border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }}
+        .container {{ max-width: 1280px; margin: 0 auto; }}
+        
+        header {{ 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 20px; 
+            margin-bottom: 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 15px;
+        }}
         h1 {{ color: var(--heading); font-size: 26px; display: flex; align-items: center; gap: 10px; }}
         .subtitle {{ color: #94a3b8; font-size: 14px; margin-top: 5px; }}
         
+        .header-actions {{ display: flex; gap: 10px; align-items: center; }}
+        .btn-ai-context {{
+            background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }}
+        .btn-ai-context:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }}
+        .btn-view-prompt {{
+            background: var(--card-bg);
+            color: var(--heading);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }}
+        .btn-view-prompt:hover {{
+            border-color: var(--accent);
+            color: var(--accent);
+        }}
+
         .kpi-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }}
         .kpi-card {{ background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }}
         .kpi-title {{ font-size: 12px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; }}
@@ -214,7 +279,6 @@ class HtmlReportFormatter(ReportFormatterPort):
         .category-filters {{ display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }}
         .cat-filter-btn {{ padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card-bg); color: var(--heading); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.1s, opacity 0.2s; }}
         .cat-filter-btn:hover {{ transform: translateY(-1px); opacity: 0.9; }}
-        .cat-filter-btn.active {{ ring: 2px solid #38bdf8; }}
         .cat-dot {{ width: 8px; height: 8px; border-radius: 50%; display: inline-block; }}
         .btn-all {{ background: #1e293b; color: #f8fafc; border-color: #475569; }}
 
@@ -225,6 +289,7 @@ class HtmlReportFormatter(ReportFormatterPort):
         .pattern-card:hover {{ border-color: #38bdf888; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }}
         .card-header {{ background: #17202e; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); }}
         .header-left {{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }}
+        .header-right {{ display: flex; align-items: center; gap: 10px; }}
         .card-index {{ color: #64748b; font-weight: 700; font-size: 13px; }}
         
         .category-badge {{ padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }}
@@ -236,6 +301,23 @@ class HtmlReportFormatter(ReportFormatterPort):
         .badge-h {{ background: #0c4a6e55; color: #38bdf8; border: 1px solid #0284c7; }}
         .badge-m {{ background: #78350f55; color: #fbbf24; border: 1px solid #d97706; }}
         .badge-l {{ background: #7f1d1d55; color: #f87171; border: 1px solid #dc2626; }}
+
+        .btn-copy-card-ai {{
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }}
+        .btn-copy-card-ai:hover {{
+            background: rgba(168, 85, 247, 0.3);
+            color: #ffffff;
+            border-color: #a855f7;
+        }}
 
         .card-body {{ padding: 16px 18px; font-size: 13px; }}
         .summary-text {{ margin-bottom: 10px; color: #e2e8f0; font-size: 14px; }}
@@ -250,13 +332,100 @@ class HtmlReportFormatter(ReportFormatterPort):
         .location-tag {{ color: #7dd3fc; font-size: 11px; margin-left: 6px; }}
         .related-locs {{ margin-top: 12px; color: #94a3b8; }}
         .related-locs ul {{ margin-left: 20px; margin-top: 4px; }}
+
+        /* Toast notification */
+        .toast {{
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: #ffffff;
+            padding: 14px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 9999;
+        }}
+        .toast.show {{
+            opacity: 1;
+            transform: translateY(0);
+        }}
+
+        /* Modal Preview */
+        .modal-overlay {{
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            padding: 20px;
+        }}
+        .modal-box {{
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }}
+        .modal-header {{
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }}
+        .modal-title {{ color: var(--heading); font-size: 18px; font-weight: 700; }}
+        .modal-close {{ background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }}
+        .modal-body {{ padding: 20px 22px; overflow-y: auto; flex: 1; }}
+        .prompt-textarea {{
+            width: 100%;
+            height: 400px;
+            background: #090d13;
+            color: #7dd3fc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: ui-monospace, monospace;
+            font-size: 12.5px;
+            line-height: 1.4;
+            resize: vertical;
+            outline: none;
+        }}
+        .modal-footer {{
+            padding: 16px 22px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }}
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🔍 Software Design Pattern Detection Report</h1>
-            <div class="subtitle">Hexagonal DDD Pattern Scanner • Project: <code>{html.escape(report.project_path or "Target Repository")}</code></div>
+            <div>
+                <h1>⚡ DPX-Cpp Architecture & Pattern Observability HUD</h1>
+                <div class="subtitle">Hexagonal DDD C++ Engine (C++14/17/20) • Target: <code>{html.escape(report.project_path or "Target Repository")}</code></div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-view-prompt" onclick="openPromptModal()">👁️ View AI Context</button>
+                <button class="btn-ai-context" onclick="copyFullAiContext()">🤖 Copy AI Context Prompt</button>
+            </div>
         </header>
 
         <div class="kpi-grid">
@@ -287,14 +456,88 @@ class HtmlReportFormatter(ReportFormatterPort):
             {"".join(category_cards)}
         </div>
 
-        <input type="text" id="searchInput" class="search-bar" placeholder="🔎 Instant search by pattern name, category, target function, or rule (e.g. observer, adapter, wrap-routes, with-db)...">
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔎 Instant search by pattern name, category, target function, or rule (e.g. kiss, singleton, dip, outputcapturecallback)...">
 
         <div id="cardsContainer">
             {"".join(cards_html)}
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span>✅</span>
+        <span id="toastMsg">AI Context Prompt Copied to Clipboard!</span>
+    </div>
+
+    <!-- AI Prompt Preview Modal -->
+    <div id="promptModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">🤖 AI Architect Context Prompt</div>
+                <button class="modal-close" onclick="closePromptModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">This structured context contains all architectural detections, principles, and evidence trails formatted for LLMs (Claude, GPT-4, Gemini).</p>
+                <textarea id="modalPromptArea" class="prompt-textarea" readonly>{html.escape(llm_prompt_text)}</textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-view-prompt" onclick="closePromptModal()">Close</button>
+                <button class="btn-ai-context" onclick="copyModalPrompt()">📋 Copy Prompt</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const FULL_LLM_PROMPT = {json.dumps(llm_prompt_text)};
+
+        function showToast(message) {{
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toastMsg');
+            msgSpan.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {{
+                toast.classList.remove('show');
+            }}, 2500);
+        }}
+
+        function copyFullAiContext() {{
+            navigator.clipboard.writeText(FULL_LLM_PROMPT).then(() => {{
+                showToast("✅ Full AI Context Prompt copied to clipboard!");
+            }}).catch(err => {{
+                console.error("Failed to copy", err);
+            }});
+        }}
+
+        function copySingleAiPrompt(promptText) {{
+            navigator.clipboard.writeText(promptText).then(() => {{
+                showToast("✅ Finding refactoring prompt copied for AI!");
+            }}).catch(err => {{
+                console.error("Failed to copy", err);
+            }});
+        }}
+
+        function openPromptModal() {{
+            document.getElementById('promptModal').style.display = 'flex';
+        }}
+
+        function closePromptModal() {{
+            document.getElementById('promptModal').style.display = 'none';
+        }}
+
+        function closeModalOnOverlay(e) {{
+            if (e.target.id === 'promptModal') {{
+                closePromptModal();
+            }}
+        }}
+
+        function copyModalPrompt() {{
+            const textarea = document.getElementById('modalPromptArea');
+            navigator.clipboard.writeText(textarea.value).then(() => {{
+                showToast("✅ Prompt copied to clipboard!");
+                closePromptModal();
+            }});
+        }}
+
         const searchInput = document.getElementById('searchInput');
         const cards = document.querySelectorAll('.pattern-card');
         const filterBtns = document.querySelectorAll('.cat-filter-btn');
