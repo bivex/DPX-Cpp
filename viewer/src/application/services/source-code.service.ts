@@ -7,4 +7,8 @@ export class SourceCodeService implements ReadSourceCodeUseCase {
   public async execute(filePath: string): Promise<string> {
     return this.sourceProviderPort.readFile(filePath);
   }
+
+  public async pickFolder(): Promise<string | null> {
+    return this.sourceProviderPort.pickFolder();
+  }
 }

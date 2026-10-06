@@ -11,7 +11,8 @@ pub fn run() {
             trace_dataflow_all,
             trace_dataflow_target,
             read_source_file,
-            load_json_file
+            load_json_file,
+            pick_folder
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -8,11 +8,17 @@ export const HeaderBar: React.FC = () => {
     currentView,
     switchView,
     scan,
+    openFolder,
     loadDataFlow,
     isLoading,
   } = useViewer();
 
   const [inputPath, setInputPath] = useState(projectPath);
+
+  // Sync input value when projectPath changes (e.g. via openFolder)
+  React.useEffect(() => {
+    setInputPath(projectPath);
+  }, [projectPath]);
 
   const handleScanClick = () => {
     setProjectPath(inputPath);
@@ -50,6 +56,14 @@ export const HeaderBar: React.FC = () => {
 
       <div className="header-right">
         <div className="path-input-group">
+          <button
+            className="secondary-btn"
+            onClick={openFolder}
+            disabled={isLoading}
+            title="Choose C++ project directory via folder picker dialog"
+          >
+            📁 Open Folder
+          </button>
           <input
             type="text"
             className="path-input"

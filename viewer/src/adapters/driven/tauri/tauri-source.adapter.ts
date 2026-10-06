@@ -21,4 +21,18 @@ export class TauriSourceProviderAdapter implements SourceProviderPort {
       return this.mockFallback.readFile(filePath);
     }
   }
+
+  public async pickFolder(): Promise<string | null> {
+    if (!this.isTauriAvailable()) {
+      return this.mockFallback.pickFolder();
+    }
+
+    try {
+      const selected = await invoke<string | null>('pick_folder');
+      return selected || null;
+    } catch (err) {
+      console.error('Failed to invoke pick_folder dialog:', err);
+      return this.mockFallback.pickFolder();
+    }
+  }
 }

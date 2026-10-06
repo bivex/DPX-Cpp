@@ -188,3 +188,29 @@ pub fn load_json_file(file_path: String) -> Result<Value, String> {
     let content = std::fs::read_to_string(path).map_err(|e| format!("Failed to read JSON file: {}", e))?;
     serde_json::from_str(&content).map_err(|e| format!("Invalid JSON format: {}", e))
 }
+
+#[tauri::command]
+pub fn pick_folder() -> Result<Option<String>, String> {
+    #[cfg(target_os = "macos")]
+    {
+        let output = Command::new("osascript")
+            .arg("-e")
+            .arg("POSIX path of (choose folder with prompt \"Select C++ Project Directory\")")
+            .output()
+            .map_err(|e| format!("Failed to open folder picker: {}", e))?;
+
+        if output.status.success() {
+            let path_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !path_str.is_empty() {
+                let trimmed = path_str.strip_suffix('/').unwrap_or(&path_str).to_string();
+                return Ok(Some(trimmed));
+            }
+        }
+        Ok(None)
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    {
+        Ok(None)
+    }
+}

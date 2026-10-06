@@ -27,4 +27,9 @@ void runPipeline() {
 }
 `;
   }
+
+  public async pickFolder(): Promise<string | null> {
+    const input = window.prompt('Enter C++ Project Directory path:', 'examples/cpp_samples');
+    return input ? input.trim() : null;
+  }
 }

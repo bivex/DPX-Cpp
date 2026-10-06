@@ -175,6 +175,34 @@ body, html {
   cursor: not-allowed;
 }
 
+.secondary-btn {
+  height: 32px;
+  padding: 0 12px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background: #253348;
+  border-color: var(--accent-cyan-glow);
+  color: #fff;
+}
+
+.secondary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Loading Bar */
 .loading-bar-indicator {
   height: 2px;

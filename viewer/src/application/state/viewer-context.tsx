@@ -40,6 +40,7 @@ export interface ViewerContextType {
 
   // Methods
   scan: (path?: string) => Promise<void>;
+  openFolder: () => Promise<void>;
   loadDataFlow: (path?: string) => Promise<void>;
   traceVariable: (variable: string, direction?: 'out' | 'in') => Promise<void>;
   selectNode: (nodeId: string | null) => Promise<void>;
@@ -194,6 +195,22 @@ export const ViewerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     scan();
   }, []);
 
+  const openFolder = async () => {
+    try {
+      const selected = await container.sourceCodeService.pickFolder();
+      if (selected) {
+        setProjectPath(selected);
+        if (currentView === 'patterns') {
+          await scan(selected);
+        } else {
+          await loadDataFlow(selected);
+        }
+      }
+    } catch (err: any) {
+      setError(err?.message || String(err));
+    }
+  };
+
   const switchView = (view: 'patterns' | 'dataflow') => {
     setCurrentView(view);
     if (view === 'dataflow' && !dataFlowSummary) {
@@ -228,6 +245,7 @@ export const ViewerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         layoutAlgorithm,
         setLayoutAlgorithm,
         scan,
+        openFolder,
         loadDataFlow,
         traceVariable,
         selectNode,
