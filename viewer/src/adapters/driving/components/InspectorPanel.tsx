@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useViewer } from '../../../application/state/viewer-context';
 
 export const InspectorPanel: React.FC = () => {
@@ -9,11 +9,30 @@ export const InspectorPanel: React.FC = () => {
     sourceCode,
   } = useViewer();
 
+  const targetLineRef = useRef<HTMLDivElement | null>(null);
+
+  const highlightLine = selectedNode?.metadata?.line || selectedDetection?.primaryLocation?.line;
+
+  // Auto-scroll code preview container so the exact targeted line is centered
+  useEffect(() => {
+    if (targetLineRef.current) {
+      targetLineRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [sourceCode, highlightLine]);
+
   if (!selectedNode && !selectedDetection) {
     return null;
   }
 
-  const highlightLine = selectedNode?.metadata?.line || selectedDetection?.primaryLocation?.line;
+  const scrollToTarget = () => {
+    targetLineRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  };
 
   return (
     <section className="inspector-panel">
@@ -24,7 +43,7 @@ export const InspectorPanel: React.FC = () => {
           </span>
           <h3 className="inspector-title">{selectedNode?.label || selectedDetection?.targetName}</h3>
         </div>
-        <button className="close-btn" onClick={() => selectNode(null)}>
+        <button className="close-btn" onClick={() => selectNode(null)} title="Close Inspector">
           ✕
         </button>
       </div>
@@ -82,8 +101,8 @@ export const InspectorPanel: React.FC = () => {
               )}
               {selectedNode.metadata.line && (
                 <div className="meta-item">
-                  <span className="meta-label">Line</span>
-                  <span className="meta-val">{selectedNode.metadata.line}</span>
+                  <span className="meta-label">Exact Line</span>
+                  <span className="meta-val">Line {selectedNode.metadata.line}</span>
                 </div>
               )}
               {selectedNode.metadata.details && (
@@ -96,23 +115,29 @@ export const InspectorPanel: React.FC = () => {
           </div>
         )}
 
-        {/* Source Code Viewer */}
+        {/* Source Code Viewer with Auto-Scroll & Line Pinpointing */}
         {sourceCode && (
           <div className="inspector-section code-section">
-            <h4 className="section-title">
-              C++ Source Preview {highlightLine ? `(Line ${highlightLine})` : ''}
-            </h4>
+            <div className="code-header">
+              <h4 className="section-title">C++ Source Preview</h4>
+              {highlightLine !== undefined && (
+                <button className="line-jump-badge" onClick={scrollToTarget} title="Jump to line in code">
+                  🎯 Line {highlightLine}
+                </button>
+              )}
+            </div>
             <div className="code-viewer-container">
               <pre className="code-block">
                 {sourceCode.split('\n').map((lineText, idx) => {
                   const lineNum = idx + 1;
-                  const isHighlighted = highlightLine !== undefined && Math.abs(lineNum - highlightLine) <= 1;
                   const isTarget = highlightLine === lineNum;
+                  const isNear = highlightLine !== undefined && Math.abs(lineNum - highlightLine) <= 2;
                   return (
                     <div
                       key={idx}
+                      ref={isTarget ? targetLineRef : undefined}
                       className={`code-line ${isTarget ? 'target-line' : ''} ${
-                        isHighlighted ? 'highlight-range' : ''
+                        isNear && !isTarget ? 'highlight-range' : ''
                       }`}
                     >
                       <span className="line-num">{lineNum}</span>

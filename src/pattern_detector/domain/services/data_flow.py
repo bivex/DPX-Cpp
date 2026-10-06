@@ -16,6 +16,16 @@ from pattern_detector.domain.data_flow import (
 )
 
 
+def _find_var_location(model: CodeModel, var_name: str) -> SourceLocation | None:
+    for st in model.all_states():
+        if st.name == var_name:
+            return st.location
+    for r in model.all_records():
+        if var_name in r.fields:
+            return r.location
+    return None
+
+
 class DataFlowService:
     """Domain Service for computing Forward (Data Flow Out) and Backward (Data Flow In) graphs."""
 
@@ -34,11 +44,14 @@ class DataFlowService:
         )
 
         # Register root variable
+        root_loc = _find_var_location(model, root_variable)
         graph.add_node(
             node_id=root_variable,
             name=root_variable,
             kind=NodeKind.VARIABLE,
             is_root=True,
+            file_path=root_loc.file_path if root_loc else "",
+            line=root_loc.line if root_loc else 1,
         )
 
         # Pre-build / retrieve cached inverted index for O(1) reader lookups
@@ -89,11 +102,14 @@ class DataFlowService:
 
                 for w_var in written_vars:
                     w_kind = "MODIFIES" if w_var in fn.modifies_variables or (w_var == var_name) else "WRITES"
+                    w_loc = _find_var_location(model, w_var)
                     graph.add_node(
                         node_id=w_var,
                         name=w_var,
                         kind=NodeKind.VARIABLE,
                         cluster=cluster_name,
+                        file_path=w_loc.file_path if w_loc else "",
+                        line=w_loc.line if w_loc else (fn.location.line if fn.location else 1),
                     )
                     graph.add_edge(from_id=fn_id, to_id=w_var, kind=w_kind, location=fn.location)
 
@@ -116,11 +132,14 @@ class DataFlowService:
             variant=variant,
         )
 
+        root_loc = _find_var_location(model, root_variable)
         graph.add_node(
             node_id=root_variable,
             name=root_variable,
             kind=NodeKind.VARIABLE,
             is_root=True,
+            file_path=root_loc.file_path if root_loc else "",
+            line=root_loc.line if root_loc else 1,
         )
 
         # Pre-build / retrieve cached inverted index for O(1) writer lookups
@@ -163,11 +182,14 @@ class DataFlowService:
 
                 # 2. Find variables that this function reads
                 for r_var in fn.reads_variables:
+                    r_loc = _find_var_location(model, r_var)
                     graph.add_node(
                         node_id=r_var,
                         name=r_var,
                         kind=NodeKind.VARIABLE,
                         cluster=cluster_name,
+                        file_path=r_loc.file_path if r_loc else "",
+                        line=r_loc.line if r_loc else (fn.location.line if fn.location else 1),
                     )
                     graph.add_edge(from_id=fn_id, to_id=r_var, kind="READS_FROM", location=fn.location)
 

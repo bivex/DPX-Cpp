@@ -404,10 +404,19 @@ class CppAntlrParserAdapter(ParserPort):
         ns_match = re.search(r"(?<!using\s)\bnamespace\s+([a-zA-Z0-9_:]+)\s*\{", source_code)
         ns_name = ns_match.group(1) if ns_match else "global"
 
-        # Pre-clean comments and macros for clean brace navigation
-        cleaned = re.sub(r"/\*.*?\*/", "", source_code, flags=re.DOTALL)
-        cleaned = re.sub(r"//[^\n]*", "", cleaned)
-        cleaned = re.sub(r"#\s*(?:pragma|define|undef|ifdef|ifndef|endif|else|elif|line)\b[^\n]*", "", cleaned)
+        # Pre-clean comments and macros for clean brace navigation while preserving exact character offsets
+        cleaned = re.sub(
+            r"/\*.*?\*/",
+            lambda m: "\n" * m.group(0).count("\n") + " " * (len(m.group(0)) - m.group(0).count("\n")),
+            source_code,
+            flags=re.DOTALL,
+        )
+        cleaned = re.sub(r"//[^\n]*", lambda m: " " * len(m.group(0)), cleaned)
+        cleaned = re.sub(
+            r"#\s*(?:pragma|define|undef|ifdef|ifndef|endif|else|elif|line)\b[^\n]*",
+            lambda m: " " * len(m.group(0)),
+            cleaned,
+        )
 
         CONTROL_KEYWORDS = {
             "if",
@@ -448,7 +457,8 @@ class CppAntlrParserAdapter(ParserPort):
                 if b.strip()
             ]
 
-            loc = SourceLocation(file_path=file_path, line=1, column=1)
+            class_line = source_code[:cm.start()].count("\n") + 1
+            loc = SourceLocation(file_path=file_path, line=class_line, column=1)
             start_idx = cm.end()
             depth = 1
             pos = start_idx
@@ -473,7 +483,7 @@ class CppAntlrParserAdapter(ParserPort):
                     fields.append(f_name)
 
             # Accurate brace-aware method parser
-            raw_methods: list[tuple[str, str, str, bool]] = []
+            raw_methods: list[tuple[str, str, str, bool, int]] = []
             length = len(c_body)
             i = 0
             depth = 0
@@ -501,7 +511,10 @@ class CppAntlrParserAdapter(ParserPort):
                         m_name = m.group(2)
                         params = m.group(3) or ""
                         if m_name not in ("if", "for", "while", "switch", "catch", "return") and m_name not in fields:
-                            raw_methods.append((m_name, params, m_body_text, "= 0" in cleaned_sig))
+                            m_name_offset = raw_sig.find(m_name)
+                            m_abs_pos = start_idx + sig_start + (m_name_offset if m_name_offset != -1 else 0)
+                            m_line = source_code[:m_abs_pos].count("\n") + 1
+                            raw_methods.append((m_name, params, m_body_text, "= 0" in cleaned_sig, m_line))
                     i = j
                     sig_start = i
                     continue
@@ -513,7 +526,10 @@ class CppAntlrParserAdapter(ParserPort):
                         m_name = m.group(2)
                         params = m.group(3) or ""
                         if m_name not in ("if", "for", "while", "switch", "catch", "return", "default", "delete") and m_name not in fields:
-                            raw_methods.append((m_name, params, "", "= 0" in cleaned_sig))
+                            m_name_offset = raw_sig.find(m_name)
+                            m_abs_pos = start_idx + sig_start + (m_name_offset if m_name_offset != -1 else 0)
+                            m_line = source_code[:m_abs_pos].count("\n") + 1
+                            raw_methods.append((m_name, params, "", "= 0" in cleaned_sig, m_line))
                     sig_start = i + 1
                 elif ch == "{":
                     depth += 1
@@ -523,14 +539,15 @@ class CppAntlrParserAdapter(ParserPort):
                     sig_start = i + 1
                 i += 1
 
-            for m_name, m_params_raw, m_body_text, is_pure in raw_methods:
+            for m_name, m_params_raw, m_body_text, is_pure, m_line in raw_methods:
                 qualified_name = f"{c_name}::{m_name}"
                 param_list = [p.strip() for p in m_params_raw.split(",") if p.strip()]
+                m_loc = SourceLocation(file_path=file_path, line=m_line, column=1)
 
                 fn = FunctionModel(
                     name=qualified_name,
                     namespace=ns_name,
-                    location=loc,
+                    location=m_loc,
                     parameter_lists=[param_list],
                     body_text=m_body_text,
                     calls=sorted(set(re.findall(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", m_body_text))),
@@ -538,13 +555,15 @@ class CppAntlrParserAdapter(ParserPort):
                 methods.append(fn)
                 visitor.functions[qualified_name] = fn
                 if is_pure:
-                    pure_methods.append(MethodSignature(name=m_name, location=loc))
+                    pure_methods.append(MethodSignature(name=m_name, location=m_loc))
 
             if "static" in c_body and ("instance" in c_body.lower() or "getinstance" in c_body.lower() or "get_instance" in c_body.lower()):
+                inst_match = re.search(r"\b(?:instance|getInstance|get_instance)\b", c_body)
+                inst_line = source_code[:start_idx + inst_match.start()].count("\n") + 1 if inst_match else class_line
                 visitor.states[f"{c_name}::instance"] = StateModel(
                     name=f"{c_name}::instance",
                     namespace=ns_name,
-                    location=loc,
+                    location=SourceLocation(file_path=file_path, line=inst_line, column=1),
                     kind="atom",
                     is_once=True,
                     is_dynamic=True,
@@ -566,7 +585,7 @@ class CppAntlrParserAdapter(ParserPort):
                     name=c_name,
                     namespace=ns_name,
                     location=loc,
-                    methods=pure_methods if pure_methods else [MethodSignature(name=m.name.split("::")[-1], location=loc) for m in methods],
+                    methods=pure_methods if pure_methods else [MethodSignature(name=m.name.split("::")[-1], location=m.location) for m in methods],
                 )
 
         # Extract global/extern variables
@@ -576,10 +595,11 @@ class CppAntlrParserAdapter(ParserPort):
         for vm in var_pattern.finditer(cleaned):
             v_name = vm.group(1)
             if v_name not in CONTROL_KEYWORDS and not v_name.startswith("return") and v_name not in ("default", "delete"):
+                var_line = source_code[:vm.start()].count("\n") + 1
                 visitor.states[v_name] = StateModel(
                     name=v_name,
                     namespace=ns_name,
-                    location=SourceLocation(file_path=file_path, line=1, column=1),
+                    location=SourceLocation(file_path=file_path, line=var_line, column=1),
                     kind="atom",
                 )
 
@@ -592,7 +612,8 @@ class CppAntlrParserAdapter(ParserPort):
             if fn_name in CONTROL_KEYWORDS or fn_name.startswith("main") or any(r.name == fn_name for r in visitor.records.values()):
                 continue
             fn_params_raw = fn_m.group(2) or ""
-            fn_loc = SourceLocation(file_path=file_path, line=1, column=1)
+            fn_line = source_code[:fn_m.start()].count("\n") + 1
+            fn_loc = SourceLocation(file_path=file_path, line=fn_line, column=1)
 
             start_idx = fn_m.end()
             depth = 1

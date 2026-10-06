@@ -683,6 +683,34 @@ body, html {
   padding: 8px;
 }
 
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.code-header .section-title {
+  margin-bottom: 0;
+}
+
+.line-jump-badge {
+  background: rgba(244, 63, 94, 0.2);
+  border: 1px solid rgba(244, 63, 94, 0.5);
+  color: #fda4af;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.line-jump-badge:hover {
+  background: #f43f5e;
+  color: #fff;
+}
+
 .code-viewer-container {
   background: #050811;
   border: 1px solid var(--border-subtle);

@@ -54,12 +54,17 @@ export class TauriAnalyzerAdapter implements AnalyzerPort {
               snippet: e.snippet,
             })),
           },
-          primaryLocation: d.confidence?.evidences?.[0]?.location ? {
+          primaryLocation: d.primary_location?.file_path ? {
+            filePath: d.primary_location.file_path,
+            line: d.primary_location.line,
+            column: d.primary_location.column,
+            formatted: d.primary_location.formatted,
+          } : (d.confidence?.evidences?.[0]?.location ? {
             filePath: d.confidence.evidences[0].location.file_path,
             line: d.confidence.evidences[0].location.line,
             column: d.confidence.evidences[0].location.column,
             formatted: d.confidence.evidences[0].location.formatted,
-          } : undefined,
+          } : undefined),
           relatedLocations: (d.related_locations || []).map((l: any) => ({
             filePath: l.file_path,
             line: l.line,
